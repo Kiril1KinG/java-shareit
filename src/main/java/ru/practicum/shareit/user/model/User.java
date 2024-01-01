@@ -1,4 +1,5 @@
-package ru.practicum.shareit.item.model;
+package ru.practicum.shareit.user.model;
+
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,13 +8,10 @@ import java.util.Objects;
 
 @Getter
 @Setter
-public class Item {
+public class User {
     private Integer id;
     private String name;
-    private String description;
-    private Boolean available;
-    private String owner;
-    private String request;
+    private String email;
 
     @Override
     public boolean equals(Object o) {
@@ -23,8 +21,8 @@ public class Item {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Item item = (Item) o;
-        return Objects.equals(id, item.id);
+        User user = (User) o;
+        return Objects.equals(id, user.id);
     }
 
     @Override

@@ -1,19 +1,19 @@
-package ru.practicum.shareit.item.model;
+package ru.practicum.shareit.request.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import ru.practicum.shareit.user.model.User;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Getter
 @Setter
-public class Item {
+public class ItemRequest {
     private Integer id;
-    private String name;
     private String description;
-    private Boolean available;
-    private String owner;
-    private String request;
+    private User requestor;
+    private LocalDateTime created;
 
     @Override
     public boolean equals(Object o) {
@@ -23,8 +23,8 @@ public class Item {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Item item = (Item) o;
-        return Objects.equals(id, item.id);
+        ItemRequest that = (ItemRequest) o;
+        return Objects.equals(id, that.id);
     }
 
     @Override
