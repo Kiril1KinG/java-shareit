@@ -11,7 +11,7 @@ import ru.practicum.shareit.request.storage.ItemRequestStorage;
 @RequiredArgsConstructor
 @Component
 @Slf4j
-public class ItemRequestServiceImpl implements ItemRequestService{
+public class ItemRequestServiceImpl implements ItemRequestService {
 
     private final ItemRequestStorage itemRequestStorage;
 
@@ -22,7 +22,7 @@ public class ItemRequestServiceImpl implements ItemRequestService{
     }
 
     public ItemRequest get(int id) {
-        if (!itemRequestStorage.contains(id)){
+        if (!itemRequestStorage.contains(id)) {
             throw new DataNotExistsException(String.format("Get item request failed, item request with id %d not exists",
                     id));
         }

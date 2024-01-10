@@ -1,5 +1,7 @@
 package ru.practicum.shareit.request.dto;
 
+import lombok.Getter;
+import lombok.Setter;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
@@ -7,6 +9,9 @@ import java.time.LocalDateTime;
 /**
  * TODO Sprint add-item-requests.
  */
+
+@Getter
+@Setter
 public class ItemRequestRequest {
     private Integer id;
     private String description;

@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class UserStorageImpl implements UserStorage{
+public class UserStorageImpl implements UserStorage {
     private final Map<Integer, User> users = new HashMap<>();
     private int id = 1;
 
