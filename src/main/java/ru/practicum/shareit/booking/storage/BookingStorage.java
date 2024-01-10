@@ -1,10 +1,11 @@
-package ru.practicum.shareit.booking.service;
+package ru.practicum.shareit.booking.storage;
 
 import ru.practicum.shareit.booking.model.Booking;
 
 import java.util.Collection;
 
-public interface BookingService {
+public interface BookingStorage {
+
     Booking add(Booking booking);
 
     Booking get(int id);
@@ -12,6 +13,8 @@ public interface BookingService {
     Booking update(int id, Booking booking);
 
     void delete(int id);
+
+    boolean contains(int id);
 
     Collection<Booking> getAll();
 }

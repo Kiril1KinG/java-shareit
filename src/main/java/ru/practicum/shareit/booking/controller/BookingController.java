@@ -8,34 +8,39 @@ import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.service.BookingService;
 
+import java.util.Collection;
+
 @RestController
 @RequestMapping(path = "/bookings")
 @RequiredArgsConstructor
 public class BookingController {
-    private final BookingService service;
+    private final BookingService bookingService;
     private final BookingMapper mapper;
 
     @PostMapping
     public BookingResponse add(@RequestBody BookingRequest request) {
-        Booking booking = service.add(mapper.toBooking(request));
+        Booking booking = bookingService.add(mapper.toBooking(request));
         return mapper.toResponse(booking);
     }
 
     @GetMapping("/{id}")
     public BookingResponse get(@PathVariable Integer id) {
-        return mapper.toResponse(service.get(id));
+        return mapper.toResponse(bookingService.get(id));
     }
 
-    @PatchMapping //TODO PATCH /items/{itemId}
-    public BookingResponse update(@RequestBody BookingRequest request) {
-        Booking booking = service.update(mapper.toBooking(request));
+    @GetMapping()
+    public Collection<Booking> getAll() {
+        return bookingService.getAll();
+    }
+
+    @PatchMapping("/{id}")
+    public BookingResponse update(@PathVariable Integer id, @RequestBody BookingRequest request) {
+        Booking booking = bookingService.update(id, mapper.toBooking(request));
         return mapper.toResponse(booking);
     }
 
-    //TODO /items/search?text={text}
-
-    @DeleteMapping
-    public void delete(@RequestHeader("X-Sharer-User-Id") Integer id) {
-        service.delete(id);
+    @DeleteMapping("/id")
+    public void delete(@PathVariable Integer id) {
+        bookingService.delete(id);
     }
 }

@@ -5,6 +5,6 @@ public class ItemResponse {
     private String name;
     private String description;
     private Boolean available;
-    private String owner;
+    private Integer userId;
     private String request;
 }

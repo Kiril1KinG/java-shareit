@@ -1,33 +1,20 @@
 package ru.practicum.shareit.item.service;
 
-import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.model.Item;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collection;
 
+public interface ItemService {
 
-@Component
-public class ItemService {
-    private final Map<Integer, Item> items = new HashMap<>();
-    private int id = 1;
+    Item add(int userId, Item item);
 
-    public Item add(Item item) {
-        item.setId(id);
-        items.put(id++, item);
-        return item;
-    }
+    Item get(int id);
 
-    public Item get(int id) {
-        return items.get(id);
-    }
+    Item update(int userId, int id, Item item);
 
-    public Item update(Item item) {
-        items.put(item.getId(), item);
-        return items.get(item.getId());
-    }
+    void delete(int userId, int id);
 
-    public void delete(int id) {
-        items.remove(id);
-    }
+    Collection<Item> search(String text);
+
+    Collection<Item> getAllForOwner(int userId);
 }

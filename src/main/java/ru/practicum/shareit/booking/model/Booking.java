@@ -16,7 +16,7 @@ public class Booking {
     private LocalDateTime end;
     private Item item;
     private User broker;
-    private String status;
+    private BookingStatus status = BookingStatus.WAITING;
 
     @Override
     public boolean equals(Object o) {

@@ -8,6 +8,5 @@ public class ItemRequest {
     private String name;
     private String description;
     private Boolean available;
-    private String owner;
     private String request;
 }

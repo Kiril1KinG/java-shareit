@@ -1,10 +1,10 @@
-package ru.practicum.shareit.user.service;
+package ru.practicum.shareit.user.storage;
 
 import ru.practicum.shareit.user.model.User;
 
 import java.util.Collection;
 
-public interface UserService {
+public interface UserStorage {
 
     User add(User user);
 
@@ -14,6 +14,7 @@ public interface UserService {
 
     void delete(Integer id);
 
-    Collection<User> getAll();
+    boolean contains(Integer id);
 
+    Collection<User> getAll();
 }

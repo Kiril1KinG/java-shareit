@@ -12,7 +12,7 @@ public class Item {
     private String name;
     private String description;
     private Boolean available;
-    private String owner;
+    private Integer userId;;
     private String request;
 
     @Override
