@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exception.DataNotExistsException;
 import ru.practicum.shareit.item.model.Item;
@@ -13,10 +14,10 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class ItemServiceImpl implements ItemService{
 
     private final ItemStorage itemStorage;
-
     private final UserStorage userStorage;
 
     @Override
@@ -25,7 +26,9 @@ public class ItemServiceImpl implements ItemService{
             throw new DataNotExistsException(String.format("Add item failed, user with id %d npt exists", userId));
         }
         item.setUserId(userId);
-        return itemStorage.add(item);
+        Item res = itemStorage.add(item);
+        log.info("Item added: {}", res);
+        return res;
     }
 
     @Override
@@ -33,7 +36,9 @@ public class ItemServiceImpl implements ItemService{
         if (!itemStorage.contains(id)) {
             throw new DataNotExistsException(String.format("Get item by id failed, item with %d not exists", id));
         }
-        return itemStorage.get(id);
+        Item res = itemStorage.get(id);
+        log.info("Item received: {}", res);
+        return res;
     }
 
     @Override
@@ -47,7 +52,13 @@ public class ItemServiceImpl implements ItemService{
         if (itemStorage.get(id).getUserId() != userId) {
             throw new DataNotExistsException(String.format("Update item failed, user with %d not owner", userId));
         }
-        return itemStorage.update(id, item);
+        Item modified = itemStorage.get(id);
+        modified.setName(item.getName());
+        modified.setDescription(item.getDescription());
+        modified.setAvailable(item.getAvailable());
+        itemStorage.update(id, modified);
+        log.info("Item updated: {}", modified);
+        return modified;
     }
 
     @Override
@@ -55,22 +66,27 @@ public class ItemServiceImpl implements ItemService{
         if ((itemStorage.get(id).getUserId() != userId)) {
             throw new DataNotExistsException(String.format("Delete item failed, user with %d not owner", userId));
         }
-       itemStorage.delete(id);
+        itemStorage.delete(id);
+        log.info("Item with id {} deleted", id);
     }
 
 
     @Override
     public Collection<Item> search(String text) {
-        return itemStorage.getAll().stream()
+        Collection<Item> items = itemStorage.getAll().stream()
                 .filter(item -> (item.getName().contains(text) || item.getDescription().contains(text))
                         && item.getAvailable() == true)
                 .collect(Collectors.toList());
+        log.info("Item search by request \"{}\" received: {}", text, items);
+        return items;
     }
 
     @Override
     public Collection<Item> getAllForOwner(int userId) {
-        return itemStorage.getAll().stream()
+        Collection<Item> items = itemStorage.getAll().stream()
                 .filter(item -> item.getUserId() == userId)
                 .collect(Collectors.toList());
+        log.info("Items for owner received: {}", items);
+        return items;
     }
 }
