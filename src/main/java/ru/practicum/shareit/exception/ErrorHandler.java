@@ -30,7 +30,7 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     public Map<String, String> handle(DataAlreadyExistsException e) {
         log.info(e.getMessage(), e);
-        return Map.of("Bad request", e.getMessage());
+        return Map.of("Already exists", e.getMessage());
     }
 
     @ExceptionHandler
