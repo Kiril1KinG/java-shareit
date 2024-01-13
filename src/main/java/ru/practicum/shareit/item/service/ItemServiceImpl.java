@@ -97,7 +97,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Collection<ItemResponse> getAllForOwner(int userId) {
+    public Collection<ItemResponse> getByOwnerId(int userId) {
         Collection<ItemResponse> items = itemStorage.getAll().stream()
                 .filter(item -> item.getOwnerId() == userId)
                 .map(mapper::toResponse)

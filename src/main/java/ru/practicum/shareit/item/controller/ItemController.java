@@ -45,7 +45,7 @@ public class ItemController {
     @GetMapping()
     public Collection<ItemResponse> getAllForOwner(@RequestHeader("X-Sharer-User-Id") Integer userId) {
         log.info("GET /items X-Sharer-User-Id: {}", userId);
-        return itemService.getAllForOwner(userId);
+        return itemService.getByOwnerId(userId);
     }
 
     @GetMapping("/search")

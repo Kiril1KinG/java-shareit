@@ -17,5 +17,5 @@ public interface ItemService {
 
     Collection<ItemResponse> search(String text);
 
-    Collection<ItemResponse> getAllForOwner(int userId);
+    Collection<ItemResponse> getByOwnerId(int userId);
 }
