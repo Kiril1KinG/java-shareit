@@ -20,7 +20,7 @@ import javax.validation.Valid;
 import java.util.Collection;
 
 @RestController
-@RequestMapping(path = "/users")
+@RequestMapping("/users")
 @RequiredArgsConstructor
 @Slf4j
 public class UserController {
