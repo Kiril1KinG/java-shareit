@@ -17,4 +17,6 @@ public interface ItemStorage {
     Collection<Item> getAll();
 
     boolean contains(int id);
+
+    Collection<Item> search(String text);
 }

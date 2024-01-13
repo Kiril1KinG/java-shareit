@@ -6,6 +6,7 @@ import ru.practicum.shareit.item.model.Item;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 public class InMemoryItemStorageImpl implements ItemStorage {
@@ -43,5 +44,14 @@ public class InMemoryItemStorageImpl implements ItemStorage {
     @Override
     public boolean contains(int id) {
         return items.containsKey(id);
+    }
+
+    @Override
+    public Collection<Item> search(String text) {
+        return items.values().stream()
+                .filter(item -> (item.getName().toLowerCase().contains(text.toLowerCase())
+                        || item.getDescription().toLowerCase().contains(text.toLowerCase()))
+                        && item.getAvailable())
+                .collect(Collectors.toList());
     }
 }

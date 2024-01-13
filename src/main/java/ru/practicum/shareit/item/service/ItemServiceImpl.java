@@ -83,11 +83,7 @@ public class ItemServiceImpl implements ItemService {
         if (text.isBlank() || text.isEmpty()) {
             return Collections.emptyList();
         }
-        Collection<Item> items = itemStorage.getAll().stream()
-                .filter(item -> (item.getName().toLowerCase().contains(text.toLowerCase())
-                        || item.getDescription().toLowerCase().contains(text.toLowerCase()))
-                        && item.getAvailable())
-                .collect(Collectors.toList());
+        Collection<Item> items = itemStorage.search(text);
         log.info("Item search by request \"{}\" received: {}", text, items);
         return items;
     }
