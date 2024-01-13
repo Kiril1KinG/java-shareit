@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item.service;
 
-import ru.practicum.shareit.item.dto.ItemResponse;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.Collection;
@@ -15,7 +14,7 @@ public interface ItemService {
 
     void delete(int userId, int id);
 
-    Collection<ItemResponse> search(String text);
+    Collection<Item> search(String text);
 
-    Collection<ItemResponse> getByOwnerId(int userId);
+    Collection<Item> getByOwnerId(int userId);
 }

@@ -4,15 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exception.DataAlreadyExistsException;
-import ru.practicum.shareit.user.dto.UserResponse;
-import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -20,7 +17,6 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     private final UserStorage userStorage;
-    private final UserMapper mapper;
 
     @Override
     public User add(User user) {
@@ -72,10 +68,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Collection<UserResponse> getAll() {
-        Collection<UserResponse> users = userStorage.getAll().stream()
-                .map(mapper::toResponse)
-                .collect(Collectors.toList());
+    public Collection<User> getAll() {
+        Collection<User> users = userStorage.getAll();
         log.info("All users received: {}", users);
         return users;
     }

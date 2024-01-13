@@ -18,6 +18,7 @@ import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.Valid;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
@@ -42,7 +43,9 @@ public class UserController {
     @GetMapping
     public Collection<UserResponse> getAll() {
         log.info("GET /users");
-        return userService.getAll();
+        return userService.getAll().stream()
+                .map(mapper::toResponse)
+                .collect(Collectors.toList());
     }
 
     @PatchMapping("/{id}")

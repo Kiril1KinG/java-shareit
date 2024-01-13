@@ -1,6 +1,5 @@
 package ru.practicum.shareit.user.service;
 
-import ru.practicum.shareit.user.dto.UserResponse;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.Collection;
@@ -15,6 +14,6 @@ public interface UserService {
 
     void delete(Integer id);
 
-    Collection<UserResponse> getAll();
+    Collection<User> getAll();
 
 }

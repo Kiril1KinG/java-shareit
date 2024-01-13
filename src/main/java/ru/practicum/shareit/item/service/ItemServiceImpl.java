@@ -4,8 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exception.DataNotExistsException;
-import ru.practicum.shareit.item.dto.ItemResponse;
-import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemStorage;
 import ru.practicum.shareit.user.storage.UserStorage;
@@ -22,7 +20,6 @@ public class ItemServiceImpl implements ItemService {
 
     private final ItemStorage itemStorage;
     private final UserStorage userStorage;
-    private final ItemMapper mapper;
 
     @Override
     public Item add(int userId, Item item) {
@@ -82,25 +79,23 @@ public class ItemServiceImpl implements ItemService {
 
 
     @Override
-    public Collection<ItemResponse> search(String text) {
+    public Collection<Item> search(String text) {
         if (text.isBlank() || text.isEmpty()) {
             return Collections.emptyList();
         }
-        Collection<ItemResponse> items = itemStorage.getAll().stream()
+        Collection<Item> items = itemStorage.getAll().stream()
                 .filter(item -> (item.getName().toLowerCase().contains(text.toLowerCase())
                         || item.getDescription().toLowerCase().contains(text.toLowerCase()))
                         && item.getAvailable())
-                .map(mapper::toResponse)
                 .collect(Collectors.toList());
         log.info("Item search by request \"{}\" received: {}", text, items);
         return items;
     }
 
     @Override
-    public Collection<ItemResponse> getByOwnerId(int userId) {
-        Collection<ItemResponse> items = itemStorage.getAll().stream()
+    public Collection<Item> getByOwnerId(int userId) {
+        Collection<Item> items = itemStorage.getAll().stream()
                 .filter(item -> item.getOwnerId() == userId)
-                .map(mapper::toResponse)
                 .collect(Collectors.toList());
         log.info("Items for owner received: {}", items);
         return items;

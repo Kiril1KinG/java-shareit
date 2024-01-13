@@ -20,6 +20,7 @@ import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/items")
@@ -45,13 +46,17 @@ public class ItemController {
     @GetMapping()
     public Collection<ItemResponse> getAllForOwner(@RequestHeader("X-Sharer-User-Id") Integer userId) {
         log.info("GET /items X-Sharer-User-Id: {}", userId);
-        return itemService.getByOwnerId(userId);
+        return itemService.getByOwnerId(userId).stream()
+                .map(mapper::toResponse)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/search")
     public Collection<ItemResponse> search(@RequestParam String text) {
         log.info("GET /items/search?text={}", text);
-        return itemService.search(text);
+        return itemService.search(text).stream()
+                .map(mapper::toResponse)
+                .collect(Collectors.toList());
     }
 
     @PatchMapping("/{id}")
