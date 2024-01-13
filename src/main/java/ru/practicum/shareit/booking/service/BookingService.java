@@ -9,7 +9,7 @@ public interface BookingService {
 
     Booking get(int id);
 
-    Booking update(int id, Booking booking);
+    Booking update(Booking booking);
 
     void delete(int id);
 

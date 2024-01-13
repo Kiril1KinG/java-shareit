@@ -34,15 +34,15 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Booking update(int id, Booking booking) {
-        if (!bookingStorage.contains(id)) {
+    public Booking update(Booking booking) {
+        if (!bookingStorage.contains(booking.getId())) {
             throw new DataNotExistsException(String.format("Update booking by id filed, booking with id %d not exists",
-                    id));
+                    booking.getId()));
         }
-        Booking modified = bookingStorage.get(id);
+        Booking modified = bookingStorage.get(booking.getId());
         modified.setEnd(booking.getEnd());
         modified.setStatus(booking.getStatus());
-        bookingStorage.update(id, modified);
+        bookingStorage.update(booking.getId(), modified);
         log.info("Booking updated: {}", modified);
         return modified;
     }

@@ -48,7 +48,8 @@ public class BookingController {
     @PatchMapping("/{id}")
     public BookingResponse update(@PathVariable Integer id, @RequestBody BookingRequest request) {
         log.info("PATCH /bookings/{}", id);
-        Booking booking = bookingService.update(id, mapper.toBooking(request));
+        request.setId(id);
+        Booking booking = bookingService.update(mapper.toBooking(request));
         return mapper.toResponse(booking);
     }
 
