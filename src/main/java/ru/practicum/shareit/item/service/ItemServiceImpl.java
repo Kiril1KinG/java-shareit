@@ -24,7 +24,8 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Item add(int userId, Item item) {
         if (!userStorage.contains(userId)) {
-            throw new DataNotExistsException(String.format("Add item failed, user with id %d npt exists", userId));
+            throw new DataNotExistsException(
+                    String.format("Add item failed, user with id %d npt exists", userId));
         }
         item.setOwnerId(userId);
         Item res = itemStorage.add(item);
@@ -35,7 +36,8 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Item get(int id) {
         if (!itemStorage.contains(id)) {
-            throw new DataNotExistsException(String.format("Get item by id failed, item with %d not exists", id));
+            throw new DataNotExistsException(
+                    String.format("Get item by id failed, item with %d not exists", id));
         }
         Item res = itemStorage.get(id);
         log.info("Item received: {}", res);
@@ -45,13 +47,16 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Item update(int userId, int id, Item item) {
         if (!itemStorage.contains(id)) {
-            throw new DataNotExistsException(String.format("Update item failed, item with %d not exists", id));
+            throw new DataNotExistsException(
+                    String.format("Update item failed, item with %d not exists", id));
         }
         if (!userStorage.contains(userId)) {
-            throw new DataNotExistsException(String.format("Update item failed, user with %d not exists", userId));
+            throw new DataNotExistsException(
+                    String.format("Update item failed, user with %d not exists", userId));
         }
         if (itemStorage.get(id).getOwnerId() != userId) {
-            throw new DataNotExistsException(String.format("Update item failed, user with %d not owner", userId));
+            throw new DataNotExistsException(
+                    String.format("Update item failed, user with %d not owner", userId));
         }
         Item modified = itemStorage.get(id);
         if (item.getName() != null) {
@@ -71,7 +76,8 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public void delete(int userId, int id) {
         if ((itemStorage.get(id).getOwnerId() != userId)) {
-            throw new DataNotExistsException(String.format("Delete item failed, user with %d not owner", userId));
+            throw new DataNotExistsException(
+                    String.format("Delete item failed, user with %d not owner", userId));
         }
         itemStorage.delete(id);
         log.info("Item with id {} deleted", id);

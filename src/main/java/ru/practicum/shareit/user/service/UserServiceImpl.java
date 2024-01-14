@@ -21,8 +21,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public User add(User user) {
         if (userStorage.getAll().stream().map(User::getEmail).anyMatch(p -> p.equals(user.getEmail()))) {
-            throw new DataAlreadyExistsException(String.format("Add user failed, user with email %s already exists",
-                    user.getEmail()));
+            throw new DataAlreadyExistsException(
+                    String.format("Add user failed, user with email %s already exists", user.getEmail()));
         }
         log.info("User added: {}", user);
         return userStorage.add(user);
@@ -31,7 +31,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public User get(Integer id) {
         if (!userStorage.contains(id)) {
-            throw new RuntimeException(String.format("Get user failed, user with id %d not exists", id));
+            throw new RuntimeException(
+                    String.format("Get user failed, user with id %d not exists", id));
         }
         User user = userStorage.get(id);
         log.info("User received: {}", user);
@@ -41,14 +42,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public User update(Integer id, User user) {
         if (!userStorage.contains(id)) {
-            throw new RuntimeException(String.format("Update user failed, user with id %d not exists", id));
+            throw new RuntimeException(
+                    String.format("Update user failed, user with id %d not exists", id));
         }
         User modified = userStorage.get(id);
         List<User> allUsersWithoutThis = new ArrayList<>(userStorage.getAll());
         allUsersWithoutThis.remove(modified);
         if (allUsersWithoutThis.stream().map(User::getEmail).anyMatch(p -> p.equals(user.getEmail()))) {
-            throw new DataAlreadyExistsException(String.format("Update user failed, user with email %s already exists",
-                    user.getEmail()));
+            throw new DataAlreadyExistsException(
+                    String.format("Update user failed, user with email %s already exists", user.getEmail()));
         }
         if ((user.getEmail() != null)) {
             modified.setEmail(user.getEmail());

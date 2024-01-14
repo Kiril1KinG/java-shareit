@@ -23,8 +23,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     public ItemRequest get(int id) {
         if (!itemRequestStorage.contains(id)) {
-            throw new DataNotExistsException(String.format("Get item request failed, item request with id %d not exists",
-                    id));
+            throw new DataNotExistsException(
+                    String.format("Get item request failed, item request with id %d not exists", id));
         }
         ItemRequest res = itemRequestStorage.get(id);
         log.info("Item request received:{}", res);

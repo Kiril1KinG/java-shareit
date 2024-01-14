@@ -25,8 +25,8 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Booking get(int id) {
         if (!bookingStorage.contains(id)) {
-            throw new DataNotExistsException(String.format("Get booking by id filed, booking with id %d not exists",
-                    id));
+            throw new DataNotExistsException(
+                    String.format("Get booking by id filed, booking with id %d not exists",  id));
         }
         Booking booking = bookingStorage.get(id);
         log.info("Booking received: {}", booking);
@@ -36,8 +36,8 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Booking update(Booking booking) {
         if (!bookingStorage.contains(booking.getId())) {
-            throw new DataNotExistsException(String.format("Update booking by id filed, booking with id %d not exists",
-                    booking.getId()));
+            throw new DataNotExistsException(
+                    String.format("Update booking by id filed, booking with id %d not exists", booking.getId()));
         }
         Booking modified = bookingStorage.get(booking.getId());
         modified.setEnd(booking.getEnd());
