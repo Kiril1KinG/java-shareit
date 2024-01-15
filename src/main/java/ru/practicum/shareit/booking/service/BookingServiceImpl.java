@@ -26,7 +26,7 @@ public class BookingServiceImpl implements BookingService {
     public Booking get(int id) {
         if (!bookingStorage.contains(id)) {
             throw new DataNotExistsException(
-                    String.format("Get booking by id filed, booking with id %d not exists",  id));
+                    String.format("Get booking by id filed, booking with id %d not exists", id));
         }
         Booking booking = bookingStorage.get(id);
         log.info("Booking received: {}", booking);
