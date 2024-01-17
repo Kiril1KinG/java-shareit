@@ -40,12 +40,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User update(Integer id, User user) {
-        if (!userStorage.contains(id)) {
+    public User update(User user) {
+        if (!userStorage.contains(user.getId())) {
             throw new RuntimeException(
-                    String.format("Update user failed, user with id %d not exists", id));
+                    String.format("Update user failed, user with id %d not exists", user.getId()));
         }
-        User modified = userStorage.get(id);
+        User modified = userStorage.get(user.getId());
         List<User> allUsersWithoutThis = new ArrayList<>(userStorage.getAll());
         allUsersWithoutThis.remove(modified);
         if (allUsersWithoutThis.stream().map(User::getEmail).anyMatch(p -> p.equals(user.getEmail()))) {
@@ -58,7 +58,7 @@ public class UserServiceImpl implements UserService {
         if (user.getName() != null) {
             modified.setName(user.getName());
         }
-        userStorage.update(id, modified);
+        userStorage.update(modified);
         log.info("User updated: {}", modified);
         return modified;
     }

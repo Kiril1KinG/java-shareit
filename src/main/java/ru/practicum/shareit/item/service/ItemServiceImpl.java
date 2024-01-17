@@ -45,20 +45,20 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Item update(int userId, int id, Item item) {
-        if (!itemStorage.contains(id)) {
+    public Item update(int userId, Item item) {
+        if (!itemStorage.contains(item.getId())) {
             throw new DataNotExistsException(
-                    String.format("Update item failed, item with %d not exists", id));
+                    String.format("Update item failed, item with %d not exists", item.getId()));
         }
         if (!userStorage.contains(userId)) {
             throw new DataNotExistsException(
                     String.format("Update item failed, user with %d not exists", userId));
         }
-        if (itemStorage.get(id).getOwnerId() != userId) {
+        if (itemStorage.get(item.getId()).getOwnerId() != userId) {
             throw new DataNotExistsException(
                     String.format("Update item failed, user with %d not owner", userId));
         }
-        Item modified = itemStorage.get(id);
+        Item modified = itemStorage.get(item.getId());
         if (item.getName() != null) {
             modified.setName(item.getName());
         }
@@ -68,7 +68,7 @@ public class ItemServiceImpl implements ItemService {
         if (item.getAvailable() != null) {
             modified.setAvailable(item.getAvailable());
         }
-        itemStorage.update(id, modified);
+        itemStorage.update(modified);
         log.info("Item updated: {}", modified);
         return modified;
     }

@@ -10,7 +10,7 @@ public interface UserService {
 
     User get(Integer id);
 
-    User update(Integer id, User user);
+    User update(User user);
 
     void delete(Integer id);
 

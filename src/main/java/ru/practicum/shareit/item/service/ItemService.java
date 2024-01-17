@@ -10,7 +10,7 @@ public interface ItemService {
 
     Item get(int id);
 
-    Item update(int userId, int id, Item item);
+    Item update(int userId, Item item);
 
     void delete(int userId, int id);
 

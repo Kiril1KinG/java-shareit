@@ -9,7 +9,7 @@ public interface ItemRequestService {
 
     ItemRequest get(int id);
 
-    ItemRequest update(int id, ItemRequest itemRequest);
+    ItemRequest update(ItemRequest itemRequest);
 
     void delete(int id);
 }

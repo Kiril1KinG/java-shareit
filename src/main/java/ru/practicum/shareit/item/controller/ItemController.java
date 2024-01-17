@@ -63,6 +63,8 @@ public class ItemController {
     public Item update(@RequestHeader("X-Sharer-User-Id") Integer userId, @PathVariable int id,
                        @RequestBody ItemUpdateRequest request) {
         log.info("PATCH /items/{} X-Sharer-User-Id: {}", id, userId);
-        return itemService.update(userId, id, mapper.toItem(request));
+        Item item = mapper.toItem(request);
+        item.setId(id);
+        return itemService.update(userId, item);
     }
 }

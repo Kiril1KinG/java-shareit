@@ -26,8 +26,8 @@ public class ItemInMemoryStorageImpl implements ItemRequestStorage {
 
     @Override
     public ItemRequest update(ItemRequest itemRequest) {
-        ItemRequest modified = itemRequests.get(id);
-        return modified;
+        itemRequests.put(itemRequest.getId(), itemRequest);
+        return itemRequest;
     }
 
     @Override

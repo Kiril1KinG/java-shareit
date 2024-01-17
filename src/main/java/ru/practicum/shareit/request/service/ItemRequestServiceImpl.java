@@ -31,11 +31,10 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         return res;
     }
 
-    public ItemRequest update(int id, ItemRequest itemRequest) {
-        itemRequest.setId(id);
-        ItemRequest res = itemRequestStorage.update(itemRequest);
-        log.info("Item request updated:{}", res);
-        return res;
+    public ItemRequest update(ItemRequest itemRequest) {
+        itemRequestStorage.update(itemRequest);
+        log.info("Item request updated:{}", itemRequest);
+        return itemRequest;
     }
 
     public void delete(int id) {

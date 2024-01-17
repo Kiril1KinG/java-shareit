@@ -14,6 +14,7 @@ import ru.practicum.shareit.user.dto.UserCreateRequest;
 import ru.practicum.shareit.user.dto.UserResponse;
 import ru.practicum.shareit.user.dto.UserUpdateRequest;
 import ru.practicum.shareit.user.mapper.UserMapper;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.Valid;
@@ -51,7 +52,9 @@ public class UserController {
     @PatchMapping("/{id}")
     public UserResponse update(@PathVariable Integer id, @RequestBody @Valid UserUpdateRequest request) {
         log.info("PATCH /users/{}", id);
-        return mapper.toResponse(userService.update(id, mapper.toUser(request)));
+        User user = mapper.toUser(request);
+        user.setId(id);
+        return mapper.toResponse(userService.update(user));
     }
 
     @DeleteMapping("/{id}")

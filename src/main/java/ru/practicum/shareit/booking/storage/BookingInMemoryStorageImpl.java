@@ -25,8 +25,8 @@ public class BookingInMemoryStorageImpl implements BookingStorage {
     }
 
     @Override
-    public Booking update(int id, Booking booking) {
-        bookings.put(id, booking);
+    public Booking update(Booking booking) {
+        bookings.put(booking.getId(), booking);
         return booking;
     }
 

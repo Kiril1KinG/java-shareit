@@ -42,7 +42,7 @@ public class BookingServiceImpl implements BookingService {
         Booking modified = bookingStorage.get(booking.getId());
         modified.setEnd(booking.getEnd());
         modified.setStatus(booking.getStatus());
-        bookingStorage.update(booking.getId(), modified);
+        bookingStorage.update(modified);
         log.info("Booking updated: {}", modified);
         return modified;
     }
