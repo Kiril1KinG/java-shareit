@@ -65,6 +65,4 @@ public class ItemController {
         log.info("PATCH /items/{} X-Sharer-User-Id: {}", id, userId);
         return itemService.update(userId, id, mapper.toItem(request));
     }
-
-
 }

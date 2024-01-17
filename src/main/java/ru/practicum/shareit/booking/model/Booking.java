@@ -16,5 +16,4 @@ public class Booking {
     private Item item;
     private User broker;
     private BookingStatus status = BookingStatus.WAITING;
-
 }

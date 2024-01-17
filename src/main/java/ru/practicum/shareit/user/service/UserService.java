@@ -15,5 +15,4 @@ public interface UserService {
     void delete(Integer id);
 
     Collection<User> getAll();
-
 }
