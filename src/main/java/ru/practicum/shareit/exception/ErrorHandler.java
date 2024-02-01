@@ -14,7 +14,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> handle(DataNotExistsException e) {
+    public Map<String, String> handle(DataDoesNotExistsException e) {
         log.info(e.getMessage(), e);
         return Map.of("Data not found", e.getMessage());
     }

@@ -3,7 +3,7 @@ package ru.practicum.shareit.request.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.exception.DataNotExistsException;
+import ru.practicum.shareit.exception.DataDoesNotExistsException;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.storage.ItemRequestStorage;
 
@@ -23,7 +23,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     public ItemRequest get(int id) {
         if (!itemRequestStorage.contains(id)) {
-            throw new DataNotExistsException(
+            throw new DataDoesNotExistsException(
                     String.format("Get item request failed, item request with id %d not exists", id));
         }
         ItemRequest res = itemRequestStorage.get(id);

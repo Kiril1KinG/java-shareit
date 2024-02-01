@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.storage.BookingStorage;
-import ru.practicum.shareit.exception.DataNotExistsException;
+import ru.practicum.shareit.exception.DataDoesNotExistsException;
 
 import java.util.Collection;
 
@@ -25,7 +25,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Booking get(int id) {
         if (!bookingStorage.contains(id)) {
-            throw new DataNotExistsException(
+            throw new DataDoesNotExistsException(
                     String.format("Get booking by id filed, booking with id %d not exists", id));
         }
         Booking booking = bookingStorage.get(id);
@@ -36,7 +36,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Booking update(Booking booking) {
         if (!bookingStorage.contains(booking.getId())) {
-            throw new DataNotExistsException(
+            throw new DataDoesNotExistsException(
                     String.format("Update booking by id filed, booking with id %d not exists", booking.getId()));
         }
         Booking modified = bookingStorage.get(booking.getId());
