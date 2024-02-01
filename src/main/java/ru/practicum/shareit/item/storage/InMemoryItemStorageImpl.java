@@ -42,6 +42,13 @@ public class InMemoryItemStorageImpl implements ItemStorage {
     }
 
     @Override
+    public Collection<Item> getByOwnerId(int userId) {
+        return items.values().stream()
+                .filter(item -> item.getOwnerId() == userId)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public boolean contains(int id) {
         return items.containsKey(id);
     }

@@ -96,9 +96,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Collection<Item> getByOwnerId(int userId) {
-        Collection<Item> items = itemStorage.getAll().stream()
-                .filter(item -> item.getOwnerId() == userId)
-                .collect(Collectors.toList());
+        Collection<Item> items = itemStorage.getByOwnerId(userId);
         log.info("Items for owner received: {}", items);
         return items;
     }
