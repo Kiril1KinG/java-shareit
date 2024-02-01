@@ -28,11 +28,14 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ItemController {
 
+    private static final String X_SHARER_USER_ID = "X-Sharer-User-Id";
+
+
     private final ItemService itemService;
     private final ItemMapper mapper;
 
     @PostMapping()
-    public ItemResponse add(@RequestHeader("X-Sharer-User-Id") Integer userId, @RequestBody @Valid ItemCreateRequest request) {
+    public ItemResponse add(@RequestHeader(X_SHARER_USER_ID) Integer userId, @RequestBody @Valid ItemCreateRequest request) {
         log.info("POST /items X-Sharer-User-Id: {}", userId);
         return mapper.toResponse(itemService.add(userId, mapper.toItem(request)));
     }
@@ -44,7 +47,7 @@ public class ItemController {
     }
 
     @GetMapping()
-    public Collection<ItemResponse> getAllForOwner(@RequestHeader("X-Sharer-User-Id") Integer userId) {
+    public Collection<ItemResponse> getAllForOwner(@RequestHeader(X_SHARER_USER_ID) Integer userId) {
         log.info("GET /items X-Sharer-User-Id: {}", userId);
         return itemService.getByOwnerId(userId).stream()
                 .map(mapper::toResponse)
@@ -60,7 +63,7 @@ public class ItemController {
     }
 
     @PatchMapping("/{id}")
-    public Item update(@RequestHeader("X-Sharer-User-Id") Integer userId, @PathVariable int id,
+    public Item update(@RequestHeader(X_SHARER_USER_ID) Integer userId, @PathVariable int id,
                        @RequestBody ItemUpdateRequest request) {
         log.info("PATCH /items/{} X-Sharer-User-Id: {}", id, userId);
         Item item = mapper.toItem(request);
