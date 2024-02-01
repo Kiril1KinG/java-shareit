@@ -10,7 +10,6 @@ import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.stream.Collectors;
 
 
 @Component
