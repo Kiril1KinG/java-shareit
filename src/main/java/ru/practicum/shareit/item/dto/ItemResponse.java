@@ -1,17 +1,15 @@
-package ru.practicum.shareit.item.model;
+package ru.practicum.shareit.item.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 @Setter
-@ToString
-public class Item {
+public class ItemResponse {
     private Integer id;
     private String name;
     private String description;
     private Boolean available;
-    private Integer ownerId;
+    private Integer userId;
     private String request;
 }
