@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exception.DataAlreadyExistsException;
+import ru.practicum.shareit.exception.DataDoesNotExistsException;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserStorage;
 
@@ -31,7 +32,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User get(Integer id) {
         if (!userStorage.contains(id)) {
-            throw new RuntimeException(
+            throw new DataDoesNotExistsException(
                     String.format("Get user failed, user with id %d not exists", id));
         }
         User user = userStorage.get(id);
