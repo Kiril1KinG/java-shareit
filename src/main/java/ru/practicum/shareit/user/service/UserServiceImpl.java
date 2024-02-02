@@ -5,75 +5,79 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exception.DataAlreadyExistsException;
 import ru.practicum.shareit.exception.DataDoesNotExistsException;
+import ru.practicum.shareit.user.entity.UserEntity;
+import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.storage.UserStorage;
+import ru.practicum.shareit.user.storage.UserRepository;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class UserServiceImpl implements UserService {
 
-    private final UserStorage userStorage;
+    private final UserRepository userRepository;
+    private final UserMapper mapper;
 
     @Override
     public User add(User user) {
-        if (userStorage.getAll().stream().map(User::getEmail).anyMatch(p -> p.equals(user.getEmail()))) {
+        if (userRepository.findAll().stream().map(UserEntity::getEmail).anyMatch(p -> p.equals(user.getEmail()))) {
             throw new DataAlreadyExistsException(
                     String.format("Add user failed, user with email %s already exists", user.getEmail()));
         }
         log.info("User added: {}", user);
-        return userStorage.add(user);
+        return mapper.toUser(userRepository.save(mapper.toUserEntity(user)));
     }
 
     @Override
     public User get(Integer id) {
-        if (!userStorage.contains(id)) {
+        if (!userRepository.existsById(id)) {
             throw new DataDoesNotExistsException(
                     String.format("Get user failed, user with id %d not exists", id));
         }
-        User user = userStorage.get(id);
-        log.info("User received: {}", user);
-        return user;
+        Optional<UserEntity> userEntity = userRepository.findById(id);
+        log.info("User received: {}", userEntity);
+        return mapper.toUser(userEntity.get());
     }
 
     @Override
     public User update(User user) {
-        if (!userStorage.contains(user.getId())) {
+        if (!userRepository.existsById(user.getId())) {
             throw new RuntimeException(
                     String.format("Update user failed, user with id %d not exists", user.getId()));
         }
-        User modified = userStorage.get(user.getId());
-        List<User> allUsersWithoutThis = new ArrayList<>(userStorage.getAll());
-        allUsersWithoutThis.remove(modified);
-        if (allUsersWithoutThis.stream().map(User::getEmail).anyMatch(p -> p.equals(user.getEmail()))) {
+        Optional<UserEntity> modified = userRepository.findById(user.getId());
+        List<UserEntity> allUsersWithoutThis = new ArrayList<>(userRepository.findAll());
+        allUsersWithoutThis.remove(modified.get());
+        if (allUsersWithoutThis.stream().map(UserEntity::getEmail).anyMatch(p -> p.equals(user.getEmail()))) {
             throw new DataAlreadyExistsException(
                     String.format("Update user failed, user with email %s already exists", user.getEmail()));
         }
         if ((user.getEmail() != null)) {
-            modified.setEmail(user.getEmail());
+            modified.get().setEmail(user.getEmail());
         }
         if (user.getName() != null) {
-            modified.setName(user.getName());
+            modified.get().setName(user.getName());
         }
-        userStorage.update(modified);
+        userRepository.save(modified.get());
         log.info("User updated: {}", modified);
-        return modified;
+        return mapper.toUser(modified.get());
     }
 
     @Override
     public void delete(Integer id) {
-        userStorage.delete(id);
+        userRepository.deleteById(id);
         log.info("User with id {} removed", id);
     }
 
     @Override
     public Collection<User> getAll() {
-        Collection<User> users = userStorage.getAll();
+        Collection<UserEntity> users = userRepository.findAll();
         log.info("All users received: {}", users);
-        return users;
+        return mapper.toUsers(users);
     }
 }

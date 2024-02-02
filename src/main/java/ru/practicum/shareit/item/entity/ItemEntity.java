@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import ru.practicum.shareit.user.entity.UserEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -21,7 +22,7 @@ public class ItemEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "pk_item")
-    @Column(name = "id")
+    @Column(name = "id", nullable = false, updatable = false, unique = true)
     private Integer id;
 
     @Column(name = "name")
@@ -33,11 +34,10 @@ public class ItemEntity {
     @Column(name = "is_available")
     private Boolean available;
 
-    @Column(name = "owner_id")
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id", table = "users")
-    private Integer ownerId;
+    @JoinColumn(name = "owner_id")
+    private UserEntity owner;
 
     @Column(name = "request_id")
-    private String request;
+    private Integer request;
 }

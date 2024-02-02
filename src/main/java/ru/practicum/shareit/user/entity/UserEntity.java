@@ -19,7 +19,7 @@ public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "pk_user")
-    @Column(name = "id")
+    @Column(name = "id", nullable = false, updatable = false, unique = true)
     private Integer id;
 
     @Column(name = "name")

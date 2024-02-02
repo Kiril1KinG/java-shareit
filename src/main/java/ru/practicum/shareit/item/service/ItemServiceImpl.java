@@ -4,12 +4,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exception.DataDoesNotExistsException;
+import ru.practicum.shareit.item.entity.ItemEntity;
+import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.storage.ItemStorage;
-import ru.practicum.shareit.user.storage.UserStorage;
+import ru.practicum.shareit.item.storage.ItemRepository;
+import ru.practicum.shareit.user.mapper.UserMapper;
+import ru.practicum.shareit.user.storage.UserRepository;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 
 @Component
@@ -17,68 +21,72 @@ import java.util.Collections;
 @Slf4j
 public class ItemServiceImpl implements ItemService {
 
-    private final ItemStorage itemStorage;
-    private final UserStorage userStorage;
+    private final ItemRepository itemRepository;
+    private final UserRepository userRepository;
+    private final ItemMapper itemMapper;
+    private final UserMapper userMapper;
 
     @Override
     public Item add(int userId, Item item) {
-        if (!userStorage.contains(userId)) {
+        if (!userRepository.existsById(userId)) {
             throw new DataDoesNotExistsException(
                     String.format("Add item failed, user with id %d npt exists", userId));
         }
         item.setOwnerId(userId);
-        Item res = itemStorage.add(item);
+        ItemEntity res = itemMapper.toItemEntity(item);
+        res.setOwner(userRepository.findById(userId).get());
+        itemRepository.save(res);
         log.info("Item added: {}", res);
-        return res;
+        return itemMapper.toItem(res);
     }
 
     @Override
     public Item get(int id) {
-        if (!itemStorage.contains(id)) {
+        if (!itemRepository.existsById(id)) {
             throw new DataDoesNotExistsException(
                     String.format("Get item by id failed, item with %d not exists", id));
         }
-        Item res = itemStorage.get(id);
-        log.info("Item received: {}", res);
-        return res;
+        Optional<ItemEntity> res = itemRepository.findById(id);
+        log.info("Item received: {}", res.get());
+        return itemMapper.toItem(res.get());
     }
 
     @Override
     public Item update(int userId, Item item) {
-        if (!itemStorage.contains(item.getId())) {
+        if (!itemRepository.existsById(item.getId())) {
             throw new DataDoesNotExistsException(
                     String.format("Update item failed, item with %d not exists", item.getId()));
         }
-        if (!userStorage.contains(userId)) {
+        if (!userRepository.existsById(userId)) {
             throw new DataDoesNotExistsException(
                     String.format("Update item failed, user with %d not exists", userId));
         }
-        if (itemStorage.get(item.getId()).getOwnerId() != userId) {
+        if (itemRepository.findById(item.getId()).get().getOwner().getId() != userId) {
             throw new DataDoesNotExistsException(
                     String.format("Update item failed, user with %d not owner", userId));
         }
-        Item modified = itemStorage.get(item.getId());
+        Optional<ItemEntity> modified = itemRepository.findById(item.getId());
         if (item.getName() != null) {
-            modified.setName(item.getName());
+            modified.get().setName(item.getName());
         }
         if (item.getDescription() != null) {
-            modified.setDescription(item.getDescription());
+            modified.get().setDescription(item.getDescription());
         }
         if (item.getAvailable() != null) {
-            modified.setAvailable(item.getAvailable());
+            modified.get().setAvailable(item.getAvailable());
         }
-        itemStorage.update(modified);
+        itemRepository.save(modified.get());
         log.info("Item updated: {}", modified);
-        return modified;
+        return itemMapper.toItem(modified.get());
     }
 
     @Override
     public void delete(int userId, int id) {
-        if ((itemStorage.get(id).getOwnerId() != userId)) {
+        if ((itemRepository.findById(id).get().getOwner().getId() != userId)) {
             throw new DataDoesNotExistsException(
                     String.format("Delete item failed, user with %d not owner", userId));
         }
-        itemStorage.delete(id);
+        itemRepository.deleteById(id);
         log.info("Item with id {} deleted", id);
     }
 
@@ -88,15 +96,15 @@ public class ItemServiceImpl implements ItemService {
         if (text.isBlank() || text.isEmpty()) {
             return Collections.emptyList();
         }
-        Collection<Item> items = itemStorage.search(text);
+        Collection<ItemEntity> items = itemRepository.search(text);
         log.info("Item search by request \"{}\" received: {}", text, items);
-        return items;
+        return itemMapper.toItems(items);
     }
 
     @Override
     public Collection<Item> getByOwnerId(int userId) {
-        Collection<Item> items = itemStorage.getByOwnerId(userId);
+        Collection<ItemEntity> items = itemRepository.findUsersByOwnerId(userId);
         log.info("Items for owner received: {}", items);
-        return items;
+        return itemMapper.toItems(items);
     }
 }
