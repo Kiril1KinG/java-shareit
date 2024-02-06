@@ -2,18 +2,23 @@ package ru.practicum.shareit.booking.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.model.User;
 
+import javax.validation.constraints.FutureOrPresent;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
 public class BookingRequest {
-    private Integer id;
+
+    @NotNull
+    private Integer itemId;
+
+    @NotNull
+    @FutureOrPresent
     private LocalDateTime start;
+
+    @NotNull
+    @FutureOrPresent
     private LocalDateTime end;
-    private Item item;
-    private User broker;
-    private String status;
 }

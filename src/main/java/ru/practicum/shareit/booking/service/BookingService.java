@@ -7,11 +7,11 @@ import java.util.Collection;
 public interface BookingService {
     Booking add(Booking booking);
 
-    Booking get(int id);
+    Booking approveBooking(Integer bookingId, Integer userId, boolean approve);
 
-    Booking update(Booking booking);
+    Booking getById(Integer bookingId, Integer userId);
 
-    void delete(int id);
+    Collection<Booking> getAllBookingsByState(Integer userId, String bookingState);
 
-    Collection<Booking> getAll();
+    Collection<Booking> getAllBookingsForItemsByState(Integer userId, String bookingState);
 }

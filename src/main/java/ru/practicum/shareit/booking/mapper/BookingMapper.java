@@ -1,19 +1,30 @@
 package ru.practicum.shareit.booking.mapper;
 
+
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.practicum.shareit.booking.Entity.BookingEntity;
 import ru.practicum.shareit.booking.dto.BookingRequest;
 import ru.practicum.shareit.booking.dto.BookingResponse;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.user.storage.UserRepository;
 
 @Mapper(componentModel = "spring")
-public interface BookingMapper {
+public abstract class BookingMapper {
 
-    Booking toBooking(BookingRequest dto);
+    @Autowired
+    protected UserRepository userRepository;
 
-    Booking toBooking(BookingEntity bookingEntity);
+    @Mapping(target = "booker.id", source = "userId")
+    @Mapping(target = "item.id", source = "request.itemId")
+    public abstract Booking toBooking(BookingRequest request, Integer userId);
 
-    BookingResponse toResponse(Booking booking);
+    public abstract Booking toBooking(BookingEntity bookingEntity);
 
-    BookingEntity toBookingEntity(Booking booking);
+    public abstract BookingResponse toResponse(Booking booking);
+
+    @Mapping(target = "item.id", source = "booking.item.id")
+    @Mapping(target = "booker.id", source = "booking.booker.id")
+    public abstract BookingEntity toBookingEntity(Booking booking);
 }
