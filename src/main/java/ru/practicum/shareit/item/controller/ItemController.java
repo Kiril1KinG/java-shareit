@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.shareit.item.dto.ItemCreateRequest;
 import ru.practicum.shareit.item.dto.ItemResponse;
 import ru.practicum.shareit.item.dto.ItemUpdateRequest;
+import ru.practicum.shareit.item.dto.ItemWithBookingsResponse;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
@@ -40,18 +41,20 @@ public class ItemController {
         return mapper.toResponse(itemService.add(userId, mapper.toItem(request)));
     }
 
-    @GetMapping("/{id}")
-    public ItemResponse get(@PathVariable int id) {
-        log.info("GET /items/{}", id);
-        return mapper.toResponse(itemService.get(id));
+    @GetMapping("/{itemId}")
+    public ItemWithBookingsResponse get(@PathVariable int itemId,
+                                        @RequestHeader(value = X_SHARER_USER_ID) Integer userId) {
+        log.info("GET /items/{}", itemId);
+        return mapper.toItemWithBookingsResponse(itemService.get(itemId, userId));
     }
 
     @GetMapping()
-    public Collection<ItemResponse> getAllForOwner(@RequestHeader(X_SHARER_USER_ID) Integer userId) {
+    public Collection<ItemWithBookingsResponse> getAllForOwner(@RequestHeader(X_SHARER_USER_ID) Integer userId) {
         log.info("GET /items X-Sharer-User-Id: {}", userId);
         return itemService.getByOwnerId(userId).stream()
-                .map(mapper::toResponse)
+                .map(mapper::toItemWithBookingsResponse)
                 .collect(Collectors.toList());
+
     }
 
     @GetMapping("/search")

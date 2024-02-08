@@ -1,6 +1,8 @@
 package ru.practicum.shareit.booking.storage;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import ru.practicum.shareit.booking.Entity.BookingEntity;
 import ru.practicum.shareit.booking.model.BookingStatus;
 
@@ -30,5 +32,16 @@ public interface BookingRepository extends JpaRepository<BookingEntity, Integer>
     Collection<BookingEntity> findAllByItem_Owner_IdAndStartIsAfterOrderByStartDesc(Integer ownerId, LocalDateTime now);
 
     Collection<BookingEntity> findAllByItem_Owner_IdAndStatusOrderByStartDesc(Integer ownerId, BookingStatus bookingStatus);
+
+    Collection<BookingEntity> findByItemIdOrderByEndDesc(Integer itemId);
+
+    @Query(value = "SELECT * FROM bookings AS b " +
+            "WHERE item_id = :itemId AND end_date < :now AND status = 'APPROVED' ORDER BY end_date DESC limit 1", nativeQuery = true)
+    BookingEntity findLastBookingByItemId(@Param("itemId") Integer itemId, @Param("now") LocalDateTime now);
+
+    @Query(value = "SELECT * FROM bookings AS b " +
+            "WHERE item_id = :itemId AND start_date > :now ORDER BY start_date ASC limit 1", nativeQuery = true)
+    BookingEntity findNextBookingByItemId(@Param("itemId") Integer itemId, @Param("now") LocalDateTime now);
+
 
 }

@@ -25,10 +25,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User add(User user) {
-//        if (userRepository.findAll().stream().map(UserEntity::getEmail).anyMatch(p -> p.equals(user.getEmail()))) {
-//            throw new DataAlreadyExistsException(
-//                    String.format("Add user failed, user with email %s already exists", user.getEmail()));
-//        }
         log.info("User added: {}", user);
         return mapper.toUser(userRepository.save(mapper.toUserEntity(user)));
     }

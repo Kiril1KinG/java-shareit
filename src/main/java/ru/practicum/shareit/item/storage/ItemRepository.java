@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface ItemRepository extends JpaRepository<ItemEntity, Integer> {
 
-    Collection<ItemEntity> findUsersByOwnerId(Integer ownerId);
+    Collection<ItemEntity> findUsersByOwnerIdOrderByIdAsc(Integer ownerId);
 
     @Query("select i from ItemEntity i " +
             "where (upper(i.name) like upper(concat('%', ?1, '%')) " +

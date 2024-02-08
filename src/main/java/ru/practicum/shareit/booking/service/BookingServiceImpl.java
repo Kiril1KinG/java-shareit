@@ -14,6 +14,7 @@ import ru.practicum.shareit.exception.DataDoesNotExistsException;
 import ru.practicum.shareit.exception.NotAvailableException;
 import ru.practicum.shareit.exception.NotOwnerException;
 import ru.practicum.shareit.exception.RepeatedRequestException;
+import ru.practicum.shareit.exception.UnknownStateException;
 import ru.practicum.shareit.item.entity.ItemEntity;
 import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.user.entity.UserEntity;
@@ -46,11 +47,12 @@ public class BookingServiceImpl implements BookingService {
             throw new NotAvailableException(
                     String.format("Add booking failed, item with id %d not available now", item.get().getId()));
         }
-        if (!userRepository.existsById(booking.getBooker().getId())) {
+        Optional<UserEntity> user = userRepository.findById(booking.getBooker().getId());
+        if (user.isEmpty()) {
             throw new DataDoesNotExistsException(
                     String.format("Add booking failed, user with id %d not exists", booking.getBooker().getId()));
         }
-        if (item.get().getOwner().getId().equals(booking.getBooker().getId())) {
+        if (item.get().getOwner().getId().equals(user.get().getId())) {
             throw new DataDoesNotExistsException(
                     String.format("Add booking failed, user with id %d owner", booking.getBooker().getId()));
         }
@@ -60,6 +62,7 @@ public class BookingServiceImpl implements BookingService {
         }
         BookingEntity res = bookingRepository.save(mapper.toBookingEntity(booking));
         res.setItem(item.get());
+        res.setBooker(user.get());
         log.info("Booking added: {}", res);
         return mapper.toBooking(res);
     }
@@ -110,16 +113,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public Collection<Booking> getAllBookingsByState(Integer userId, String bookingState) {
-        BookingState state;
-        if (bookingState == null) {
-            state = BookingState.ALL;
-        } else {
-            try {
-                state = BookingState.valueOf(bookingState.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("Unknown state: " + bookingState);
-            }
-        }
+        BookingState state = filterBookingState(bookingState);
         if (!userRepository.existsById(userId)) {
             throw new DataDoesNotExistsException(
                     String.format("Get all booking by state failed, user with id %d not exists", userId));
@@ -151,20 +145,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     public Collection<Booking> getAllBookingsForItemsByState(Integer userId, String bookingState) {
-        BookingState state;
-        if (bookingState == null) {
-            state = BookingState.ALL;
-        } else {
-            try {
-                state = BookingState.valueOf(bookingState.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("Unknown state: " + bookingState);
-            }
-        }
-        if (!userRepository.existsById(userId)) {
-            throw new DataDoesNotExistsException(
-                    String.format("Get all booking by state failed, user with id %d not exists", userId));
-        }
+        BookingState state = filterBookingState(bookingState);
         if (!userRepository.existsById(userId)) {
             throw new DataDoesNotExistsException(
                     String.format("Get all booking by state failed, user with id %d not exists", userId));
@@ -193,5 +174,17 @@ public class BookingServiceImpl implements BookingService {
         return res.stream()
                 .map(mapper::toBooking)
                 .collect(Collectors.toList());
+    }
+
+    private static BookingState filterBookingState(String strState) {
+        if (strState == null) {
+           return BookingState.ALL;
+        } else {
+            try {
+                return BookingState.valueOf(strState.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new UnknownStateException("Unknown state: " + strState);
+            }
+        }
     }
 }

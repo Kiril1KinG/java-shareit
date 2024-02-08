@@ -8,7 +8,7 @@ public interface ItemService {
 
     Item add(int userId, Item item);
 
-    Item get(int id);
+    Item get(int itemId, Integer userId);
 
     Item update(int userId, Item item);
 

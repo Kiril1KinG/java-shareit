@@ -35,13 +35,6 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handle(RuntimeException e) {
-        log.info(e.getMessage(), e);
-        return Map.of("Bad request", e.getMessage());
-    }
-
-    @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public Map<String, String> handle(DataIntegrityViolationException e) {
         log.info(e.getMessage(), e);
@@ -50,9 +43,9 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handle(IllegalArgumentException e) {
+    public UnknownStateException handle(UnknownStateException e) {
         log.info(e.getMessage(), e);
-        return Map.of("Error message", e.getMessage());
+        return e;
     }
 
     @ExceptionHandler
@@ -60,5 +53,12 @@ public class ErrorHandler {
     public Map<String, String> handle(RepeatedRequestException e) {
         log.info(e.getMessage(), e);
         return Map.of("Repeated request", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handle(TimeValidationException e) {
+        log.info(e.getMessage(), e);
+        return Map.of("Bad request", e.getMessage());
     }
 }
