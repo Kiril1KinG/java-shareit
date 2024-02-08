@@ -7,6 +7,8 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
+import java.util.List;
+
 @Getter
 @Setter
 @ToString
@@ -19,4 +21,5 @@ public class Item {
     private ItemRequest request;
     private Booking lastBooking;
     private Booking nextBooking;
+    private List<Comment> comments;
 }

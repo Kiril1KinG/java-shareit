@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UnknownStateException extends RuntimeException{
+public class UnknownStateException extends RuntimeException {
 
     private String error;
 

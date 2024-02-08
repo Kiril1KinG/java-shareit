@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.service;
 
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.Collection;
@@ -17,4 +18,6 @@ public interface ItemService {
     Collection<Item> search(String text);
 
     Collection<Item> getByOwnerId(int userId);
+
+    Comment addComment(Comment comment);
 }

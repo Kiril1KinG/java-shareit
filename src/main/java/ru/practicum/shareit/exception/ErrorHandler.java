@@ -61,4 +61,18 @@ public class ErrorHandler {
         log.info(e.getMessage(), e);
         return Map.of("Bad request", e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handle(WithoutBookingException e) {
+        log.info(e.getMessage(), e);
+        return Map.of("Bad request", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handle(NotAvailableException e) {
+        log.info(e.getMessage(), e);
+        return Map.of("Bad request", e.getMessage());
+    }
 }

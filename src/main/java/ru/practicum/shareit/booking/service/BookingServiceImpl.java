@@ -36,6 +36,18 @@ public class BookingServiceImpl implements BookingService {
     private final UserRepository userRepository;
     private final BookingMapper mapper;
 
+    private static BookingState filterBookingState(String strState) {
+        if (strState == null) {
+            return BookingState.ALL;
+        } else {
+            try {
+                return BookingState.valueOf(strState.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new UnknownStateException("Unknown state: " + strState);
+            }
+        }
+    }
+
     @Override
     public Booking add(Booking booking) {
         Optional<ItemEntity> item = itemRepository.findById(booking.getItem().getId());
@@ -124,7 +136,8 @@ public class BookingServiceImpl implements BookingService {
                 res = bookingRepository.findAllByBooker_IdOrderByStartDesc(userId);
                 break;
             case CURRENT:
-                res = bookingRepository.findAllByBooker_IdAndEndIsAfterOrderByStartDesc(userId, LocalDateTime.now());
+                res = bookingRepository.findAllByBooker_IdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(userId,
+                        LocalDateTime.now(), LocalDateTime.now());
                 break;
             case PAST:
                 res = bookingRepository.findAllByBooker_IdAndEndIsBeforeOrderByStartDesc(userId, LocalDateTime.now());
@@ -156,7 +169,8 @@ public class BookingServiceImpl implements BookingService {
                 res = bookingRepository.findAllByItem_Owner_IdOrderByStartDesc(userId);
                 break;
             case CURRENT:
-                res = bookingRepository.findAllByItem_Owner_IdAndEndIsAfterOrderByStartDesc(userId, LocalDateTime.now());
+                res = bookingRepository.findAllByItem_Owner_IdAndEndIsAfterAndStartIsBeforeOrderByStartDesc(userId,
+                        LocalDateTime.now(), LocalDateTime.now());
                 break;
             case PAST:
                 res = bookingRepository.findAllByItem_Owner_IdAndEndIsBeforeOrderByStartDesc(userId, LocalDateTime.now());
@@ -174,17 +188,5 @@ public class BookingServiceImpl implements BookingService {
         return res.stream()
                 .map(mapper::toBooking)
                 .collect(Collectors.toList());
-    }
-
-    private static BookingState filterBookingState(String strState) {
-        if (strState == null) {
-           return BookingState.ALL;
-        } else {
-            try {
-                return BookingState.valueOf(strState.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                throw new UnknownStateException("Unknown state: " + strState);
-            }
-        }
     }
 }
