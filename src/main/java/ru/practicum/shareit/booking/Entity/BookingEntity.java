@@ -27,7 +27,6 @@ import java.time.LocalDateTime;
 
 @Setter
 @Getter
-@EqualsAndHashCode
 @ToString
 @Entity
 @Table(name = "bookings", schema = "public")
