@@ -39,12 +39,11 @@ public class BookingServiceImpl implements BookingService {
     private static BookingState filterBookingState(String strState) {
         if (strState == null) {
             return BookingState.ALL;
-        } else {
-            try {
-                return BookingState.valueOf(strState.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                throw new UnknownStateException("Unknown state: " + strState);
-            }
+        }
+        try {
+            return BookingState.valueOf(strState.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new UnknownStateException("Unknown state: " + strState);
         }
     }
 
