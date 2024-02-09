@@ -43,13 +43,11 @@ public interface BookingRepository extends JpaRepository<BookingEntity, Integer>
     Boolean existsBookingByItemIdAndBookerIdAndStatusAndEndIsBefore(Integer itemId, Integer userId,
                                                                     BookingStatus bookingStatus, LocalDateTime now);
 
-    @Query(value = "SELECT * FROM bookings AS b " +
-            "WHERE item_id = :itemId AND start_date < :now AND status = 'APPROVED' ORDER BY end_date DESC limit 1",
+    @Query(value = "SELECT * FROM (SELECT * FROM bookings AS b " +
+            "WHERE item_id = :itemId AND start_date < :now AND status = 'APPROVED' ORDER BY end_date DESC limit 1) " +
+            "UNION ALL " +
+            "(SELECT * FROM bookings AS b " +
+            "WHERE item_id = :itemId AND start_date > :now AND status = 'APPROVED' ORDER BY start_date ASC limit 1)",
             nativeQuery = true)
-    BookingEntity findLastBookingByItemId(@Param("itemId") Integer itemId, @Param("now") LocalDateTime now);
-
-    @Query(value = "SELECT * FROM bookings AS b " +
-            "WHERE item_id = :itemId AND start_date > :now AND status = 'APPROVED' ORDER BY start_date ASC limit 1",
-            nativeQuery = true)
-    BookingEntity findNextBookingByItemId(@Param("itemId") Integer itemId, @Param("now") LocalDateTime now);
+    Collection<BookingEntity> findLastAndNextBookingByItemId(@Param("itemId") Integer itemId, @Param("now") LocalDateTime now);
 }

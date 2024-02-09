@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.practicum.shareit.booking.Entity.BookingEntity;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.storage.BookingRepository;
@@ -22,6 +23,7 @@ import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.storage.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -163,8 +165,18 @@ public class ItemServiceImpl implements ItemService {
 
     private void addBookingsToItems(Collection<Item> items) {
         for (Item item : items) {
-            item.setLastBooking(bookingMapper.toBooking(bookingRepository.findLastBookingByItemId(item.getId(), LocalDateTime.now())));
-            item.setNextBooking(bookingMapper.toBooking(bookingRepository.findNextBookingByItemId(item.getId(), LocalDateTime.now())));
+            ArrayList<BookingEntity> bookingEntities = new ArrayList<>(bookingRepository.findLastAndNextBookingByItemId(
+                    item.getId(), LocalDateTime.now()));
+            if (bookingEntities.size() == 2) {
+                item.setLastBooking(bookingMapper.toBooking(bookingEntities.get(0)));
+                item.setNextBooking(bookingMapper.toBooking(bookingEntities.get(1)));
+            } else if (bookingEntities.size() == 1) {
+                if (bookingEntities.get(0).getStart().isBefore(LocalDateTime.now())) {
+                    item.setLastBooking(bookingMapper.toBooking(bookingEntities.get(0)));
+                } else {
+                    item.setNextBooking(bookingMapper.toBooking(bookingEntities.get(0)));
+                }
+            }
         }
     }
 
