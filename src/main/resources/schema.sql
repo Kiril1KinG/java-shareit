@@ -1,9 +1,3 @@
-drop table if exists comments, requests, bookings, items, users;
-drop sequence if exists users_id_seq;
-drop sequence if exists requests_id_seq;
-drop sequence if exists items_id_seq;
-drop sequence if exists bookings_id_seq;
-drop sequence if exists comments_id_seq;
 create sequence users_id_seq;
 create sequence requests_id_seq;
 create sequence items_id_seq;
