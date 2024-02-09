@@ -148,7 +148,7 @@ public class ItemServiceImpl implements ItemService {
             throw new DataDoesNotExistsException(
                     String.format("Add comment failed, item with id %d not exists", comment.getAuthor().getId()));
         }
-        if (!bookingRepository.existsBookingByItem_IdAndBooker_IdAndStatusAndEndIsBefore(comment.getItem().getId(),
+        if (!bookingRepository.existsBookingByItemIdAndBookerIdAndStatusAndEndIsBefore(comment.getItem().getId(),
                 comment.getAuthor().getId(), BookingStatus.APPROVED, LocalDateTime.now())) {
             throw new WithoutBookingException(
                     String.format("Add comment failed, user with id %d did not booked this thing",

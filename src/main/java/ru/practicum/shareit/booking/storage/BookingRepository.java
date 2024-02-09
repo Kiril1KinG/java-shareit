@@ -13,35 +13,35 @@ public interface BookingRepository extends JpaRepository<BookingEntity, Integer>
 
     boolean existsBookingByItemIdAndBookerIdAndStatus(Integer itemId, Integer bookerId, BookingStatus bookingStatus);
 
-    Collection<BookingEntity> findAllByBooker_IdOrderByStartDesc(Integer bookerId);
+    Collection<BookingEntity> findAllByBookerIdOrderByStartDesc(Integer bookerId);
 
-    Collection<BookingEntity> findAllByBooker_IdAndEndIsBeforeOrderByStartDesc(Integer bookerId, LocalDateTime now);
+    Collection<BookingEntity> findAllByBookerIdAndEndIsBeforeOrderByStartDesc(Integer bookerId, LocalDateTime now);
 
-    Collection<BookingEntity> findAllByBooker_IdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(Integer bookerId,
-                                                                                              LocalDateTime start,
-                                                                                              LocalDateTime now);
+    Collection<BookingEntity> findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(Integer bookerId,
+                                                                                             LocalDateTime start,
+                                                                                             LocalDateTime now);
 
-    Collection<BookingEntity> findAllByBooker_IdAndStartIsAfterOrderByStartDesc(Integer bookerId,
-                                                                                LocalDateTime now);
+    Collection<BookingEntity> findAllByBookerIdAndStartIsAfterOrderByStartDesc(Integer bookerId,
+                                                                               LocalDateTime now);
 
-    Collection<BookingEntity> findAllByBooker_IdAndStatusOrderByStartDesc(Integer bookerId, BookingStatus status);
+    Collection<BookingEntity> findAllByBookerIdAndStatusOrderByStartDesc(Integer bookerId, BookingStatus status);
 
-    Collection<BookingEntity> findAllByItem_Owner_IdOrderByStartDesc(Integer ownerId);
+    Collection<BookingEntity> findAllByItemOwnerIdOrderByStartDesc(Integer ownerId);
 
-    Collection<BookingEntity> findAllByItem_Owner_IdAndEndIsAfterAndStartIsBeforeOrderByStartDesc(Integer ownerId,
-                                                                                                  LocalDateTime start,
-                                                                                                  LocalDateTime now);
+    Collection<BookingEntity> findAllByItemOwnerIdAndEndIsAfterAndStartIsBeforeOrderByStartDesc(Integer ownerId,
+                                                                                                LocalDateTime start,
+                                                                                                LocalDateTime now);
 
-    Collection<BookingEntity> findAllByItem_Owner_IdAndEndIsBeforeOrderByStartDesc(Integer ownerId, LocalDateTime now);
+    Collection<BookingEntity> findAllByItemOwnerIdAndEndIsBeforeOrderByStartDesc(Integer ownerId, LocalDateTime now);
 
-    Collection<BookingEntity> findAllByItem_Owner_IdAndStartIsAfterOrderByStartDesc(Integer ownerId,
-                                                                                    LocalDateTime now);
+    Collection<BookingEntity> findAllByItemOwnerIdAndStartIsAfterOrderByStartDesc(Integer ownerId,
+                                                                                  LocalDateTime now);
 
-    Collection<BookingEntity> findAllByItem_Owner_IdAndStatusOrderByStartDesc(Integer ownerId,
-                                                                              BookingStatus bookingStatus);
+    Collection<BookingEntity> findAllByItemOwnerIdAndStatusOrderByStartDesc(Integer ownerId,
+                                                                            BookingStatus bookingStatus);
 
-    Boolean existsBookingByItem_IdAndBooker_IdAndStatusAndEndIsBefore(Integer itemId, Integer userId,
-                                                                      BookingStatus bookingStatus, LocalDateTime now);
+    Boolean existsBookingByItemIdAndBookerIdAndStatusAndEndIsBefore(Integer itemId, Integer userId,
+                                                                    BookingStatus bookingStatus, LocalDateTime now);
 
     @Query(value = "SELECT * FROM bookings AS b " +
             "WHERE item_id = :itemId AND start_date < :now AND status = 'APPROVED' ORDER BY end_date DESC limit 1",
