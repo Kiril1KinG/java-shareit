@@ -14,6 +14,7 @@ import ru.practicum.shareit.exception.DataDoesNotExistsException;
 import ru.practicum.shareit.exception.NotAvailableException;
 import ru.practicum.shareit.exception.NotOwnerException;
 import ru.practicum.shareit.exception.RepeatedRequestException;
+import ru.practicum.shareit.exception.TimeValidationException;
 import ru.practicum.shareit.exception.UnknownStateException;
 import ru.practicum.shareit.item.entity.ItemEntity;
 import ru.practicum.shareit.item.storage.ItemRepository;
@@ -49,6 +50,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public Booking add(Booking booking) {
+        checkBookingRequestTime(booking);
         Optional<ItemEntity> item = itemRepository.findById(booking.getItem().getId());
         if (item.isEmpty()) {
             throw new DataDoesNotExistsException(
@@ -187,5 +189,14 @@ public class BookingServiceImpl implements BookingService {
         return res.stream()
                 .map(mapper::toBooking)
                 .collect(Collectors.toList());
+    }
+
+    private void checkBookingRequestTime(Booking booking) {
+        if (booking.getEnd().isBefore(booking.getStart())) {
+            throw new TimeValidationException("Incorrect time, end can not be before start");
+        }
+        if (booking.getEnd().equals(booking.getStart())) {
+            throw new TimeValidationException("Incorrect time, end can not be equal start");
+        }
     }
 }

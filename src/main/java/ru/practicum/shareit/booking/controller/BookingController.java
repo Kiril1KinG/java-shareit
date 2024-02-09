@@ -16,7 +16,6 @@ import ru.practicum.shareit.booking.dto.BookingResponse;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.service.BookingService;
-import ru.practicum.shareit.exception.TimeValidationException;
 
 import javax.validation.Valid;
 import java.util.Collection;
@@ -37,7 +36,6 @@ public class BookingController {
     public BookingResponse add(@Valid @RequestBody BookingRequest request,
                                @RequestHeader(X_SHARER_USER_ID) Integer userId) {
         log.info("POST /bookings");
-        checkBookingRequestTime(request);
         Booking booking = mapper.toBooking(request, userId);
         return mapper.toResponse(bookingService.add(booking));
     }
@@ -74,14 +72,5 @@ public class BookingController {
         return bookingService.getAllBookingsForItemsByState(userId, state).stream()
                 .map(mapper::toResponse)
                 .collect(Collectors.toList());
-    }
-
-    private void checkBookingRequestTime(BookingRequest request) {
-        if (request.getEnd().isBefore(request.getStart())) {
-            throw new TimeValidationException("Incorrect time, end can not be before start");
-        }
-        if (request.getEnd().equals(request.getStart())) {
-            throw new TimeValidationException("Incorrect time, end can not be equal start");
-        }
     }
 }
