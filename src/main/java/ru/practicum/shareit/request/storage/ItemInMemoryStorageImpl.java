@@ -6,7 +6,6 @@ import ru.practicum.shareit.request.model.ItemRequest;
 import java.util.HashMap;
 import java.util.Map;
 
-
 @Component
 public class ItemInMemoryStorageImpl implements ItemRequestStorage {
     private final Map<Integer, ItemRequest> itemRequests = new HashMap<>();

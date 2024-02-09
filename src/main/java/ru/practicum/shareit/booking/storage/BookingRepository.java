@@ -52,6 +52,4 @@ public interface BookingRepository extends JpaRepository<BookingEntity, Integer>
             "WHERE item_id = :itemId AND start_date > :now AND status = 'APPROVED' ORDER BY start_date ASC limit 1",
             nativeQuery = true)
     BookingEntity findNextBookingByItemId(@Param("itemId") Integer itemId, @Param("now") LocalDateTime now);
-
-
 }

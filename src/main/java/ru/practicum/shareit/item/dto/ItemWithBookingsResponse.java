@@ -6,7 +6,6 @@ import ru.practicum.shareit.booking.dto.BookingShort;
 
 import java.util.List;
 
-
 @Getter
 @Setter
 public class ItemWithBookingsResponse extends ItemResponse {

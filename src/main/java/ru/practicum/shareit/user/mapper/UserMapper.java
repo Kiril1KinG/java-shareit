@@ -9,7 +9,6 @@ import ru.practicum.shareit.user.model.User;
 
 import java.util.Collection;
 
-
 @Mapper(componentModel = "spring")
 public interface UserMapper {
     User toUser(UserCreateRequest request);

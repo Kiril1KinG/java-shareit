@@ -1,6 +1,5 @@
 package ru.practicum.shareit.booking.mapper;
 
-
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import ru.practicum.shareit.booking.Entity.BookingEntity;

@@ -30,7 +30,6 @@ public class BookingController {
 
     private static final String X_SHARER_USER_ID = "X-Sharer-User-Id";
 
-
     private final BookingService bookingService;
     private final BookingMapper mapper;
 

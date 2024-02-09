@@ -1,6 +1,5 @@
 package ru.practicum.shareit.booking.dto;
 
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,5 +13,4 @@ public class BookingShort {
     private Integer bookerId;
     private LocalDateTime start;
     private LocalDateTime end;
-
 }
