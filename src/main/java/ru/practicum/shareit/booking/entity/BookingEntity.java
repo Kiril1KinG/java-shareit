@@ -1,4 +1,4 @@
-package ru.practicum.shareit.booking.Entity;
+package ru.practicum.shareit.booking.entity;
 
 import lombok.Getter;
 import lombok.Setter;

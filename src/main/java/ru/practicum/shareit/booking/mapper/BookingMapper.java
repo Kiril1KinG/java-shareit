@@ -2,7 +2,7 @@ package ru.practicum.shareit.booking.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import ru.practicum.shareit.booking.Entity.BookingEntity;
+import ru.practicum.shareit.booking.entity.BookingEntity;
 import ru.practicum.shareit.booking.dto.BookingRequest;
 import ru.practicum.shareit.booking.dto.BookingResponse;
 import ru.practicum.shareit.booking.dto.BookingShortDto;
