@@ -2,13 +2,14 @@ package ru.practicum.shareit.booking.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.shareit.booking.dto.BookingRequest;
 import ru.practicum.shareit.booking.dto.BookingResponse;
@@ -16,46 +17,59 @@ import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.service.BookingService;
 
+import javax.validation.Valid;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/bookings")
 @RequiredArgsConstructor
 @Slf4j
 public class BookingController {
+
+    private static final String X_SHARER_USER_ID = "X-Sharer-User-Id";
+
     private final BookingService bookingService;
     private final BookingMapper mapper;
 
     @PostMapping
-    public BookingResponse add(@RequestBody BookingRequest request) {
+    public BookingResponse add(@Valid @RequestBody BookingRequest request,
+                               @RequestHeader(X_SHARER_USER_ID) Integer userId) {
         log.info("POST /bookings");
-        Booking booking = bookingService.add(mapper.toBooking(request));
-        return mapper.toResponse(booking);
+        Booking booking = mapper.toBooking(request, userId);
+        return mapper.toResponse(bookingService.add(booking));
     }
 
-    @GetMapping("/{id}")
-    public BookingResponse get(@PathVariable Integer id) {
-        log.info("GET /bookings/{}", id);
-        return mapper.toResponse(bookingService.get(id));
+    @PatchMapping("/{bookingId}")
+    public BookingResponse approveOrReject(@PathVariable Integer bookingId,
+                                           @RequestHeader(X_SHARER_USER_ID) Integer userId,
+                                           @RequestParam boolean approved) {
+        log.info("POST /bookings/{}?approved={}, X-Sharer-User-Id={}", bookingId, approved, userId);
+        return mapper.toResponse(bookingService.approveBooking(bookingId, userId, approved));
+    }
+
+    @GetMapping("/{bookingId}")
+    public BookingResponse getById(@PathVariable Integer bookingId,
+                                   @RequestHeader(X_SHARER_USER_ID) Integer userId) {
+        log.info("GET /bookings/{}, X-Sharer-User-Id={}", bookingId, userId);
+
+        return mapper.toResponse(bookingService.getById(bookingId, userId));
     }
 
     @GetMapping()
-    public Collection<Booking> getAll() {
-        log.info("GET /bookings");
-        return bookingService.getAll();
+    public Collection<BookingResponse> getAllByState(@RequestHeader(X_SHARER_USER_ID) Integer userId,
+                                                     @RequestParam(value = "state", required = false) String state) {
+        return bookingService.getAllBookingsByState(userId, state).stream()
+                .map(mapper::toResponse)
+                .collect(Collectors.toList());
     }
 
-    @PatchMapping("/{id}")
-    public BookingResponse update(@PathVariable Integer id, @RequestBody BookingRequest request) {
-        log.info("PATCH /bookings/{}", id);
-        request.setId(id);
-        Booking booking = bookingService.update(mapper.toBooking(request));
-        return mapper.toResponse(booking);
-    }
-
-    @DeleteMapping("/id")
-    public void delete(@PathVariable Integer id) {
-        log.info("DELETE /bookings/{}", id);
-        bookingService.delete(id);
+    @GetMapping("/owner")
+    public Collection<BookingResponse> getAllBookingsForItemsByState(@RequestHeader(X_SHARER_USER_ID) Integer userId,
+                                                                     @RequestParam(value = "state",
+                                                                             required = false) String state) {
+        return bookingService.getAllBookingsForItemsByState(userId, state).stream()
+                .map(mapper::toResponse)
+                .collect(Collectors.toList());
     }
 }

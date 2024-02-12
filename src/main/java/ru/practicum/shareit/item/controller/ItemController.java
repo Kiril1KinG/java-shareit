@@ -11,9 +11,13 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.practicum.shareit.item.dto.CommentRequest;
+import ru.practicum.shareit.item.dto.CommentResponse;
 import ru.practicum.shareit.item.dto.ItemCreateRequest;
 import ru.practicum.shareit.item.dto.ItemResponse;
 import ru.practicum.shareit.item.dto.ItemUpdateRequest;
+import ru.practicum.shareit.item.dto.ItemWithBookingsResponse;
+import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
@@ -30,44 +34,54 @@ public class ItemController {
 
     private static final String X_SHARER_USER_ID = "X-Sharer-User-Id";
 
-
     private final ItemService itemService;
-    private final ItemMapper mapper;
+    private final ItemMapper itemMapper;
+    private final CommentMapper commentMapper;
 
     @PostMapping()
-    public ItemResponse add(@RequestHeader(X_SHARER_USER_ID) Integer userId, @RequestBody @Valid ItemCreateRequest request) {
+    public ItemResponse add(@RequestHeader(X_SHARER_USER_ID) Integer userId,
+                            @RequestBody @Valid ItemCreateRequest request) {
         log.info("POST /items X-Sharer-User-Id: {}", userId);
-        return mapper.toResponse(itemService.add(userId, mapper.toItem(request)));
+        return itemMapper.toResponse(itemService.add(userId, itemMapper.toItem(request)));
     }
 
-    @GetMapping("/{id}")
-    public ItemResponse get(@PathVariable int id) {
-        log.info("GET /items/{}", id);
-        return mapper.toResponse(itemService.get(id));
+    @GetMapping("/{itemId}")
+    public ItemWithBookingsResponse get(@PathVariable int itemId,
+                                        @RequestHeader(value = X_SHARER_USER_ID) Integer userId) {
+        log.info("GET /items/{}", itemId);
+        return itemMapper.toItemWithBookingsResponse(itemService.get(itemId, userId));
     }
 
     @GetMapping()
-    public Collection<ItemResponse> getAllForOwner(@RequestHeader(X_SHARER_USER_ID) Integer userId) {
+    public Collection<ItemWithBookingsResponse> getAllForOwner(@RequestHeader(X_SHARER_USER_ID) Integer userId) {
         log.info("GET /items X-Sharer-User-Id: {}", userId);
         return itemService.getByOwnerId(userId).stream()
-                .map(mapper::toResponse)
+                .map(itemMapper::toItemWithBookingsResponse)
                 .collect(Collectors.toList());
+
     }
 
     @GetMapping("/search")
     public Collection<ItemResponse> search(@RequestParam String text) {
         log.info("GET /items/search?text={}", text);
         return itemService.search(text).stream()
-                .map(mapper::toResponse)
+                .map(itemMapper::toResponse)
                 .collect(Collectors.toList());
     }
 
     @PatchMapping("/{id}")
     public Item update(@RequestHeader(X_SHARER_USER_ID) Integer userId, @PathVariable int id,
-                       @RequestBody ItemUpdateRequest request) {
+                       @Valid @RequestBody ItemUpdateRequest request) {
         log.info("PATCH /items/{} X-Sharer-User-Id: {}", id, userId);
-        Item item = mapper.toItem(request);
+        Item item = itemMapper.toItem(request);
         item.setId(id);
         return itemService.update(userId, item);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentResponse addComment(@PathVariable Integer itemId, @RequestHeader(X_SHARER_USER_ID) Integer userId,
+                                      @Valid @RequestBody CommentRequest request) {
+        log.info("POST items/{}/comment, X-Sharer-User-Id: {}", itemId, userId);
+        return commentMapper.toResponse(itemService.addComment(commentMapper.toComment(request, itemId, userId)));
     }
 }
