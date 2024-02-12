@@ -10,10 +10,7 @@ import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserRepository;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -31,37 +28,30 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User get(Integer id) {
-        if (!userRepository.existsById(id)) {
-            throw new DataDoesNotExistsException(
-                    String.format("Get user failed, user with id %d not exists", id));
-        }
-        Optional<UserEntity> userEntity = userRepository.findById(id);
+        UserEntity userEntity = userRepository.findById(id).orElseThrow(
+                () -> new DataDoesNotExistsException(String.format("Get user failed, user with id %d not exists", id)));
         log.info("User received: {}", userEntity);
-        return mapper.toUser(userEntity.get());
+        return mapper.toUser(userEntity);
     }
 
     @Override
     public User update(User user) {
-        if (!userRepository.existsById(user.getId())) {
-            throw new RuntimeException(
-                    String.format("Update user failed, user with id %d not exists", user.getId()));
-        }
-        Optional<UserEntity> modified = userRepository.findById(user.getId());
-        List<UserEntity> allUsersWithoutThis = new ArrayList<>(userRepository.findAll());
-        allUsersWithoutThis.remove(modified.get());
-        if (allUsersWithoutThis.stream().map(UserEntity::getEmail).anyMatch(p -> p.equals(user.getEmail()))) {
+        UserEntity modified = userRepository.findById(user.getId()).orElseThrow(
+                () -> new DataDoesNotExistsException(String.format("Update user failed, user with id %d not exists",
+                        user.getId())));
+        if (userRepository.existsByEmailAndIdNot(modified.getEmail(), modified.getId())) {
             throw new DataAlreadyExistsException(
                     String.format("Update user failed, user with email %s already exists", user.getEmail()));
         }
         if ((user.getEmail() != null)) {
-            modified.get().setEmail(user.getEmail());
+            modified.setEmail(user.getEmail());
         }
         if (user.getName() != null) {
-            modified.get().setName(user.getName());
+            modified.setName(user.getName());
         }
-        userRepository.save(modified.get());
+        userRepository.save(modified);
         log.info("User updated: {}", modified);
-        return mapper.toUser(modified.get());
+        return mapper.toUser(modified);
     }
 
     @Override
