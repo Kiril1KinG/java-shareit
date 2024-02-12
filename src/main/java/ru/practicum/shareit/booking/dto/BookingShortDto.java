@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class BookingShort {
+public class BookingShortDto {
 
     private Integer id;
     private Integer bookerId;

@@ -58,8 +58,7 @@ public class BookingController {
 
     @GetMapping()
     public Collection<BookingResponse> getAllByState(@RequestHeader(X_SHARER_USER_ID) Integer userId,
-                                                     @RequestParam(value = "state",
-                                                             required = false) String state) {
+                                                     @RequestParam(value = "state", required = false) String state) {
         return bookingService.getAllBookingsByState(userId, state).stream()
                 .map(mapper::toResponse)
                 .collect(Collectors.toList());

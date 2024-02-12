@@ -5,7 +5,7 @@ import org.mapstruct.Mapping;
 import ru.practicum.shareit.booking.Entity.BookingEntity;
 import ru.practicum.shareit.booking.dto.BookingRequest;
 import ru.practicum.shareit.booking.dto.BookingResponse;
-import ru.practicum.shareit.booking.dto.BookingShort;
+import ru.practicum.shareit.booking.dto.BookingShortDto;
 import ru.practicum.shareit.booking.model.Booking;
 
 @Mapper(componentModel = "spring")
@@ -25,5 +25,5 @@ public abstract class BookingMapper {
     @Mapping(target = "item.request", source = "item.request.id")
     public abstract BookingEntity toBookingEntity(Booking booking);
 
-    public abstract BookingShort toBookingResponseShort(BookingEntity booking);
+    public abstract BookingShortDto toBookingResponseShort(BookingEntity booking);
 }
