@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -46,12 +45,10 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Item add(int userId, Item item) {
-        Optional<UserEntity> user = userRepository.findById(userId);
-        if (user.isEmpty()) {
-            throw new DataDoesNotExistsException(
-                    String.format("Add item failed, user with id %d npt exists", userId));
-        }
-        item.setOwner(userMapper.toUser(user.get()));
+        UserEntity userEntity = userRepository.findById(userId).orElseThrow(
+                () -> new DataDoesNotExistsException(String.format("Add item failed, user with id %d npt exists",
+                        userId)));
+        item.setOwner(userMapper.toUser(userEntity));
         ItemEntity res = itemMapper.toItemEntity(item);
         itemRepository.save(res);
         log.info("Item added: {}", res);
@@ -60,12 +57,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Item get(int id, Integer userId) {
-        Optional<ItemEntity> itemEntity = itemRepository.findById(id);
-        if (itemEntity.isEmpty()) {
-            throw new DataDoesNotExistsException(
-                    String.format("Get item by id failed, item with %d not exists", id));
-        }
-        Item item = itemMapper.toItem(itemEntity.get());
+        ItemEntity itemEntity = itemRepository.findById(id).orElseThrow(
+                () -> new DataDoesNotExistsException(String.format("Get item by id failed, item with %d not exists", id)));
+        Item item = itemMapper.toItem(itemEntity);
         if (item.getOwner().getId().equals(userId)) {
             addBookingsToItems(Collections.singleton(item));
         }
@@ -76,37 +70,37 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Item update(int userId, Item item) {
-        Optional<ItemEntity> itemEntity = itemRepository.findById(item.getId());
-        if (itemEntity.isEmpty()) {
-            throw new DataDoesNotExistsException(
-                    String.format("Update item failed, item with %d not exists", item.getId()));
-        }
+        ItemEntity itemEntity = itemRepository.findById(item.getId()).orElseThrow(
+                () -> new DataDoesNotExistsException(String.format("Update item failed, item with %d not exists",
+                        item.getId())));
         if (!userRepository.existsById(userId)) {
             throw new DataDoesNotExistsException(
                     String.format("Update item failed, user with %d not exists", userId));
         }
-        if (itemEntity.get().getOwner().getId() != userId) {
+        if (itemEntity.getOwner().getId() != userId) {
             throw new DataDoesNotExistsException(
                     String.format("Update item failed, user with %d not owner", userId));
         }
 
         if (item.getName() != null) {
-            itemEntity.get().setName(item.getName());
+            itemEntity.setName(item.getName());
         }
         if (item.getDescription() != null) {
-            itemEntity.get().setDescription(item.getDescription());
+            itemEntity.setDescription(item.getDescription());
         }
         if (item.getAvailable() != null) {
-            itemEntity.get().setAvailable(item.getAvailable());
+            itemEntity.setAvailable(item.getAvailable());
         }
-        itemRepository.save(itemEntity.get());
+        itemRepository.save(itemEntity);
         log.info("Item updated: {}", itemEntity);
-        return itemMapper.toItem(itemEntity.get());
+        return itemMapper.toItem(itemEntity);
     }
 
     @Override
     public void delete(int userId, int id) {
-        if ((itemRepository.findById(id).get().getOwner().getId() != userId)) {
+        ItemEntity itemEntity = itemRepository.findById(id).orElseThrow(
+                () -> new DataDoesNotExistsException(String.format("Delete item failed, item with id %d not exists", id)));
+        if ((itemEntity.getOwner().getId() != userId)) {
             throw new DataDoesNotExistsException(
                     String.format("Delete item failed, user with %d not owner", userId));
         }
@@ -138,28 +132,28 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Comment addComment(Comment comment) {
-        Optional<UserEntity> userEntity = userRepository.findById(comment.getAuthor().getId());
-        if (userEntity.isEmpty()) {
-            throw new DataDoesNotExistsException(
-                    String.format("Add comment failed, user with id %d not exists", comment.getAuthor().getId()));
-        }
-        Optional<ItemEntity> itemEntity = itemRepository.findById(comment.getItem().getId());
-        if (itemEntity.isEmpty()) {
-            throw new DataDoesNotExistsException(
-                    String.format("Add comment failed, item with id %d not exists", comment.getAuthor().getId()));
-        }
+        UserEntity userEntity = userRepository.findById(comment.getAuthor().getId()).orElseThrow(
+                () -> new DataDoesNotExistsException(
+                        String.format("Add comment failed, user with id %d not exists", comment.getAuthor().getId())));
+
+        ItemEntity itemEntity = itemRepository.findById(comment.getItem().getId()).orElseThrow(
+                () -> new DataDoesNotExistsException(
+                        String.format("Add comment failed, item with id %d not exists", comment.getAuthor().getId())));
+
         if (!bookingRepository.existsBookingByItemIdAndBookerIdAndStatusAndEndIsBefore(comment.getItem().getId(),
                 comment.getAuthor().getId(), BookingStatus.APPROVED, LocalDateTime.now())) {
             throw new WithoutBookingException(
                     String.format("Add comment failed, user with id %d did not booked this thing",
                             comment.getAuthor().getId()));
         }
+
         if (commentRepository.existsByItemIdAndAuthorId(comment.getItem().getId(), comment.getAuthor().getId())) {
             throw new DataAlreadyExistsException("Add comment failed, comment already exists");
         }
+
         CommentEntity commentEntity = commentRepository.save(commentMapper.toCommentEntity(comment));
-        commentEntity.setItem(itemEntity.get());
-        commentEntity.setAuthor(userEntity.get());
+        commentEntity.setItem(itemEntity);
+        commentEntity.setAuthor(userEntity);
         return commentMapper.toComment(commentEntity);
     }
 
