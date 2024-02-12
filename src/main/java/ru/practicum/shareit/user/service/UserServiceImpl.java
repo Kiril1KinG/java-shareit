@@ -29,7 +29,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public User get(Integer id) {
         UserEntity userEntity = userRepository.findById(id).orElseThrow(
-                () -> new DataDoesNotExistsException(String.format("Get user failed, user with id %d not exists", id)));
+                () -> new DataDoesNotExistsException(
+                        String.format("Get user failed, user with id %d not exists", id)));
         log.info("User received: {}", userEntity);
         return mapper.toUser(userEntity);
     }
@@ -37,8 +38,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public User update(User user) {
         UserEntity modified = userRepository.findById(user.getId()).orElseThrow(
-                () -> new DataDoesNotExistsException(String.format("Update user failed, user with id %d not exists",
-                        user.getId())));
+                () -> new DataDoesNotExistsException(
+                        String.format("Update user failed, user with id %d not exists", user.getId())));
+
         if (userRepository.existsByEmailAndIdNot(modified.getEmail(), modified.getId())) {
             throw new DataAlreadyExistsException(
                     String.format("Update user failed, user with email %s already exists", user.getEmail()));

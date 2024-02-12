@@ -46,8 +46,8 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Item add(int userId, Item item) {
         UserEntity userEntity = userRepository.findById(userId).orElseThrow(
-                () -> new DataDoesNotExistsException(String.format("Add item failed, user with id %d npt exists",
-                        userId)));
+                () -> new DataDoesNotExistsException(
+                        String.format("Add item failed, user with id %d npt exists", userId)));
         item.setOwner(userMapper.toUser(userEntity));
         ItemEntity res = itemMapper.toItemEntity(item);
         itemRepository.save(res);
@@ -58,11 +58,14 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Item get(int id, Integer userId) {
         ItemEntity itemEntity = itemRepository.findById(id).orElseThrow(
-                () -> new DataDoesNotExistsException(String.format("Get item by id failed, item with %d not exists", id)));
+                () -> new DataDoesNotExistsException(
+                        String.format("Get item by id failed, item with %d not exists", id)));
+
         Item item = itemMapper.toItem(itemEntity);
         if (item.getOwner().getId().equals(userId)) {
             addBookingsToItems(Collections.singleton(item));
         }
+
         addCommentsToItems(Collections.singleton(item));
         log.info("Item received: {}", item);
         return item;
@@ -71,8 +74,9 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Item update(int userId, Item item) {
         ItemEntity itemEntity = itemRepository.findById(item.getId()).orElseThrow(
-                () -> new DataDoesNotExistsException(String.format("Update item failed, item with %d not exists",
-                        item.getId())));
+                () -> new DataDoesNotExistsException(
+                        String.format("Update item failed, item with %d not exists", item.getId())));
+
         if (!userRepository.existsById(userId)) {
             throw new DataDoesNotExistsException(
                     String.format("Update item failed, user with %d not exists", userId));
@@ -99,7 +103,9 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public void delete(int userId, int id) {
         ItemEntity itemEntity = itemRepository.findById(id).orElseThrow(
-                () -> new DataDoesNotExistsException(String.format("Delete item failed, item with id %d not exists", id)));
+                () -> new DataDoesNotExistsException(
+                        String.format("Delete item failed, item with id %d not exists", id)));
+
         if ((itemEntity.getOwner().getId() != userId)) {
             throw new DataDoesNotExistsException(
                     String.format("Delete item failed, user with %d not owner", userId));

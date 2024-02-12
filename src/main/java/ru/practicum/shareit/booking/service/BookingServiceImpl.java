@@ -51,77 +51,76 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Booking add(Booking booking) {
         checkBookingRequestTime(booking);
-        Optional<ItemEntity> item = itemRepository.findById(booking.getItem().getId());
-        if (item.isEmpty()) {
-            throw new DataDoesNotExistsException(
-                    String.format("Add booking failed, item with id %d not exists", booking.getItem().getId()));
-        }
-        if (!item.get().getAvailable()) {
+        ItemEntity itemEntity = itemRepository.findById(booking.getItem().getId()).orElseThrow(
+                () -> new DataDoesNotExistsException(
+                        String.format("Add booking failed, item with id %d not exists", booking.getItem().getId())));
+        if (!itemEntity.getAvailable()) {
             throw new NotAvailableException(
-                    String.format("Add booking failed, item with id %d not available now", item.get().getId()));
+                    String.format("Add booking failed, item with id %d not available now", itemEntity.getId()));
         }
-        Optional<UserEntity> user = userRepository.findById(booking.getBooker().getId());
-        if (user.isEmpty()) {
-            throw new DataDoesNotExistsException(
-                    String.format("Add booking failed, user with id %d not exists", booking.getBooker().getId()));
-        }
-        if (item.get().getOwner().getId().equals(user.get().getId())) {
+
+        UserEntity userEntity = userRepository.findById(booking.getBooker().getId()).orElseThrow(
+                () -> new DataDoesNotExistsException(
+                        String.format("Add booking failed, user with id %d not exists", booking.getBooker().getId())));
+
+        if (itemEntity.getOwner().getId().equals(userEntity.getId())) {
             throw new DataDoesNotExistsException(
                     String.format("Add booking failed, user with id %d owner", booking.getBooker().getId()));
         }
-        if (bookingRepository.existsBookingByItemIdAndBookerIdAndStatus(item.get().getId(),
+        if (bookingRepository.existsBookingByItemIdAndBookerIdAndStatus(itemEntity.getId(),
                 booking.getBooker().getId(), BookingStatus.WAITING)) {
             throw new DataAlreadyExistsException("Add booking failed, booking request already exists");
         }
+
         BookingEntity res = bookingRepository.save(mapper.toBookingEntity(booking));
-        res.setItem(item.get());
-        res.setBooker(user.get());
+        res.setItem(itemEntity);
+        res.setBooker(userEntity);
         log.info("Booking added: {}", res);
         return mapper.toBooking(res);
     }
 
     @Override
     public Booking approveBooking(Integer bookingId, Integer userId, boolean approve) {
-        Optional<BookingEntity> bookingEntity = bookingRepository.findById(bookingId);
-        if (bookingEntity.isEmpty()) {
-            throw new DataDoesNotExistsException(
-                    String.format("Approve booking failed, booking with id %d not exists", bookingId));
-        }
-        if (bookingEntity.get().getStatus().equals(BookingStatus.APPROVED) ||
-                bookingEntity.get().getStatus().equals(BookingStatus.REJECTED)) {
+        BookingEntity bookingEntity = bookingRepository.findById(bookingId).orElseThrow(
+                () -> new DataDoesNotExistsException(
+                        String.format("Approve booking failed, booking with id %d not exists", bookingId)));
+
+        if (bookingEntity.getStatus().equals(BookingStatus.APPROVED) ||
+                bookingEntity.getStatus().equals(BookingStatus.REJECTED)) {
             throw new RepeatedRequestException("Approve booking failed, booking already approved");
         }
-        Optional<UserEntity> userEntity = userRepository.findById(userId);
-        if (userEntity.isEmpty()) {
-            throw new DataDoesNotExistsException(
-                    String.format("Approve booking failed, user with id %d not exists", userId));
-        }
-        if (!bookingEntity.get().getItem().getOwner().getId().equals(userEntity.get().getId())) {
+
+        UserEntity userEntity = userRepository.findById(userId).orElseThrow(
+                () -> new DataDoesNotExistsException(
+                        String.format("Approve booking failed, user with id %d not exists", userId)));
+
+        if (!bookingEntity.getItem().getOwner().getId().equals(userEntity.getId())) {
             throw new NotOwnerException(
                     String.format("Approve booking failed, user with id %d not owner", userId));
         }
+
         if (approve) {
-            bookingEntity.get().setStatus(BookingStatus.APPROVED);
+            bookingEntity.setStatus(BookingStatus.APPROVED);
         } else {
-            bookingEntity.get().setStatus(BookingStatus.REJECTED);
+            bookingEntity.setStatus(BookingStatus.REJECTED);
         }
-        return mapper.toBooking(bookingRepository.save(bookingEntity.get()));
+
+        return mapper.toBooking(bookingRepository.save(bookingEntity));
     }
 
     @Override
     public Booking getById(Integer bookingId, Integer userId) {
-        Optional<BookingEntity> bookingEntity = bookingRepository.findById(bookingId);
-        if (bookingEntity.isEmpty()) {
-            throw new DataDoesNotExistsException(
-                    String.format("Get booking by id failed, booking with id %d not exists", bookingId));
-        }
-        ItemEntity item = bookingEntity.get().getItem();
+        BookingEntity bookingEntity = bookingRepository.findById(bookingId).orElseThrow(
+                () -> new DataDoesNotExistsException(
+                        String.format("Get booking by id failed, booking with id %d not exists", bookingId)));
+
+        ItemEntity item = bookingEntity.getItem();
         if (!item.getOwner().getId().equals(userId) &&
-                !bookingEntity.get().getBooker().getId().equals(userId)) {
+                !bookingEntity.getBooker().getId().equals(userId)) {
             throw new NotOwnerException("Get booking failed, you not owner/booker");
         }
-        log.info("Booking by id received: {}", bookingEntity.get());
-        return mapper.toBooking(bookingEntity.get());
+        log.info("Booking by id received: {}", bookingEntity);
+        return mapper.toBooking(bookingEntity);
     }
 
     @Override
