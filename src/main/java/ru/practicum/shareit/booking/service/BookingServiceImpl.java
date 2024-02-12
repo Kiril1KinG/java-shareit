@@ -37,14 +37,14 @@ public class BookingServiceImpl implements BookingService {
     private final UserRepository userRepository;
     private final BookingMapper mapper;
 
-    private static BookingState filterBookingState(String strState) {
-        if (strState == null) {
+    private static BookingState filterBookingState(String state) {
+        if (state == null) {
             return BookingState.ALL;
         }
         try {
-            return BookingState.valueOf(strState.toUpperCase());
+            return BookingState.valueOf(state.toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new UnknownStateException("Unknown state: " + strState);
+            throw new UnknownStateException("Unknown state: " + state);
         }
     }
 
