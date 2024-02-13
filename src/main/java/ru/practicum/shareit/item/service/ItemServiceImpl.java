@@ -18,8 +18,9 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.CommentRepository;
 import ru.practicum.shareit.item.storage.ItemRepository;
+import ru.practicum.shareit.request.entity.ItemRequestEntity;
+import ru.practicum.shareit.request.storage.ItemRequestRepository;
 import ru.practicum.shareit.user.entity.UserEntity;
-import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.storage.UserRepository;
 
 import java.time.LocalDateTime;
@@ -36,20 +37,28 @@ public class ItemServiceImpl implements ItemService {
 
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
+    private final ItemRequestRepository itemRequestRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
     private final ItemMapper itemMapper;
-    private final UserMapper userMapper;
     private final BookingMapper bookingMapper;
     private final CommentMapper commentMapper;
 
     @Override
     public Item add(int userId, Item item) {
+        ItemRequestEntity itemRequestEntity = null;
+        if (item.getRequest().getId() != null) {
+            itemRequestEntity = itemRequestRepository.findById(item.getRequest().getId()).orElseThrow(
+                    () -> new DataDoesNotExistsException(
+                            String.format("Create item by ItemRequest failed, ItemRequest with id %d not exists",
+                                    item.getRequest().getId())));
+        }
         UserEntity userEntity = userRepository.findById(userId).orElseThrow(
                 () -> new DataDoesNotExistsException(
                         String.format("Add item failed, user with id %d npt exists", userId)));
-        item.setOwner(userMapper.toUser(userEntity));
         ItemEntity res = itemMapper.toItemEntity(item);
+        res.setOwner(userEntity);
+        res.setRequest(itemRequestEntity);
         itemRepository.save(res);
         log.info("Item added: {}", res);
         return itemMapper.toItem(res);

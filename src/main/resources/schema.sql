@@ -16,6 +16,7 @@ create table requests (
     id BIGINT not null default nextval('requests_id_seq'),
     description varchar(1024),
     requestor_id bigint references users (id) on delete cascade not null,
+    created timestamp not null,
     constraint pk_request primary key (id)
 );
 

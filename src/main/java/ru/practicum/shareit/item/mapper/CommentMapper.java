@@ -21,10 +21,8 @@ public abstract class CommentMapper {
     @Mapping(target = "authorName", source = "author.name")
     public abstract CommentResponse toResponse(Comment comment);
 
-    @Mapping(target = "item.request", source = "item.request.id")
     public abstract CommentEntity toCommentEntity(Comment comment);
 
-    @Mapping(target = "item.request.id", source = "item.request")
     public abstract Comment toComment(CommentEntity entity);
 
     public Collection<Comment> toComments(Collection<CommentEntity> entities) {

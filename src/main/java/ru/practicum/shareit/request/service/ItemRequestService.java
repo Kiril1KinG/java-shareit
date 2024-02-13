@@ -2,13 +2,15 @@ package ru.practicum.shareit.request.service;
 
 import ru.practicum.shareit.request.model.ItemRequest;
 
+import java.util.Collection;
+
 public interface ItemRequestService {
 
-    ItemRequest add(ItemRequest itemRequest);
+    ItemRequest create(ItemRequest itemRequest);
 
-    ItemRequest get(int id);
+    Collection<ItemRequest> getAllForUser(Integer userId);
 
-    ItemRequest update(ItemRequest itemRequest);
+    Collection<ItemRequest> getAll(Integer userId, Integer from, Integer size);
 
-    void delete(int id);
+    ItemRequest getById(Integer userId, Integer id);
 }
