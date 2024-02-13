@@ -15,7 +15,7 @@ public interface ItemService {
 
     void delete(int userId, int id);
 
-    Collection<Item> search(String text);
+    Collection<Item> search(String text, Integer from, Integer size);
 
     Collection<Item> getByOwnerId(int userId, Integer from, Integer size);
 

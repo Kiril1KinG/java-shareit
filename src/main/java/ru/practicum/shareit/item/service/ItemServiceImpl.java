@@ -129,11 +129,21 @@ public class ItemServiceImpl implements ItemService {
 
 
     @Override
-    public Collection<Item> search(String text) {
+    public Collection<Item> search(String text, Integer from, Integer size) {
         if (text.isBlank() || text.isEmpty()) {
             return Collections.emptyList();
         }
-        Collection<ItemEntity> items = itemRepository.search(text);
+
+        Collection<ItemEntity> items;
+        if (from == null ^ size == null) {
+            throw new PaginationParamsException("Get Items failed, one of pagination params cannot be null");
+        }
+        if (from != null && size != null) {
+            Pageable pageable = PageRequest.of(from, size);
+            items = itemRepository.search(text, pageable).getContent();
+        } else {
+            items = itemRepository.search(text);
+        }
         log.info("Item search by request \"{}\" received: {}", text, items);
         return itemMapper.toItems(items);
     }
@@ -146,7 +156,7 @@ public class ItemServiceImpl implements ItemService {
         }
         if (from != null && size != null) {
             Pageable pageable = PageRequest.of(from, size, Sort.by("id"));
-            items = itemRepository.findAllByOwnerId(userId, pageable).stream()
+            items = itemRepository.findAllByOwnerId(userId, pageable).getContent().stream()
                     .map(itemMapper::toItem)
                     .collect(Collectors.toList());
         } else {

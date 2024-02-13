@@ -49,7 +49,7 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemWithBookingsResponse get(@PathVariable int itemId,
+    public ItemWithBookingsResponse get(@PathVariable Integer itemId,
                                         @RequestHeader(value = X_SHARER_USER_ID) Integer userId) {
         log.info("GET /items/{}", itemId);
         return itemMapper.toItemWithBookingsResponse(itemService.get(itemId, userId));
@@ -67,15 +67,17 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public Collection<ItemResponse> search(@RequestParam String text) {
+    public Collection<ItemResponse> search(@RequestParam String text,
+                                           @RequestParam(value = "from", required = false) @Min(0) Integer from,
+                                           @RequestParam(value = "size", required = false) @Min(1) Integer size) {
         log.info("GET /items/search?text={}", text);
-        return itemService.search(text).stream()
+        return itemService.search(text, from, size).stream()
                 .map(itemMapper::toResponse)
                 .collect(Collectors.toList());
     }
 
     @PatchMapping("/{id}")
-    public Item update(@RequestHeader(X_SHARER_USER_ID) Integer userId, @PathVariable int id,
+    public Item update(@RequestHeader(X_SHARER_USER_ID) Integer userId, @PathVariable Integer id,
                        @Valid @RequestBody ItemUpdateRequest request) {
         log.info("PATCH /items/{} X-Sharer-User-Id: {}", id, userId);
         Item item = itemMapper.toItem(request);
