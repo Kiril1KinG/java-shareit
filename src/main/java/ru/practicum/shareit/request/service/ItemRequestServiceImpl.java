@@ -59,13 +59,10 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     public Collection<ItemRequest> getAll(Integer userId, Integer from, Integer size) {
         Collection<ItemRequest> itemRequests;
-        if ((from == null) ^ (size == null)) {
+        if (from == null ^ size == null) {
             throw new PaginationParamsException("Bad pagination params, one of the parameters cannot be null");
         }
         if (from != null & size != null) {
-            if (from < 0) {
-                throw new PaginationParamsException("Bad pagination params, 'from' cannot be less than zero");
-            }
             Pageable pageable = PageRequest.of(from, size, Sort.by("created").descending());
             itemRequests = itemRequestMapper.toItemRequests(itemRequestRepository.findAllWithoutRequestor(userId, pageable).getContent());
         } else {

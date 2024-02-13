@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.storage;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,7 +11,9 @@ import java.util.List;
 
 public interface ItemRepository extends JpaRepository<ItemEntity, Integer> {
 
-    Collection<ItemEntity> findUsersByOwnerIdOrderByIdAsc(Integer ownerId);
+    Collection<ItemEntity> findAllByOwnerIdOrderByIdAsc(Integer ownerId);
+
+    Collection<ItemEntity> findAllByOwnerId(Integer ownerId, Pageable pageable);
 
     @Query("select i from ItemEntity i " +
             "where (upper(i.name) like upper(concat('%', :text, '%')) " +

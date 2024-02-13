@@ -17,7 +17,7 @@ public interface ItemService {
 
     Collection<Item> search(String text);
 
-    Collection<Item> getByOwnerId(int userId);
+    Collection<Item> getByOwnerId(int userId, Integer from, Integer size);
 
     Comment addComment(Comment comment);
 }

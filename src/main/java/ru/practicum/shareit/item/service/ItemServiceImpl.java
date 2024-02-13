@@ -2,6 +2,9 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.entity.BookingEntity;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
@@ -9,6 +12,7 @@ import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.storage.BookingRepository;
 import ru.practicum.shareit.exception.DataAlreadyExistsException;
 import ru.practicum.shareit.exception.DataDoesNotExistsException;
+import ru.practicum.shareit.exception.PaginationParamsException;
 import ru.practicum.shareit.exception.WithoutBookingException;
 import ru.practicum.shareit.item.entity.CommentEntity;
 import ru.practicum.shareit.item.entity.ItemEntity;
@@ -135,10 +139,21 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Collection<Item> getByOwnerId(int userId) {
-        Collection<Item> items = itemRepository.findUsersByOwnerIdOrderByIdAsc(userId).stream()
-                .map(itemMapper::toItem)
-                .collect(Collectors.toList());
+    public Collection<Item> getByOwnerId(int userId, Integer from, Integer size) {
+        Collection<Item> items;
+        if (from == null ^ size == null) {
+            throw new PaginationParamsException("Get Items failed, one of pagination params cannot be null");
+        }
+        if (from != null && size != null) {
+            Pageable pageable = PageRequest.of(from, size, Sort.by("id"));
+            items = itemRepository.findAllByOwnerId(userId, pageable).stream()
+                    .map(itemMapper::toItem)
+                    .collect(Collectors.toList());
+        } else {
+            items = itemRepository.findAllByOwnerIdOrderByIdAsc(userId).stream()
+                    .map(itemMapper::toItem)
+                    .collect(Collectors.toList());
+        }
         addBookingsToItems(items);
         addCommentsToItems(items);
         log.info("Items for owner received: {}", items);
