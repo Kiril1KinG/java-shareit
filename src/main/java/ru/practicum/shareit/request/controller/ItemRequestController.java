@@ -58,6 +58,7 @@ public class ItemRequestController {
     public Collection<ItemRequestResponseWithItems> getAll(@RequestParam(value = "from", required = false) @Min(0) Integer from,
                                                   @RequestParam(value = "size", required = false) @Min(1) Integer size,
                                                   @RequestHeader(X_SHARER_USER_ID) Integer userId) {
+        log.info("GET /requests/all");
         return itemRequestService.getAll(userId, from, size).stream()
                 .map(mapper::toResponseWithItems)
                 .collect(Collectors.toList());
@@ -66,6 +67,7 @@ public class ItemRequestController {
     @GetMapping("/{requestId}")
     public ItemRequestResponseWithItems getById(@PathVariable Integer requestId,
                                                 @RequestHeader(X_SHARER_USER_ID) Integer userId) {
+        log.info("GET /requests/{}", requestId);
         return mapper.toResponseWithItems(itemRequestService.getById(userId, requestId));
     }
 }

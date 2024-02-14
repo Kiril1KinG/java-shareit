@@ -2,6 +2,9 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.entity.BookingEntity;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
@@ -13,6 +16,7 @@ import ru.practicum.shareit.exception.DataAlreadyExistsException;
 import ru.practicum.shareit.exception.DataDoesNotExistsException;
 import ru.practicum.shareit.exception.NotAvailableException;
 import ru.practicum.shareit.exception.NotOwnerException;
+import ru.practicum.shareit.exception.PaginationParamsException;
 import ru.practicum.shareit.exception.RepeatedRequestException;
 import ru.practicum.shareit.exception.TimeValidationException;
 import ru.practicum.shareit.exception.UnknownStateException;
@@ -123,32 +127,33 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Collection<Booking> getAllBookingsByState(Integer userId, String bookingState) {
+    public Collection<Booking> getAllBookingsByState(Integer userId, String bookingState, Integer from, Integer size) {
         BookingState state = filterBookingState(bookingState);
         if (!userRepository.existsById(userId)) {
             throw new DataDoesNotExistsException(
                     String.format("Get all booking by state failed, user with id %d not exists", userId));
         }
+        Pageable pageable = getPageable(from, size, Sort.by("start").descending());
         Collection<BookingEntity> res = new ArrayList<>();
         switch (state) {
             case ALL:
-                res = bookingRepository.findAllByBookerIdOrderByStartDesc(userId);
+                res = bookingRepository.findAllByBookerId(userId, pageable).getContent();
                 break;
             case CURRENT:
-                res = bookingRepository.findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(userId,
-                        LocalDateTime.now(), LocalDateTime.now());
+                res = bookingRepository.findAllByBookerIdAndStartIsBeforeAndEndIsAfter(userId, LocalDateTime.now(),
+                        LocalDateTime.now(), pageable).getContent();
                 break;
             case PAST:
-                res = bookingRepository.findAllByBookerIdAndEndIsBeforeOrderByStartDesc(userId, LocalDateTime.now());
+                res = bookingRepository.findAllByBookerIdAndEndIsBefore(userId, LocalDateTime.now(), pageable).getContent();
                 break;
             case FUTURE:
-                res = bookingRepository.findAllByBookerIdAndStartIsAfterOrderByStartDesc(userId, LocalDateTime.now());
+                res = bookingRepository.findAllByBookerIdAndStartIsAfter(userId, LocalDateTime.now(), pageable).getContent();
                 break;
             case WAITING:
-                res = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(userId, BookingStatus.WAITING);
+                res = bookingRepository.findAllByBookerIdAndStatus(userId, BookingStatus.WAITING, pageable).getContent();
                 break;
             case REJECTED:
-                res = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(userId, BookingStatus.REJECTED);
+                res = bookingRepository.findAllByBookerIdAndStatus(userId, BookingStatus.REJECTED, pageable).getContent();
                 break;
         }
         return res.stream()
@@ -156,32 +161,33 @@ public class BookingServiceImpl implements BookingService {
                 .collect(Collectors.toList());
     }
 
-    public Collection<Booking> getAllBookingsForItemsByState(Integer userId, String bookingState) {
+    public Collection<Booking> getAllBookingsForItemsByState(Integer userId, String bookingState, Integer from, Integer size) {
         BookingState state = filterBookingState(bookingState);
         if (!userRepository.existsById(userId)) {
             throw new DataDoesNotExistsException(
                     String.format("Get all booking by state failed, user with id %d not exists", userId));
         }
+        Pageable pageable = getPageable(from, size, Sort.by("start").descending());
         Collection<BookingEntity> res = new ArrayList<>();
         switch (state) {
             case ALL:
-                res = bookingRepository.findAllByItemOwnerIdOrderByStartDesc(userId);
+                res = bookingRepository.findAllByItemOwnerId(userId, pageable).getContent();
                 break;
             case CURRENT:
-                res = bookingRepository.findAllByItemOwnerIdAndEndIsAfterAndStartIsBeforeOrderByStartDesc(userId,
-                        LocalDateTime.now(), LocalDateTime.now());
+                res = bookingRepository.findAllByItemOwnerIdAndEndIsAfterAndStartIsBefore(userId, LocalDateTime.now(),
+                        LocalDateTime.now(), pageable).getContent();
                 break;
             case PAST:
-                res = bookingRepository.findAllByItemOwnerIdAndEndIsBeforeOrderByStartDesc(userId, LocalDateTime.now());
+                res = bookingRepository.findAllByItemOwnerIdAndEndIsBefore(userId, LocalDateTime.now(), pageable).getContent();
                 break;
             case FUTURE:
-                res = bookingRepository.findAllByItemOwnerIdAndStartIsAfterOrderByStartDesc(userId, LocalDateTime.now());
+                res = bookingRepository.findAllByItemOwnerIdAndStartIsAfter(userId, LocalDateTime.now(), pageable).getContent();
                 break;
             case WAITING:
-                res = bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(userId, BookingStatus.WAITING);
+                res = bookingRepository.findAllByItemOwnerIdAndStatus(userId, BookingStatus.WAITING, pageable).getContent();
                 break;
             case REJECTED:
-                res = bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(userId, BookingStatus.REJECTED);
+                res = bookingRepository.findAllByItemOwnerIdAndStatus(userId, BookingStatus.REJECTED, pageable).getContent();
                 break;
         }
         return res.stream()
@@ -195,6 +201,18 @@ public class BookingServiceImpl implements BookingService {
         }
         if (booking.getEnd().equals(booking.getStart())) {
             throw new TimeValidationException("Incorrect time, end can not be equal start");
+        }
+    }
+
+    private Pageable getPageable(Integer from, Integer size, Sort sort) {
+        if (from == null ^ size == null) {
+            throw new PaginationParamsException("Get bookings failed, one of pagination params cannot be null");
+        }
+        if (from != null && size != null) {
+            return PageRequest.of(from > 0 ? from / size : 0, size, sort);
+        } else {
+            int count = (int) bookingRepository.count();
+            return PageRequest.of(0, count > 0 ? count : 1, sort);
         }
     }
 }

@@ -14,9 +14,5 @@ public interface ItemRequestRepository extends JpaRepository<ItemRequestEntity, 
 
     @Query(value = "SELECT * FROM requests " +
             "WHERE requestor_id != :userId", nativeQuery = true)
-    Collection<ItemRequestEntity> findAllWithoutRequestor(Integer userId);
-
-    @Query(value = "SELECT * FROM requests " +
-            "WHERE requestor_id != :userId", nativeQuery = true)
     Page<ItemRequestEntity> findAllWithoutRequestor(Integer userId, Pageable pageable);
 }

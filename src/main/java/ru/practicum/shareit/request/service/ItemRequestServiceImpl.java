@@ -17,8 +17,8 @@ import ru.practicum.shareit.user.entity.UserEntity;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.storage.UserRepository;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -58,16 +58,18 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public Collection<ItemRequest> getAll(Integer userId, Integer from, Integer size) {
-        Collection<ItemRequest> itemRequests;
         if (from == null ^ size == null) {
             throw new PaginationParamsException("Bad pagination params, one of the parameters cannot be null");
         }
+        Pageable pageable;
         if (from != null & size != null) {
-            Pageable pageable = PageRequest.of(from, size, Sort.by("created").descending());
-            itemRequests = itemRequestMapper.toItemRequests(itemRequestRepository.findAllWithoutRequestor(userId, pageable).getContent());
+            pageable = PageRequest.of(from, size, Sort.by("created").descending());
         } else {
-            itemRequests = itemRequestMapper.toItemRequests(itemRequestRepository.findAllWithoutRequestor(userId));
+            int count = (int) itemRequestRepository.count();
+            pageable = PageRequest.of(0, count > 0 ? count : 1, Sort.by("created").descending());
         }
+        Collection<ItemRequest> itemRequests = itemRequestMapper.toItemRequests(
+                itemRequestRepository.findAllWithoutRequestor(userId, pageable).getContent());
         itemRequests.forEach(i -> i.setItems(List.copyOf(itemMapper.toItems(itemRepository.findAllByRequestId(i.getId())))));
         return itemRequests;
     }

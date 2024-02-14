@@ -134,36 +134,36 @@ public class ItemServiceImpl implements ItemService {
             return Collections.emptyList();
         }
 
-        Collection<ItemEntity> items;
+        Pageable pageable;
         if (from == null ^ size == null) {
             throw new PaginationParamsException("Get Items failed, one of pagination params cannot be null");
         }
         if (from != null && size != null) {
-            Pageable pageable = PageRequest.of(from, size);
-            items = itemRepository.search(text, pageable).getContent();
+            pageable = PageRequest.of(from, size);
         } else {
-            items = itemRepository.search(text);
+            int count = (int) itemRepository.count();
+            pageable = PageRequest.of(0, count > 0 ? count : 1);
         }
+        Collection<ItemEntity> items = itemRepository.search(text, pageable).getContent();
         log.info("Item search by request \"{}\" received: {}", text, items);
         return itemMapper.toItems(items);
     }
 
     @Override
     public Collection<Item> getByOwnerId(int userId, Integer from, Integer size) {
-        Collection<Item> items;
         if (from == null ^ size == null) {
             throw new PaginationParamsException("Get Items failed, one of pagination params cannot be null");
         }
+        Pageable pageable;
         if (from != null && size != null) {
-            Pageable pageable = PageRequest.of(from, size, Sort.by("id"));
-            items = itemRepository.findAllByOwnerId(userId, pageable).getContent().stream()
-                    .map(itemMapper::toItem)
-                    .collect(Collectors.toList());
+            pageable = PageRequest.of(from > 0 ? from / size : 0, size, Sort.by("id"));
         } else {
-            items = itemRepository.findAllByOwnerIdOrderByIdAsc(userId).stream()
-                    .map(itemMapper::toItem)
-                    .collect(Collectors.toList());
+            int count = (int) itemRepository.count();
+            pageable = PageRequest.of(0, count > 0 ? count : 1, Sort.by("id"));
         }
+        Collection<Item> items = itemRepository.findAllByOwnerId(userId, pageable).stream()
+                .map(itemMapper::toItem)
+                .collect(Collectors.toList());
         addBookingsToItems(items);
         addCommentsToItems(items);
         log.info("Items for owner received: {}", items);

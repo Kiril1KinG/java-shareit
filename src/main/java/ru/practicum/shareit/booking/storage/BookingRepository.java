@@ -1,5 +1,7 @@
 package ru.practicum.shareit.booking.storage;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,32 +15,27 @@ public interface BookingRepository extends JpaRepository<BookingEntity, Integer>
 
     boolean existsBookingByItemIdAndBookerIdAndStatus(Integer itemId, Integer bookerId, BookingStatus bookingStatus);
 
-    Collection<BookingEntity> findAllByBookerIdOrderByStartDesc(Integer bookerId);
+    Page<BookingEntity> findAllByBookerId(Integer bookerId, Pageable pageable);
 
-    Collection<BookingEntity> findAllByBookerIdAndEndIsBeforeOrderByStartDesc(Integer bookerId, LocalDateTime now);
+    Page<BookingEntity> findAllByBookerIdAndEndIsBefore(Integer bookerId, LocalDateTime now, Pageable pageable);
 
-    Collection<BookingEntity> findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(Integer bookerId,
-                                                                                             LocalDateTime start,
-                                                                                             LocalDateTime now);
+    Page<BookingEntity> findAllByBookerIdAndStartIsBeforeAndEndIsAfter(Integer bookerId, LocalDateTime start,
+                                                                       LocalDateTime now, Pageable pageable);
 
-    Collection<BookingEntity> findAllByBookerIdAndStartIsAfterOrderByStartDesc(Integer bookerId,
-                                                                               LocalDateTime now);
+    Page<BookingEntity> findAllByBookerIdAndStartIsAfter(Integer bookerId, LocalDateTime now, Pageable pageable);
 
-    Collection<BookingEntity> findAllByBookerIdAndStatusOrderByStartDesc(Integer bookerId, BookingStatus status);
+    Page<BookingEntity> findAllByBookerIdAndStatus(Integer bookerId, BookingStatus status, Pageable pageable);
 
-    Collection<BookingEntity> findAllByItemOwnerIdOrderByStartDesc(Integer ownerId);
+    Page<BookingEntity> findAllByItemOwnerId(Integer ownerId, Pageable pageable);
 
-    Collection<BookingEntity> findAllByItemOwnerIdAndEndIsAfterAndStartIsBeforeOrderByStartDesc(Integer ownerId,
-                                                                                                LocalDateTime start,
-                                                                                                LocalDateTime now);
+    Page<BookingEntity> findAllByItemOwnerIdAndEndIsAfterAndStartIsBefore(Integer ownerId, LocalDateTime start,
+                                                                          LocalDateTime now, Pageable pageable);
 
-    Collection<BookingEntity> findAllByItemOwnerIdAndEndIsBeforeOrderByStartDesc(Integer ownerId, LocalDateTime now);
+    Page<BookingEntity> findAllByItemOwnerIdAndEndIsBefore(Integer ownerId, LocalDateTime now, Pageable pageable);
 
-    Collection<BookingEntity> findAllByItemOwnerIdAndStartIsAfterOrderByStartDesc(Integer ownerId,
-                                                                                  LocalDateTime now);
+    Page<BookingEntity> findAllByItemOwnerIdAndStartIsAfter(Integer ownerId, LocalDateTime now, Pageable pageable);
 
-    Collection<BookingEntity> findAllByItemOwnerIdAndStatusOrderByStartDesc(Integer ownerId,
-                                                                            BookingStatus bookingStatus);
+    Page<BookingEntity> findAllByItemOwnerIdAndStatus(Integer ownerId, BookingStatus bookingStatus, Pageable pageable);
 
     Boolean existsBookingByItemIdAndBookerIdAndStatusAndEndIsBefore(Integer itemId, Integer userId,
                                                                     BookingStatus bookingStatus, LocalDateTime now);
