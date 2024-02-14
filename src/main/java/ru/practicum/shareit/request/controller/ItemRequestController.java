@@ -56,8 +56,8 @@ public class ItemRequestController {
 
     @GetMapping("/all")
     public Collection<ItemRequestResponseWithItems> getAll(@RequestParam(value = "from", required = false) @Min(0) Integer from,
-                                                  @RequestParam(value = "size", required = false) @Min(1) Integer size,
-                                                  @RequestHeader(X_SHARER_USER_ID) Integer userId) {
+                                                           @RequestParam(value = "size", required = false) @Min(1) Integer size,
+                                                           @RequestHeader(X_SHARER_USER_ID) Integer userId) {
         log.info("GET /requests/all");
         return itemRequestService.getAll(userId, from, size).stream()
                 .map(mapper::toResponseWithItems)

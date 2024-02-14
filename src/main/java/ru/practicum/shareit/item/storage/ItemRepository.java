@@ -8,7 +8,6 @@ import org.springframework.data.repository.query.Param;
 import ru.practicum.shareit.item.entity.ItemEntity;
 
 import java.util.Collection;
-import java.util.List;
 
 public interface ItemRepository extends JpaRepository<ItemEntity, Integer> {
 
