@@ -36,14 +36,8 @@ public class UserServiceImplTest {
 
     @Test
     void add() {
-        User user = new User();
-        user.setName("name");
-        user.setEmail("email");
-
-        User expected = new User();
-        expected.setId(1);
-        expected.setName("name");
-        expected.setEmail("email");
+        User user = new User(null, "name", "email");
+        User expected = new User(1, "name", "email");
 
         Mockito.when(userRepository.save(Mockito.any())).thenReturn(userMapper.toUserEntity(expected));
 
@@ -52,10 +46,7 @@ public class UserServiceImplTest {
 
     @Test
     void get() {
-        User expected = new User();
-        expected.setId(1);
-        expected.setName("name");
-        expected.setEmail("email");
+        User expected = new User(1, "name", "email");
 
         Mockito.when(userRepository.findById(1)).thenReturn(Optional.of(userMapper.toUserEntity(expected)));
         Mockito.when(userRepository.findById(99)).thenReturn(Optional.empty());
@@ -68,31 +59,11 @@ public class UserServiceImplTest {
 
     @Test
     void update() {
-        User user = new User();
-        user.setId(1);
-        user.setName("name");
-        user.setEmail("email");
-
-        User user2 = new User();
-        user2.setId(1);
-        user2.setName("update user");
-        user2.setEmail("update email");
-
-        User userWithNulls = new User();
-        userWithNulls.setId(1);
-        userWithNulls.setName(null);
-        userWithNulls.setEmail(null);
-
-        User userWithIncorrectId = new User();
-        userWithIncorrectId.setId(2);
-        userWithIncorrectId.setName("update user");
-        userWithIncorrectId.setEmail("update email");
-
-        User userWithDuplicateEmail = new User();
-        userWithDuplicateEmail.setId(3);
-        userWithDuplicateEmail.setName("update user");
-        userWithDuplicateEmail.setEmail("email");
-
+        User user = new User(1, "name", "email");
+        User user2 = new User(1, "update user", "update email");
+        User userWithNulls = new User(1, null, null);
+        User userWithIncorrectId = new User(2, "update user", "update email");
+        User userWithDuplicateEmail = new User(3, "update user", "email");
 
         Mockito.when(userRepository.findById(1)).thenReturn(Optional.of(userMapper.toUserEntity(user)));
         Mockito.when(userRepository.findById(3)).thenReturn(Optional.of(userMapper.toUserEntity(userWithDuplicateEmail)));
@@ -120,15 +91,8 @@ public class UserServiceImplTest {
 
     @Test
     void getAll() {
-        User user = new User();
-        user.setId(1);
-        user.setName("name");
-        user.setEmail("email");
-
-        User user2 = new User();
-        user2.setId(1);
-        user2.setName("user2");
-        user2.setEmail("email2");
+        User user = new User(1, "name", "email");
+        User user2 = new User(1, "user2", "email2");
 
         List<UserEntity> users = Stream.of(user, user2)
                 .map(userMapper::toUserEntity)

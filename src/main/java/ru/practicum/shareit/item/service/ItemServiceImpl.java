@@ -59,7 +59,7 @@ public class ItemServiceImpl implements ItemService {
         }
         UserEntity userEntity = userRepository.findById(userId).orElseThrow(
                 () -> new DataDoesNotExistsException(
-                        String.format("Add item failed, user with id %d npt exists", userId)));
+                        String.format("Add item failed, user with id %d not exists", userId)));
         ItemEntity res = itemMapper.toItemEntity(item);
         res.setOwner(userEntity);
         res.setRequest(itemRequestEntity);

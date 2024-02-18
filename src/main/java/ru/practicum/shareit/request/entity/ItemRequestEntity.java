@@ -1,5 +1,6 @@
 package ru.practicum.shareit.request.entity;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import ru.practicum.shareit.user.entity.UserEntity;
@@ -19,6 +20,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
+@EqualsAndHashCode(of = "id")
 @Table(name = "requests", schema = "public")
 public class ItemRequestEntity {
 

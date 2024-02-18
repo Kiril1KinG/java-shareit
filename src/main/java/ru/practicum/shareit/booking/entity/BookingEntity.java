@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.entity;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -27,6 +28,7 @@ import java.time.LocalDateTime;
 @Getter
 @ToString
 @Entity
+@EqualsAndHashCode(of = "id")
 @Table(name = "bookings", schema = "public")
 public class BookingEntity {
 
