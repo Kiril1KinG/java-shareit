@@ -243,22 +243,22 @@ class ItemServiceImplTest {
                 LocalDateTime.now());
 
         Comment commentWithBadItem = new Comment(2, "comment",
-                new Item(99, null, null, true, null, null, null,null, null),
+                new Item(99, null, null, true, null, null, null, null, null),
                 new User(1, "user", "email"),
                 LocalDateTime.now());
 
         Comment commentWithoutBooking = new Comment(2, "comment",
-                new Item(2, null, null, true, null, null, null,null, null),
+                new Item(2, null, null, true, null, null, null, null, null),
                 new User(2, null, null),
                 LocalDateTime.now());
 
         Comment repeatedComment = new Comment(3, "comment",
-                new Item(3, null, null, true, null, null, null,null, null),
+                new Item(3, null, null, true, null, null, null, null, null),
                 new User(3, null, null),
                 LocalDateTime.now());
 
         Comment comment = new Comment(4, "comment",
-                new Item(4, null, null, true, null, null, null,null, null),
+                new Item(4, null, null, true, null, null, null, null, null),
                 new User(4, null, null),
                 LocalDateTime.now());
 

@@ -51,6 +51,15 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
+    private static void checkBookingRequestTime(Booking booking) {
+        if (booking.getEnd().isBefore(booking.getStart())) {
+            throw new TimeValidationException("Incorrect time, end can not be before start");
+        }
+        if (booking.getEnd().equals(booking.getStart())) {
+            throw new TimeValidationException("Incorrect time, end can not be equal start");
+        }
+    }
+
     @Override
     public Booking add(Booking booking) {
         checkBookingRequestTime(booking);
@@ -68,7 +77,7 @@ public class BookingServiceImpl implements BookingService {
 
         if (itemEntity.getOwner().getId().equals(userEntity.getId())) {
             throw new DataDoesNotExistsException(
-                    String.format("Add booking failed, user with id %d owner", booking.getBooker().getId()));
+                    String.format("Add booking failed, user with id %d is owner", booking.getBooker().getId()));
         }
         if (bookingRepository.existsBookingByItemIdAndBookerIdAndStatus(itemEntity.getId(),
                 booking.getBooker().getId(), BookingStatus.WAITING)) {
@@ -193,15 +202,6 @@ public class BookingServiceImpl implements BookingService {
         return res.stream()
                 .map(mapper::toBooking)
                 .collect(Collectors.toList());
-    }
-
-    private void checkBookingRequestTime(Booking booking) {
-        if (booking.getEnd().isBefore(booking.getStart())) {
-            throw new TimeValidationException("Incorrect time, end can not be before start");
-        }
-        if (booking.getEnd().equals(booking.getStart())) {
-            throw new TimeValidationException("Incorrect time, end can not be equal start");
-        }
     }
 
     private Pageable getPageable(Integer from, Integer size, Sort sort) {
