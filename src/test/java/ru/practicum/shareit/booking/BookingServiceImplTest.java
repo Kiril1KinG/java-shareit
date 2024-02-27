@@ -20,6 +20,7 @@ import ru.practicum.shareit.exception.NotAvailableException;
 import ru.practicum.shareit.exception.NotOwnerException;
 import ru.practicum.shareit.exception.PaginationParamsException;
 import ru.practicum.shareit.exception.RepeatedRequestException;
+import ru.practicum.shareit.exception.TimeValidationException;
 import ru.practicum.shareit.exception.UnknownStateException;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
@@ -96,6 +97,13 @@ class BookingServiceImplTest {
                 new User(6, "user", "email"),
                 BookingStatus.WAITING);
 
+        Booking bookingWithIncorrectTime = new Booking(7,
+                LocalDateTime.of(2023, 1, 21, 20, 30),
+                LocalDateTime.of(2023, 1, 20, 20, 30),
+                new Item(7, "item", "desc", true, new User(), null, null, null, null),
+                new User(7, "user", "email"),
+                BookingStatus.WAITING);
+
 
         Mockito.when(itemRepository.findById(99)).thenReturn(Optional.empty());
 
@@ -145,6 +153,9 @@ class BookingServiceImplTest {
 
         Assertions.assertEquals(booking, bookingService.add(booking));
         Mockito.verify(bookingRepository, Mockito.times(1)).save(Mockito.any());
+
+        Assertions.assertThrows(TimeValidationException.class, () -> bookingService.add(bookingWithIncorrectTime));
+        Mockito.verify(bookingRepository, Mockito.never()).save(bookingMapper.toBookingEntity(bookingWithIncorrectTime));
     }
 
     @Test

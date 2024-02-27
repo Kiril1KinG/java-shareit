@@ -15,6 +15,7 @@ import ru.practicum.shareit.exception.DataAlreadyExistsException;
 import ru.practicum.shareit.exception.DataDoesNotExistsException;
 import ru.practicum.shareit.exception.PaginationParamsException;
 import ru.practicum.shareit.exception.WithoutBookingException;
+import ru.practicum.shareit.item.dto.ItemShortResponse;
 import ru.practicum.shareit.item.entity.ItemEntity;
 import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
@@ -303,5 +304,16 @@ class ItemServiceImplTest {
 
         Assertions.assertEquals(comment, itemService.addComment(comment));
         Mockito.verify(commentRepository, Mockito.times(1)).save(Mockito.any());
+    }
+
+    @Test
+    void itemShortResponseCoverageTest() {
+        ItemShortResponse response = new ItemShortResponse();
+        response.setId(1);
+        response.setName("name");
+        response.setAvailable(true);
+        response.setDescription("desc");
+        response.setRequestId(2);
+
     }
 }
