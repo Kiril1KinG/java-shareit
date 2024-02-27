@@ -1,4 +1,4 @@
-package ru.practicum.shareit.request.service;
+package ru.practicum.shareit.itemRequest;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +15,8 @@ import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.request.entity.ItemRequestEntity;
 import ru.practicum.shareit.request.mapper.ItemRequestMapper;
 import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.service.ItemRequestService;
+import ru.practicum.shareit.request.service.ItemRequestServiceImpl;
 import ru.practicum.shareit.request.storage.ItemRequestRepository;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
@@ -144,7 +146,7 @@ class ItemRequestServiceImplTest {
         Assertions.assertThrows(DataDoesNotExistsException.class, () -> itemRequestService.getById(1, 99));
         Mockito.verify(itemRepository, Mockito.never()).findAllByRequestId(Mockito.eq(1));
 
-        Assertions.assertEquals(itemRequest, itemRequestService.getById(1,1));
+        Assertions.assertEquals(itemRequest, itemRequestService.getById(1, 1));
         Mockito.verify(itemRepository, Mockito.times(1)).findAllByRequestId(Mockito.eq(1));
     }
 }

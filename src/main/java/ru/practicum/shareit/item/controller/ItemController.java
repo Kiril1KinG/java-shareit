@@ -50,7 +50,7 @@ public class ItemController {
 
     @GetMapping("/{itemId}")
     public ItemWithBookingsResponse get(@PathVariable Integer itemId,
-                                        @RequestHeader(value = X_SHARER_USER_ID) Integer userId) {
+                                        @RequestHeader(X_SHARER_USER_ID) Integer userId) {
         log.info("GET /items/{}", itemId);
         return itemMapper.toItemWithBookingsResponse(itemService.get(itemId, userId));
     }
@@ -77,12 +77,12 @@ public class ItemController {
     }
 
     @PatchMapping("/{id}")
-    public Item update(@RequestHeader(X_SHARER_USER_ID) Integer userId, @PathVariable Integer id,
-                       @Valid @RequestBody ItemUpdateRequest request) {
+    public ItemResponse update(@RequestHeader(X_SHARER_USER_ID) Integer userId, @PathVariable Integer id,
+                               @Valid @RequestBody ItemUpdateRequest request) {
         log.info("PATCH /items/{} X-Sharer-User-Id: {}", id, userId);
         Item item = itemMapper.toItem(request);
         item.setId(id);
-        return itemService.update(userId, item);
+        return itemMapper.toResponse(itemService.update(userId, item));
     }
 
     @PostMapping("/{itemId}/comment")
