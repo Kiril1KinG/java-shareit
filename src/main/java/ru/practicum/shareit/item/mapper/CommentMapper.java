@@ -30,10 +30,4 @@ public abstract class CommentMapper {
                 .map(this::toComment)
                 .collect(Collectors.toList());
     }
-
-    public Collection<CommentResponse> toCommentResponses(Collection<Comment> comments) {
-        return comments.stream()
-                .map(this::toResponse)
-                .collect(Collectors.toList());
-    }
 }

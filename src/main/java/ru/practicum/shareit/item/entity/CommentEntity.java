@@ -1,6 +1,8 @@
 package ru.practicum.shareit.item.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.practicum.shareit.user.entity.UserEntity;
 
@@ -20,6 +22,8 @@ import java.time.LocalDateTime;
 @Table(name = "comments", schema = "public")
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class CommentEntity {
 
     @Id

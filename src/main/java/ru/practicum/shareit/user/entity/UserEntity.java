@@ -1,7 +1,9 @@
 package ru.practicum.shareit.user.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -17,6 +19,8 @@ import javax.persistence.Table;
 @Setter
 @Entity
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @Table(name = "users", schema = "public")
 public class UserEntity {

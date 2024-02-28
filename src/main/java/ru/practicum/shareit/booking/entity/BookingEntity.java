@@ -1,7 +1,9 @@
 package ru.practicum.shareit.booking.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.Fetch;
@@ -28,6 +30,8 @@ import java.time.LocalDateTime;
 @Getter
 @ToString
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @Table(name = "bookings", schema = "public")
 public class BookingEntity {
@@ -35,7 +39,7 @@ public class BookingEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pk_booking")
     @SequenceGenerator(name = "pk_booking", schema = "public", sequenceName = "bookings_id_seq", allocationSize = 1)
-    @Column(name = "id", nullable = false)
+    @Column(name = "id", nullable = false, updatable = false, unique = true)
     private Integer id;
 
     @Column(name = "start_date", nullable = false)
