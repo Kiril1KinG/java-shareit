@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.practicum.shareit.exception.PaginationParamsException;
 import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
@@ -102,6 +103,7 @@ class ItemRequestControllerTest {
 
         Mockito.when(itemRequestService.getAll(1, null, null)).thenReturn(itemRequests);
         Mockito.when(itemRequestService.getAll(1, 0, 1)).thenReturn(List.of(itemRequests.get(0)));
+        Mockito.when(itemRequestService.getAll(1, null, 1)).thenThrow(new PaginationParamsException(""));
 
         mvc.perform(get("/requests/all")
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -128,6 +130,13 @@ class ItemRequestControllerTest {
                 .andExpect(jsonPath("[0].description").value("desc"))
                 .andExpect(jsonPath("[0].created").hasJsonPath())
                 .andExpect(jsonPath("[0].items").hasJsonPath());
+
+        mvc.perform(get("/requests/all?size=1")
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", 1)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     @Test

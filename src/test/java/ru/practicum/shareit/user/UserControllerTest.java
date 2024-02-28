@@ -9,6 +9,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import ru.practicum.shareit.exception.DataAlreadyExistsException;
+import ru.practicum.shareit.exception.DataDoesNotExistsException;
 import ru.practicum.shareit.user.controller.UserController;
 import ru.practicum.shareit.user.dto.UserCreateRequest;
 import ru.practicum.shareit.user.dto.UserUpdateRequest;
@@ -60,6 +62,7 @@ class UserControllerTest {
         User user = new User(1, "user", "email@yandex.ru");
 
         Mockito.when(userService.get(1)).thenReturn(user);
+        Mockito.when(userService.get(99)).thenThrow(new DataDoesNotExistsException(""));
 
         mvc.perform(MockMvcRequestBuilders.get("/users/1")
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -69,6 +72,12 @@ class UserControllerTest {
                 .andExpect(jsonPath("id").value(1))
                 .andExpect(jsonPath("name").value("user"))
                 .andExpect(jsonPath("email").value("email@yandex.ru"));
+
+        mvc.perform(MockMvcRequestBuilders.get("/users/99")
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -98,6 +107,8 @@ class UserControllerTest {
         User user = new User(1, "update user", "updateEmail@yandex.ru");
 
         Mockito.when(userService.update(Mockito.any())).thenReturn(user);
+        Mockito.when(userService.update(new User(99, "update user", "updateEmail@yandex.ru")))
+                .thenThrow(new DataAlreadyExistsException(""));
 
         mvc.perform(patch("/users/1")
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -108,6 +119,13 @@ class UserControllerTest {
                 .andExpect(jsonPath("id").value(1))
                 .andExpect(jsonPath("name").value("update user"))
                 .andExpect(jsonPath("email").value("updateEmail@yandex.ru"));
+
+        mvc.perform(patch("/users/99")
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict());
     }
 
     @Test

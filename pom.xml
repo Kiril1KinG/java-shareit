@@ -203,6 +203,8 @@
                     <configuration>
                         <excludes>
                             <exclude>**/generated-sources/**/*</exclude>
+                            <exclude>**/mapper/*</exclude>
+                            <exclude>**/BookingShortDto.java</exclude>
                         </excludes>
                         <output>file</output>
                     </configuration>
