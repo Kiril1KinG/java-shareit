@@ -1,4 +1,4 @@
-package ru.practicum.shareit.booking.storage;
+package ru.practicum.shareit.booking;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.booking.entity.BookingEntity;
 import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.booking.storage.BookingRepository;
 import ru.practicum.shareit.item.entity.ItemEntity;
 import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.user.entity.UserEntity;
