@@ -207,6 +207,9 @@ class ItemControllerTest {
         CommentRequest request = new CommentRequest();
         request.setText("comment");
 
+        CommentRequest badRequest = new CommentRequest();
+        badRequest.setText("");
+
         Comment comment = new Comment(1, "comment", new Item(),
                 new User(1, "name", "email"), LocalDateTime.now());
 
@@ -223,5 +226,15 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$.text").value("comment"))
                 .andExpect(jsonPath("$.authorName").hasJsonPath())
                 .andExpect(jsonPath("$.created").hasJsonPath());
+
+        mvc.perform(post("/items/1/comment")
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(objectMapper.writeValueAsString(badRequest))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Sharer-User-Id", 1)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
+
+
 }
