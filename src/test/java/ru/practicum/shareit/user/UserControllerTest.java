@@ -9,6 +9,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import ru.practicum.shareit.classBuilder.UserBuilder;
 import ru.practicum.shareit.exception.DataAlreadyExistsException;
 import ru.practicum.shareit.exception.DataDoesNotExistsException;
 import ru.practicum.shareit.user.controller.UserController;
@@ -21,6 +22,7 @@ import ru.practicum.shareit.user.service.UserService;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -41,10 +43,12 @@ class UserControllerTest {
 
     @Test
     void add() throws Exception {
-        UserCreateRequest request = new UserCreateRequest("user", "email@yandex.ru");
-        User user = new User(1, "user", "email@yandex.ru");
+        UserCreateRequest request = new UserCreateRequest();
+        request.setName("user");
+        request.setEmail("email@yandex.ru");
+        User user = UserBuilder.buildUser(1, "user", "email@yandex.ru");
 
-        when(userService.add(Mockito.any())).thenReturn(user);
+        when(userService.add(any())).thenReturn(user);
 
         mvc.perform(post("/users")
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -60,7 +64,7 @@ class UserControllerTest {
 
     @Test
     void get() throws Exception {
-        User user = new User(1, "user", "email@yandex.ru");
+        User user = UserBuilder.buildUser(1, "user", "email@yandex.ru");
 
         when(userService.get(1)).thenReturn(user);
         when(userService.get(99)).thenThrow(new DataDoesNotExistsException(""));
@@ -84,8 +88,8 @@ class UserControllerTest {
     @Test
     void getAll() throws Exception {
         List<User> users = List.of(
-                new User(1, "user", "email@yandex.ru"),
-                new User(2, "user2", "email2@yandex.ru"));
+                UserBuilder.buildUser(1, "user", "email@yandex.ru"),
+                UserBuilder.buildUser(2, "user2", "email2@yandex.ru"));
 
         when(userService.getAll()).thenReturn(users);
 
@@ -104,11 +108,13 @@ class UserControllerTest {
 
     @Test
     void update() throws Exception {
-        UserUpdateRequest request = new UserUpdateRequest("update user", "updateEmail@yandex.ru");
-        User user = new User(1, "update user", "updateEmail@yandex.ru");
+        UserUpdateRequest request = new UserUpdateRequest();
+        request.setName("update user");
+        request.setEmail("updateEmail@yandex.ru");
+        User user = UserBuilder.buildUser(1, "update user", "updateEmail@yandex.ru");
 
-        when(userService.update(Mockito.any())).thenReturn(user);
-        when(userService.update(new User(99, "update user", "updateEmail@yandex.ru")))
+        when(userService.update(any())).thenReturn(user);
+        when(userService.update(UserBuilder.buildUser(99, "update user", "updateEmail@yandex.ru")))
                 .thenThrow(new DataAlreadyExistsException(""));
 
         mvc.perform(patch("/users/1")

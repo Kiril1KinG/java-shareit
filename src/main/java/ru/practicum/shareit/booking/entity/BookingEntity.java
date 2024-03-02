@@ -1,9 +1,7 @@
 package ru.practicum.shareit.booking.entity;
 
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.Fetch;
@@ -30,8 +28,6 @@ import java.time.LocalDateTime;
 @Getter
 @ToString
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @Table(name = "bookings", schema = "public")
 public class BookingEntity {

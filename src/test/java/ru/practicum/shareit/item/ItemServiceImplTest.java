@@ -2,13 +2,20 @@ package ru.practicum.shareit.item;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import ru.practicum.shareit.booking.entity.BookingEntity;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.booking.storage.BookingRepository;
+import ru.practicum.shareit.classBuilder.CommentBuilder;
+import ru.practicum.shareit.classBuilder.ItemBuilder;
+import ru.practicum.shareit.classBuilder.ItemRequestBuilder;
+import ru.practicum.shareit.classBuilder.UserBuilder;
 import ru.practicum.shareit.exception.DataAlreadyExistsException;
 import ru.practicum.shareit.exception.DataDoesNotExistsException;
 import ru.practicum.shareit.exception.PaginationParamsException;
@@ -21,14 +28,11 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.item.service.ItemServiceImpl;
-import ru.practicum.shareit.item.storage.BookingRepository;
 import ru.practicum.shareit.item.storage.CommentRepository;
 import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.request.mapper.ItemRequestMapper;
-import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.storage.ItemRequestRepository;
 import ru.practicum.shareit.user.mapper.UserMapper;
-import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserRepository;
 
 import java.time.LocalDateTime;
@@ -38,9 +42,17 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class ItemServiceImplTest {
 
     private final ItemRequestMapper itemRequestMapper = Mappers.getMapper(ItemRequestMapper.class);
@@ -57,11 +69,11 @@ class ItemServiceImplTest {
 
     @BeforeEach
     void setup() {
-        itemRepository = Mockito.mock(ItemRepository.class);
-        userRepository = Mockito.mock(UserRepository.class);
-        itemRequestRepository = Mockito.mock(ItemRequestRepository.class);
-        bookingRepository = Mockito.mock(BookingRepository.class);
-        commentRepository = Mockito.mock(CommentRepository.class);
+        itemRepository = mock(ItemRepository.class);
+        userRepository = mock(UserRepository.class);
+        itemRequestRepository = mock(ItemRequestRepository.class);
+        bookingRepository = mock(BookingRepository.class);
+        commentRepository = mock(CommentRepository.class);
         itemMapper = Mappers.getMapper(ItemMapper.class);
         bookingMapper = Mappers.getMapper(BookingMapper.class);
         commentMapper = Mappers.getMapper(CommentMapper.class);
@@ -71,17 +83,17 @@ class ItemServiceImplTest {
 
     @Test
     void add() {
-        Item itemWithIncorrectRequestId = new Item(1, "item", "desc", true, null,
-                new ItemRequest(99, null, null, null, null),
+        Item itemWithIncorrectRequestId = ItemBuilder.buildItem(1, "item", "desc", true, null,
+                ItemRequestBuilder.buildItemRequest(99, null, null, null, null),
                 null, null, null);
 
-        Item item = new Item(2, "item", "desc", true, null,
-                new ItemRequest(1, null, null, null, null),
+        Item item = ItemBuilder.buildItem(2, "item", "desc", true, null,
+                ItemRequestBuilder.buildItemRequest(1, null, null, null, null),
                 null, null, null);
 
-        Item item2 = new Item(3, "item", "desc", true,
-                new User(1, "user", "email"),
-                new ItemRequest(2, null, null, null, null),
+        Item item2 = ItemBuilder.buildItem(3, "item", "desc", true,
+                UserBuilder.buildUser(1, "user", "email"),
+                ItemRequestBuilder.buildItemRequest(2, null, null, null, null),
                 null, null, null);
 
         ItemEntity item2Entity = itemMapper.toItemEntity(item2);
@@ -97,18 +109,18 @@ class ItemServiceImplTest {
 
 
         assertThrows(DataDoesNotExistsException.class, () -> itemService.add(1, itemWithIncorrectRequestId));
-        verify(itemRepository, Mockito.never()).save(itemMapper.toItemEntity(itemWithIncorrectRequestId));
+        verify(itemRepository, never()).save(itemMapper.toItemEntity(itemWithIncorrectRequestId));
         assertThrows(DataDoesNotExistsException.class, () -> itemService.add(99, item));
-        verify(itemRepository, Mockito.never()).save(itemMapper.toItemEntity(item));
+        verify(itemRepository, never()).save(itemMapper.toItemEntity(item));
         assertEquals(item2, itemService.add(1, item2));
-        verify(itemRepository, Mockito.times(1)).save(item2Entity);
+        verify(itemRepository, times(1)).save(item2Entity);
     }
 
     @Test
     void get() {
-        Item item = new Item(1, "item", "desc", true,
-                new User(1, "user", "email"),
-                new ItemRequest(1, null, null, null, null),
+        Item item = ItemBuilder.buildItem(1, "item", "desc", true,
+                UserBuilder.buildUser(1, "user", "email"),
+                ItemRequestBuilder.buildItemRequest(1, null, null, null, null),
                 null, null, null);
         ItemEntity itemEntity = itemMapper.toItemEntity(item);
         BookingEntity bookingEntity = new BookingEntity();
@@ -118,7 +130,7 @@ class ItemServiceImplTest {
         when(itemRepository.findById(99)).thenReturn(Optional.empty());
         when(itemRepository.findById(1)).thenReturn(Optional.of(itemEntity));
         when(commentRepository.findAllByItemId(item.getId())).thenReturn(Collections.emptyList());
-        when(bookingRepository.findLastAndNextBookingByItemId(Mockito.anyInt(), Mockito.any(LocalDateTime.class)))
+        when(bookingRepository.findLastAndNextBookingByItemId(anyInt(), any(LocalDateTime.class)))
                 .thenReturn(List.of(bookingEntity));
 
 
@@ -131,21 +143,21 @@ class ItemServiceImplTest {
         Item empty = new Item();
         ItemEntity emptyEntity = itemMapper.toItemEntity(empty);
 
-        Item item = new Item(1, "item", "desc", true,
-                new User(1, "user", "email"),
-                new ItemRequest(1, null, null, null, null),
+        Item item = ItemBuilder.buildItem(1, "item", "desc", true,
+                UserBuilder.buildUser(1, "user", "email"),
+                ItemRequestBuilder.buildItemRequest(1, null, null, null, null),
                 null, null, null);
         ItemEntity itemEntity = itemMapper.toItemEntity(item);
 
-        Item itemForUpdate = new Item(2, "item", "desc", true,
-                new User(2, "user", "email"),
-                new ItemRequest(2, null, null, null, null),
+        Item itemForUpdate = ItemBuilder.buildItem(2, "item", "desc", true,
+                UserBuilder.buildUser(2, "user", "email"),
+                ItemRequestBuilder.buildItemRequest(2, null, null, null, null),
                 null, null, null);
         ItemEntity itemForUpdateEntity = itemMapper.toItemEntity(itemForUpdate);
 
-        Item update = new Item(2, "item", "new desc", false,
-                new User(2, "user", "email"),
-                new ItemRequest(2, null, null, null, null),
+        Item update = ItemBuilder.buildItem(2, "item", "new desc", false,
+                UserBuilder.buildUser(2, "user", "email"),
+                ItemRequestBuilder.buildItemRequest(2, null, null, null, null),
                 null, null, null);
         ItemEntity updateEntity = itemMapper.toItemEntity(update);
 
@@ -159,28 +171,28 @@ class ItemServiceImplTest {
 
 
         assertThrows(DataDoesNotExistsException.class, () -> itemService.update(1, empty));
-        verify(itemRepository, Mockito.never()).save(emptyEntity);
+        verify(itemRepository, never()).save(emptyEntity);
 
         assertThrows(DataDoesNotExistsException.class, () -> itemService.update(99, item));
 
         assertThrows(DataDoesNotExistsException.class, () -> itemService.update(3, item));
-        verify(itemRepository, Mockito.never()).save(itemEntity);
+        verify(itemRepository, never()).save(itemEntity);
 
         assertEquals(update, itemService.update(2, update));
-        verify(itemRepository, Mockito.times(1)).save(updateEntity);
+        verify(itemRepository, times(1)).save(updateEntity);
     }
 
     @Test
     void delete() {
-        Item itemWithIncorrectOwnerId = new Item(1, "item", "desc", true,
-                new User(99, "user", "email"),
-                new ItemRequest(1, null, null, null, null),
+        Item itemWithIncorrectOwnerId = ItemBuilder.buildItem(1, "item", "desc", true,
+                UserBuilder.buildUser(99, "user", "email"),
+                ItemRequestBuilder.buildItemRequest(1, null, null, null, null),
                 null, null, null);
         ItemEntity itemEntityWithIncorrectOwnerId = itemMapper.toItemEntity(itemWithIncorrectOwnerId);
 
-        Item item = new Item(2, "item", "desc", true,
-                new User(2, "user", "email"),
-                new ItemRequest(2, null, null, null, null),
+        Item item = ItemBuilder.buildItem(2, "item", "desc", true,
+                UserBuilder.buildUser(2, "user", "email"),
+                ItemRequestBuilder.buildItemRequest(2, null, null, null, null),
                 null, null, null);
         ItemEntity itemEntity = itemMapper.toItemEntity(item);
 
@@ -191,82 +203,82 @@ class ItemServiceImplTest {
 
 
         assertThrows(DataDoesNotExistsException.class, () -> itemService.delete(1, 99));
-        verify(itemRepository, Mockito.never()).deleteById(1);
+        verify(itemRepository, never()).deleteById(1);
 
         assertThrows(DataDoesNotExistsException.class, () -> itemService.delete(1, 1));
-        verify(itemRepository, Mockito.never()).deleteById(1);
+        verify(itemRepository, never()).deleteById(1);
 
         itemService.delete(2, 2);
-        verify(itemRepository, Mockito.times(1)).deleteById(2);
+        verify(itemRepository, times(1)).deleteById(2);
     }
 
     @Test
     void search() {
-        Item item = new Item(1, "item", "desc", true,
-                new User(1, "user", "email"),
-                new ItemRequest(1, null, null, null, null),
+        Item item = ItemBuilder.buildItem(1, "item", "desc", true,
+                UserBuilder.buildUser(1, "user", "email"),
+                ItemRequestBuilder.buildItemRequest(1, null, null, null, null),
                 null, null, null);
         ItemEntity itemEntity = itemMapper.toItemEntity(item);
         Page<ItemEntity> page = new PageImpl<>(List.of(itemEntity));
 
 
-        when(itemRepository.search(Mockito.anyString(), Mockito.any())).thenReturn(page);
+        when(itemRepository.search(eq("search"), any())).thenReturn(page);
 
 
         assertEquals(Collections.emptyList(), itemService.search(" ", 0, 2));
-        verify(itemRepository, Mockito.never()).search(Mockito.anyString(), Mockito.any());
+        verify(itemRepository, never()).search(anyString(), any());
 
         assertThrows(PaginationParamsException.class, () -> itemService.search("text", 0, null));
-        verify(itemRepository, Mockito.never()).search(Mockito.anyString(), Mockito.any());
+        verify(itemRepository, never()).search(anyString(), any());
 
         assertEquals(List.of(item), itemService.search("search", 0, 1));
-        verify(itemRepository, Mockito.times(1)).search(Mockito.anyString(), Mockito.any());
+        verify(itemRepository, times(1)).search(anyString(), any());
     }
 
     @Test
     void getByOwnerId() {
-        Item item = new Item(1, "item", "desc", true,
-                new User(1, "user", "email"),
+        Item item = ItemBuilder.buildItem(1, "item", "desc", true,
+                UserBuilder.buildUser(1, "user", "email"),
                 null, null, null, null);
         ItemEntity itemEntity = itemMapper.toItemEntity(item);
         Page<ItemEntity> page = new PageImpl<>(List.of(itemEntity));
 
 
-        when(itemRepository.findAllByOwnerId(Mockito.anyInt(), Mockito.any())).thenReturn(page);
+        when(itemRepository.findAllByOwnerId(anyInt(), any())).thenReturn(page);
 
 
         assertThrows(PaginationParamsException.class, () -> itemService.getByOwnerId(99, 0, null));
-        verify(itemRepository, Mockito.never()).findAllByOwnerId(Mockito.anyInt(), Mockito.any());
+        verify(itemRepository, never()).findAllByOwnerId(anyInt(), any());
 
         assertEquals(List.of(item), itemService.getByOwnerId(1, 0, 1));
-        verify(itemRepository, Mockito.times(1)).findAllByOwnerId(Mockito.anyInt(), Mockito.any());
+        verify(itemRepository, times(1)).findAllByOwnerId(anyInt(), any());
     }
 
     @Test
     void addComment() {
-        Comment commentWithBadAuthor = new Comment(1, "comment",
+        Comment commentWithBadAuthor = CommentBuilder.buildComment(1, "comment",
                 new Item(),
-                new User(99, null, null),
+                UserBuilder.buildUser(99, null, null),
                 LocalDateTime.now());
 
-        Comment commentWithBadItem = new Comment(2, "comment",
-                new Item(99, null, null, true, null, null, null, null, null),
-                new User(1, "user", "email"),
+        Comment commentWithBadItem = CommentBuilder.buildComment(2, "comment",
+                ItemBuilder.buildItem(99, null, null, true, null, null, null, null, null),
+                UserBuilder.buildUser(1, "user", "email"),
                 LocalDateTime.now());
 
-        Comment commentWithoutBooking = new Comment(2, "comment",
-                new Item(2, null, null, true, null, null, null, null, null),
-                new User(2, null, null),
+        Comment commentWithoutBooking = CommentBuilder.buildComment(2, "comment",
+                ItemBuilder.buildItem(2, null, null, true, null, null, null, null, null),
+                UserBuilder.buildUser(2, null, null),
                 LocalDateTime.now());
 
-        Comment repeatedComment = new Comment(3, "comment",
-                new Item(3, null, null, true, null, null, null, null, null),
-                new User(3, null, null),
+        Comment repeatedComment = CommentBuilder.buildComment(3, "comment",
+                ItemBuilder.buildItem(3, null, null, true, null, null, null, null, null),
+                UserBuilder.buildUser(3, null, null),
                 LocalDateTime.now());
 
-        Comment comment = new Comment(4, "comment",
-                new Item(4, null, null, true, null, null, null, null, null),
-                new User(4, null, null),
+        Comment comment = CommentBuilder.buildComment(4, "comment",
+                ItemBuilder.buildItem(4, null, null, true, null, null, null, null, null),
+                UserBuilder.buildUser(4, null, null),
                 LocalDateTime.now());
 
 
@@ -277,37 +289,37 @@ class ItemServiceImplTest {
 
         when(userRepository.findById(2)).thenReturn(Optional.of(userMapper.toUserEntity(commentWithoutBooking.getAuthor())));
         when(itemRepository.findById(2)).thenReturn(Optional.of(itemMapper.toItemEntity(commentWithoutBooking.getItem())));
-        when(bookingRepository.existsBookingByItemIdAndBookerIdAndStatusAndEndIsBefore(Mockito.eq(2),
-                Mockito.eq(2), Mockito.eq(BookingStatus.APPROVED), Mockito.any(LocalDateTime.class))).thenReturn(false);
+        when(bookingRepository.existsBookingByItemIdAndBookerIdAndStatusAndEndIsBefore(eq(2),
+                eq(2), eq(BookingStatus.APPROVED), any(LocalDateTime.class))).thenReturn(false);
 
         when(userRepository.findById(3)).thenReturn(Optional.of(userMapper.toUserEntity(repeatedComment.getAuthor())));
         when(itemRepository.findById(3)).thenReturn(Optional.of(itemMapper.toItemEntity(repeatedComment.getItem())));
-        when(bookingRepository.existsBookingByItemIdAndBookerIdAndStatusAndEndIsBefore(Mockito.eq(3),
-                Mockito.eq(3), Mockito.eq(BookingStatus.APPROVED), Mockito.any(LocalDateTime.class))).thenReturn(true);
+        when(bookingRepository.existsBookingByItemIdAndBookerIdAndStatusAndEndIsBefore(eq(3),
+                eq(3), eq(BookingStatus.APPROVED), any(LocalDateTime.class))).thenReturn(true);
         when(commentRepository.existsByItemIdAndAuthorId(3, 3)).thenReturn(true);
 
         when(userRepository.findById(4)).thenReturn(Optional.of(userMapper.toUserEntity(repeatedComment.getAuthor())));
         when(itemRepository.findById(4)).thenReturn(Optional.of(itemMapper.toItemEntity(repeatedComment.getItem())));
-        when(bookingRepository.existsBookingByItemIdAndBookerIdAndStatusAndEndIsBefore(Mockito.eq(4),
-                Mockito.eq(4), Mockito.eq(BookingStatus.APPROVED), Mockito.any(LocalDateTime.class))).thenReturn(true);
+        when(bookingRepository.existsBookingByItemIdAndBookerIdAndStatusAndEndIsBefore(eq(4),
+                eq(4), eq(BookingStatus.APPROVED), any(LocalDateTime.class))).thenReturn(true);
         when(commentRepository.existsByItemIdAndAuthorId(4, 4)).thenReturn(false);
-        when(commentRepository.save(Mockito.any())).thenReturn(commentMapper.toCommentEntity(comment));
+        when(commentRepository.save(any())).thenReturn(commentMapper.toCommentEntity(comment));
 
 
         assertThrows(DataDoesNotExistsException.class, () -> itemService.addComment(commentWithBadAuthor));
-        verify(commentRepository, Mockito.never()).save(Mockito.any());
+        verify(commentRepository, never()).save(any());
 
         assertThrows(DataDoesNotExistsException.class, () -> itemService.addComment(commentWithBadItem));
-        verify(commentRepository, Mockito.never()).save(Mockito.any());
+        verify(commentRepository, never()).save(any());
 
         assertThrows(WithoutBookingException.class, () -> itemService.addComment(commentWithoutBooking));
-        verify(commentRepository, Mockito.never()).save(Mockito.any());
+        verify(commentRepository, never()).save(any());
 
         assertThrows(DataAlreadyExistsException.class, () -> itemService.addComment(repeatedComment));
-        verify(commentRepository, Mockito.never()).save(Mockito.any());
+        verify(commentRepository, never()).save(any());
 
         assertEquals(comment, itemService.addComment(comment));
-        verify(commentRepository, Mockito.times(1)).save(Mockito.any());
+        verify(commentRepository, times(1)).save(any());
     }
 
     @Test

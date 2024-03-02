@@ -205,7 +205,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private Pageable getPageable(Integer from, Integer size, Sort sort) {
-        if ((from == null & size != null) & (size == null & from != null)) {
+        if ((from == null & size != null) || (size == null & from != null)) {
             throw new PaginationParamsException("Get bookings failed, one of pagination params cannot be null");
         }
         if (from != null && size != null) {

@@ -8,6 +8,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.practicum.shareit.classBuilder.ItemRequestBuilder;
+import ru.practicum.shareit.classBuilder.UserBuilder;
 import ru.practicum.shareit.exception.PaginationParamsException;
 import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
@@ -17,13 +19,13 @@ import ru.practicum.shareit.request.dto.ItemRequestRequest;
 import ru.practicum.shareit.request.mapper.ItemRequestMapper;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.service.ItemRequestService;
-import ru.practicum.shareit.user.model.User;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -45,12 +47,16 @@ class ItemRequestControllerTest {
     @Test
     void create() throws Exception {
         LocalDateTime now = LocalDateTime.now();
-        ItemRequestRequest request = new ItemRequestRequest("desc", null, now);
-        ItemRequest itemRequest = new ItemRequest(1, "desc",
-                new User(1, "name", "email"),
+        ItemRequestRequest request = new ItemRequestRequest();
+        request.setDescription("desc");
+        request.setRequestor(null);
+        request.setCreated(now);
+
+        ItemRequest itemRequest = ItemRequestBuilder.buildItemRequest(1, "desc",
+                UserBuilder.buildUser(1, "name", "email"),
                 now, new ArrayList<>());
 
-        when(itemRequestService.create(Mockito.any())).thenReturn(itemRequest);
+        when(itemRequestService.create(any())).thenReturn(itemRequest);
 
         mvc.perform(post("/requests")
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -67,11 +73,11 @@ class ItemRequestControllerTest {
     @Test
     void getAllForUser() throws Exception {
         List<ItemRequest> itemRequests = List.of(
-                new ItemRequest(1, "desc",
-                        new User(1, "name", "email"),
+                ItemRequestBuilder.buildItemRequest(1, "desc",
+                        UserBuilder.buildUser(1, "name", "email"),
                         LocalDateTime.now(), List.of(new Item())),
-                new ItemRequest(2, "desc2",
-                        new User(1, "name", "email"),
+                ItemRequestBuilder.buildItemRequest(2, "desc2",
+                        UserBuilder.buildUser(1, "name", "email"),
                         LocalDateTime.now(), new ArrayList<>()));
 
         when(itemRequestService.getAllForUser(1)).thenReturn(itemRequests);
@@ -95,11 +101,11 @@ class ItemRequestControllerTest {
     @Test
     void getAll() throws Exception {
         List<ItemRequest> itemRequests = List.of(
-                new ItemRequest(1, "desc",
-                        new User(1, "name", "email"),
+                ItemRequestBuilder.buildItemRequest(1, "desc",
+                        UserBuilder.buildUser(1, "name", "email"),
                         LocalDateTime.now(), new ArrayList<>()),
-                new ItemRequest(2, "desc2",
-                        new User(1, "name", "email"),
+                ItemRequestBuilder.buildItemRequest(2, "desc2",
+                        UserBuilder.buildUser(1, "name", "email"),
                         LocalDateTime.now(), new ArrayList<>()));
 
         when(itemRequestService.getAll(1, null, null)).thenReturn(itemRequests);
@@ -142,8 +148,8 @@ class ItemRequestControllerTest {
 
     @Test
     void getById() throws Exception {
-        ItemRequest itemRequest = new ItemRequest(1, "desc",
-                new User(1, "name", "email"),
+        ItemRequest itemRequest = ItemRequestBuilder.buildItemRequest(1, "desc",
+                UserBuilder.buildUser(1, "name", "email"),
                 LocalDateTime.now(), new ArrayList<>());
 
         when(itemRequestService.getById(1, 1)).thenReturn(itemRequest);

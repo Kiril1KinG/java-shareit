@@ -14,8 +14,10 @@ import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.service.BookingService;
+import ru.practicum.shareit.classBuilder.BookingBuilder;
+import ru.practicum.shareit.classBuilder.ItemBuilder;
+import ru.practicum.shareit.classBuilder.UserBuilder;
 import ru.practicum.shareit.exception.ErrorHandler;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import java.nio.charset.StandardCharsets;
@@ -23,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -47,13 +50,17 @@ class BookingControllerTest {
     void add() throws Exception {
         LocalDateTime start = LocalDateTime.now().plusDays(1);
         LocalDateTime end = LocalDateTime.now().plusDays(2);
-        BookingRequest bookingRequest = new BookingRequest(7, start, end);
-        Booking booking = new Booking(1, start, end,
-                new Item(2, "item", "desc", true, new User(), null, null, null, new ArrayList<>()),
-                new User(3, "name", "email"),
+        BookingRequest bookingRequest = new BookingRequest();
+        bookingRequest.setItemId(7);
+        bookingRequest.setStart(start);
+        bookingRequest.setEnd(end);
+
+        Booking booking = BookingBuilder.buildBooking(1, start, end,
+                ItemBuilder.buildItem(2, "item", "desc", true, new User(), null, null, null, new ArrayList<>()),
+                UserBuilder.buildUser(3, "name", "email"),
                 BookingStatus.WAITING);
 
-        when(bookingService.add(Mockito.any()))
+        when(bookingService.add(any()))
                 .thenReturn(booking);
 
         mvc.perform(post("/bookings")
@@ -74,9 +81,9 @@ class BookingControllerTest {
 
     @Test
     void approveOrReject() throws Exception {
-        Booking booking = new Booking(1, LocalDateTime.now(), LocalDateTime.now().plusDays(1),
-                new Item(1, "item", "desc", true, new User(), null, null, null, new ArrayList<>()),
-                new User(1, "name", "email"),
+        Booking booking = BookingBuilder.buildBooking(1, LocalDateTime.now(), LocalDateTime.now().plusDays(1),
+                ItemBuilder.buildItem(1, "item", "desc", true, new User(), null, null, null, new ArrayList<>()),
+                UserBuilder.buildUser(1, "name", "email"),
                 BookingStatus.APPROVED);
 
         when(bookingService.approveBooking(1, 1, true))
@@ -92,9 +99,9 @@ class BookingControllerTest {
 
     @Test
     void getById() throws Exception {
-        Booking booking = new Booking(1, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2),
-                new Item(2, "item", "desc", true, new User(), null, null, null, new ArrayList<>()),
-                new User(3, "name", "email"),
+        Booking booking = BookingBuilder.buildBooking(1, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2),
+                ItemBuilder.buildItem(2, "item", "desc", true, new User(), null, null, null, new ArrayList<>()),
+                UserBuilder.buildUser(3, "name", "email"),
                 BookingStatus.WAITING);
 
         when(bookingService.getById(1, 3)).thenReturn(booking);
@@ -117,13 +124,13 @@ class BookingControllerTest {
     @Test
     void getAllByState() throws Exception {
         List<Booking> bookings = List.of(
-                new Booking(1, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2),
-                        new Item(2, "item", "desc", true, new User(), null, null, null, new ArrayList<>()),
-                        new User(3, "name", "email"),
+                BookingBuilder.buildBooking(1, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2),
+                        ItemBuilder.buildItem(2, "item", "desc", true, new User(), null, null, null, new ArrayList<>()),
+                        UserBuilder.buildUser(3, "name", "email"),
                         BookingStatus.WAITING),
-                new Booking(4, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2),
-                        new Item(3, "item2", "desc2", true, new User(), null, null, null, new ArrayList<>()),
-                        new User(5, "name2", "email2"),
+                BookingBuilder.buildBooking(4, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2),
+                        ItemBuilder.buildItem(3, "item2", "desc2", true, new User(), null, null, null, new ArrayList<>()),
+                        UserBuilder.buildUser(5, "name2", "email2"),
                         BookingStatus.WAITING));
 
         when(bookingService.getAllBookingsByState(3, "ALL", 0, 10)).thenReturn(bookings);
@@ -175,13 +182,13 @@ class BookingControllerTest {
     @Test
     void getAllBookingsForItemsByState() throws Exception {
         List<Booking> bookings = List.of(
-                new Booking(1, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2),
-                        new Item(2, "item", "desc", true, new User(), null, null, null, new ArrayList<>()),
-                        new User(3, "name", "email"),
+                BookingBuilder.buildBooking(1, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2),
+                        ItemBuilder.buildItem(2, "item", "desc", true, new User(), null, null, null, new ArrayList<>()),
+                        UserBuilder.buildUser(3, "name", "email"),
                         BookingStatus.WAITING),
-                new Booking(4, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2),
-                        new Item(3, "item2", "desc2", true, new User(), null, null, null, new ArrayList<>()),
-                        new User(5, "name2", "email2"),
+                BookingBuilder.buildBooking(4, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2),
+                        ItemBuilder.buildItem(3, "item2", "desc2", true, new User(), null, null, null, new ArrayList<>()),
+                        UserBuilder.buildUser(5, "name2", "email2"),
                         BookingStatus.WAITING));
 
         when(bookingService.getAllBookingsForItemsByState(3, "ALL", 0, 10)).thenReturn(bookings);

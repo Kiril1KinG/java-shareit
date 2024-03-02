@@ -10,6 +10,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import ru.practicum.shareit.classBuilder.CommentBuilder;
+import ru.practicum.shareit.classBuilder.ItemBuilder;
+import ru.practicum.shareit.classBuilder.UserBuilder;
 import ru.practicum.shareit.item.controller.ItemController;
 import ru.practicum.shareit.item.dto.CommentRequest;
 import ru.practicum.shareit.item.dto.ItemCreateRequest;
@@ -19,12 +22,13 @@ import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
-import ru.practicum.shareit.user.model.User;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -44,13 +48,17 @@ class ItemControllerTest {
 
     @Test
     void add() throws Exception {
-        Item item = new Item(1, "item", "desc", true,
-                new User(1, "user", "email"),
+        Item item = ItemBuilder.buildItem(1, "item", "desc", true,
+                UserBuilder.buildUser(1, "user", "email"),
                 null, null, null, null);
 
-        ItemCreateRequest request = new ItemCreateRequest("item", "desc", true, null);
+        ItemCreateRequest request = new ItemCreateRequest();
+        request.setName("item");
+        request.setDescription("desc");
+        request.setAvailable(true);
+        request.setRequestId(null);
 
-        when(itemService.add(Mockito.eq(1), Mockito.any())).thenReturn(item);
+        when(itemService.add(eq(1), any())).thenReturn(item);
 
         mvc.perform(post("/items")
                         .content(objectMapper.writeValueAsString(request))
@@ -67,8 +75,8 @@ class ItemControllerTest {
 
     @Test
     void get() throws Exception {
-        Item item = new Item(1, "item", "desc", true,
-                new User(1, "user", "email"),
+        Item item = ItemBuilder.buildItem(1, "item", "desc", true,
+                UserBuilder.buildUser(1, "user", "email"),
                 null, null, null, null);
 
         when(itemService.get(1, 1)).thenReturn(item);
@@ -90,11 +98,11 @@ class ItemControllerTest {
 
     @Test
     void getAllForOwner() throws Exception {
-        List<Item> items = List.of(new Item(1, "item", "desc", true,
-                        new User(1, "user", "email"),
+        List<Item> items = List.of(ItemBuilder.buildItem(1, "item", "desc", true,
+                        UserBuilder.buildUser(1, "user", "email"),
                         null, null, null, null),
-                new Item(2, "item2", "desc2", true,
-                        new User(1, "user", "email"),
+                ItemBuilder.buildItem(2, "item2", "desc2", true,
+                        UserBuilder.buildUser(1, "user", "email"),
                         null, null, null, null));
 
         when(itemService.getByOwnerId(1, 0, 1)).thenReturn(List.of(items.get(0)));
@@ -138,11 +146,11 @@ class ItemControllerTest {
 
     @Test
     void search() throws Exception {
-        List<Item> items = List.of(new Item(1, "item", "desc", true,
-                        new User(1, "user", "email"),
+        List<Item> items = List.of(ItemBuilder.buildItem(1, "item", "desc", true,
+                        UserBuilder.buildUser(1, "user", "email"),
                         null, null, null, null),
-                new Item(2, "other item", "other desc", true,
-                        new User(1, "user", "email"),
+                ItemBuilder.buildItem(2, "other item", "other desc", true,
+                        UserBuilder.buildUser(1, "user", "email"),
                         null, null, null, null));
 
         when(itemService.search("other", 0, 1)).thenReturn(List.of(items.get(0)));
@@ -178,12 +186,15 @@ class ItemControllerTest {
 
     @Test
     void update() throws Exception {
-        ItemUpdateRequest request = new ItemUpdateRequest("update name", "update desc", true);
-        Item item = new Item(1, "update name", "update desc", true,
-                new User(1, "user", "email"),
+        ItemUpdateRequest request = new ItemUpdateRequest();
+        request.setName("update name");
+        request.setDescription("update desc");
+        request.setAvailable(true);
+        Item item = ItemBuilder.buildItem(1, "update name", "update desc", true,
+                UserBuilder.buildUser(1, "user", "email"),
                 null, null, null, null);
 
-        when(itemService.update(Mockito.eq(1), Mockito.any())).thenReturn(item);
+        when(itemService.update(eq(1), any())).thenReturn(item);
 
         mvc.perform(patch("/items/1")
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -209,10 +220,10 @@ class ItemControllerTest {
         CommentRequest badRequest = new CommentRequest();
         badRequest.setText("");
 
-        Comment comment = new Comment(1, "comment", new Item(),
-                new User(1, "name", "email"), LocalDateTime.now());
+        Comment comment = CommentBuilder.buildComment(1, "comment", new Item(),
+                UserBuilder.buildUser(1, "name", "email"), LocalDateTime.now());
 
-        when(itemService.addComment(Mockito.any())).thenReturn(comment);
+        when(itemService.addComment(any())).thenReturn(comment);
 
         mvc.perform(post("/items/1/comment")
                         .characterEncoding(StandardCharsets.UTF_8)

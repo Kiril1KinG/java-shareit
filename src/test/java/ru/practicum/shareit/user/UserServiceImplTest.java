@@ -4,8 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import ru.practicum.shareit.classBuilder.UserBuilder;
 import ru.practicum.shareit.exception.DataAlreadyExistsException;
 import ru.practicum.shareit.exception.DataDoesNotExistsException;
 import ru.practicum.shareit.user.entity.UserEntity;
@@ -22,6 +22,10 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -34,24 +38,24 @@ public class UserServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        userRepository = Mockito.mock(UserRepository.class);
+        userRepository = mock(UserRepository.class);
         userMapper = Mappers.getMapper(UserMapper.class);
         userService = new UserServiceImpl(userRepository, userMapper);
     }
 
     @Test
     void add() {
-        User user = new User(null, "name", "email");
-        User expected = new User(1, "name", "email");
+        User user = UserBuilder.buildUser(null, "name", "email");
+        User expected = UserBuilder.buildUser(1, "name", "email");
 
-        when(userRepository.save(Mockito.any())).thenReturn(userMapper.toUserEntity(expected));
+        when(userRepository.save(any())).thenReturn(userMapper.toUserEntity(expected));
 
         assertEquals(expected, userService.add(user));
     }
 
     @Test
     void get() {
-        User expected = new User(1, "name", "email");
+        User expected = UserBuilder.buildUser(1, "name", "email");
 
         when(userRepository.findById(1)).thenReturn(Optional.of(userMapper.toUserEntity(expected)));
         when(userRepository.findById(99)).thenReturn(Optional.empty());
@@ -59,16 +63,16 @@ public class UserServiceImplTest {
         assertEquals(expected, userService.get(1));
         assertThrows(DataDoesNotExistsException.class, () -> userService.get(99));
 
-        verify(userRepository, Mockito.times(1)).findById(1);
+        verify(userRepository, times(1)).findById(1);
     }
 
     @Test
     void update() {
-        User user = new User(1, "name", "email");
-        User user2 = new User(1, "update user", "update email");
-        User userWithNulls = new User(1, null, null);
-        User userWithIncorrectId = new User(2, "update user", "update email");
-        User userWithDuplicateEmail = new User(3, "update user", "email");
+        User user = UserBuilder.buildUser(1, "name", "email");
+        User user2 = UserBuilder.buildUser(1, "update user", "update email");
+        User userWithNulls = UserBuilder.buildUser(1, null, null);
+        User userWithIncorrectId = UserBuilder.buildUser(2, "update user", "update email");
+        User userWithDuplicateEmail = UserBuilder.buildUser(3, "update user", "email");
 
         when(userRepository.findById(1)).thenReturn(Optional.of(userMapper.toUserEntity(user)));
         when(userRepository.findById(3)).thenReturn(Optional.of(userMapper.toUserEntity(userWithDuplicateEmail)));
@@ -84,20 +88,20 @@ public class UserServiceImplTest {
         assertThrows(DataDoesNotExistsException.class, () -> userService.update(userWithIncorrectId));
         assertThrows(DataAlreadyExistsException.class, () -> userService.update(userWithDuplicateEmail));
 
-        verify(userRepository, Mockito.never()).save(userMapper.toUserEntity(userWithDuplicateEmail));
-        verify(userRepository, Mockito.never()).save(userMapper.toUserEntity(userWithIncorrectId));
+        verify(userRepository, never()).save(userMapper.toUserEntity(userWithDuplicateEmail));
+        verify(userRepository, never()).save(userMapper.toUserEntity(userWithIncorrectId));
     }
 
     @Test
     void delete() {
         userService.delete(1);
-        verify(userRepository, Mockito.times(1)).deleteById(1);
+        verify(userRepository, times(1)).deleteById(1);
     }
 
     @Test
     void getAll() {
-        User user = new User(1, "name", "email");
-        User user2 = new User(1, "user2", "email2");
+        User user = UserBuilder.buildUser(1, "name", "email");
+        User user2 = UserBuilder.buildUser(1, "user2", "email2");
 
         List<UserEntity> users = Stream.of(user, user2)
                 .map(userMapper::toUserEntity)

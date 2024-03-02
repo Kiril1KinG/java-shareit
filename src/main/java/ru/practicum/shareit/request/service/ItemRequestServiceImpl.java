@@ -57,7 +57,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public Collection<ItemRequest> getAll(Integer userId, Integer from, Integer size) {
-        if ((from == null & size != null) & (size == null & from != null)) {
+        if ((from == null & size != null) || (size == null & from != null)) {
             throw new PaginationParamsException("Bad pagination params, one of the parameters cannot be null");
         }
         Pageable pageable;

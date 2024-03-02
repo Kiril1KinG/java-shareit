@@ -1,9 +1,7 @@
 package ru.practicum.shareit.item.entity;
 
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import ru.practicum.shareit.request.entity.ItemRequestEntity;
@@ -23,8 +21,6 @@ import javax.persistence.Table;
 @Getter
 @Setter
 @ToString
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @EqualsAndHashCode(of = "id")
 @Table(name = "items", schema = "public")
