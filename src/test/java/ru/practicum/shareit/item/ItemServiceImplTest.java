@@ -162,7 +162,7 @@ class ItemServiceImplTest {
         ItemEntity updateEntity = itemMapper.toItemEntity(update);
 
 
-        when(itemRepository.findById(99)).thenReturn(Optional.empty());
+        when(itemRepository.findById(null)).thenReturn(Optional.empty());
         when(itemRepository.findById(item.getId())).thenReturn(Optional.of(itemEntity));
         when(userRepository.existsById(99)).thenReturn(false);
         when(userRepository.existsById(3)).thenReturn(true);
