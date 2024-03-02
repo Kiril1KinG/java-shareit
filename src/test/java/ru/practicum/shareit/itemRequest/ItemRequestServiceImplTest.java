@@ -1,6 +1,5 @@
 package ru.practicum.shareit.itemRequest;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -26,6 +25,11 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class ItemRequestServiceImplTest {
 
@@ -60,17 +64,17 @@ class ItemRequestServiceImplTest {
                 LocalDateTime.now(), null);
 
 
-        Mockito.when(userRepository.findById(99)).thenReturn(Optional.empty());
+        when(userRepository.findById(99)).thenReturn(Optional.empty());
 
-        Mockito.when(userRepository.findById(1)).thenReturn(Optional.of(userMapper.toUserEntity(itemRequest.getRequestor())));
-        Mockito.when(itemRequestRepository.save(Mockito.any())).thenReturn(itemRequestMapper.toEntity(itemRequest));
+        when(userRepository.findById(1)).thenReturn(Optional.of(userMapper.toUserEntity(itemRequest.getRequestor())));
+        when(itemRequestRepository.save(Mockito.any())).thenReturn(itemRequestMapper.toEntity(itemRequest));
 
 
-        Assertions.assertThrows(DataDoesNotExistsException.class, () -> itemRequestService.create(itemRequestWithIncorrectRequestorId));
-        Mockito.verify(itemRequestRepository, Mockito.never()).save(Mockito.any());
+        assertThrows(DataDoesNotExistsException.class, () -> itemRequestService.create(itemRequestWithIncorrectRequestorId));
+        verify(itemRequestRepository, Mockito.never()).save(Mockito.any());
 
-        Assertions.assertEquals(itemRequest, itemRequestService.create(itemRequest));
-        Mockito.verify(itemRequestRepository, Mockito.times(1)).save(Mockito.any());
+        assertEquals(itemRequest, itemRequestService.create(itemRequest));
+        verify(itemRequestRepository, Mockito.times(1)).save(Mockito.any());
     }
 
     @Test
@@ -82,20 +86,20 @@ class ItemRequestServiceImplTest {
         ItemRequestEntity itemRequestEntity = itemRequestMapper.toEntity(itemRequest);
 
 
-        Mockito.when(userRepository.existsById(99)).thenReturn(false);
+        when(userRepository.existsById(99)).thenReturn(false);
 
-        Mockito.when(userRepository.existsById(1)).thenReturn(true);
-        Mockito.when(itemRequestRepository.findAllByRequestorIdOrderByCreatedDesc(1)).thenReturn(Collections.singletonList(itemRequestEntity));
-        Mockito.when(itemRepository.findAllByRequestRequestorId(1)).thenReturn(Collections.singletonList(new ItemEntity()));
+        when(userRepository.existsById(1)).thenReturn(true);
+        when(itemRequestRepository.findAllByRequestorIdOrderByCreatedDesc(1)).thenReturn(Collections.singletonList(itemRequestEntity));
+        when(itemRepository.findAllByRequestRequestorId(1)).thenReturn(Collections.singletonList(new ItemEntity()));
 
 
-        Assertions.assertThrows(DataDoesNotExistsException.class, () -> itemRequestService.getAllForUser(99));
-        Mockito.verify(itemRequestRepository, Mockito.never()).findAllByRequestorIdOrderByCreatedDesc(Mockito.any());
-        Mockito.verify(itemRepository, Mockito.never()).findAllByRequestRequestorId(Mockito.any());
+        assertThrows(DataDoesNotExistsException.class, () -> itemRequestService.getAllForUser(99));
+        verify(itemRequestRepository, Mockito.never()).findAllByRequestorIdOrderByCreatedDesc(Mockito.any());
+        verify(itemRepository, Mockito.never()).findAllByRequestRequestorId(Mockito.any());
 
-        Assertions.assertEquals(Collections.singletonList(itemRequest), itemRequestService.getAllForUser(1));
-        Mockito.verify(itemRequestRepository, Mockito.times(1)).findAllByRequestorIdOrderByCreatedDesc(Mockito.any());
-        Mockito.verify(itemRepository, Mockito.times(1)).findAllByRequestRequestorId(Mockito.any());
+        assertEquals(Collections.singletonList(itemRequest), itemRequestService.getAllForUser(1));
+        verify(itemRequestRepository, Mockito.times(1)).findAllByRequestorIdOrderByCreatedDesc(Mockito.any());
+        verify(itemRepository, Mockito.times(1)).findAllByRequestRequestorId(Mockito.any());
     }
 
     @Test
@@ -108,20 +112,20 @@ class ItemRequestServiceImplTest {
         Page<ItemRequestEntity> page = new PageImpl(List.of(itemRequestEntity));
 
 
-        Mockito.when(itemRequestRepository.findAllWithoutRequestor(Mockito.any(), Mockito.any())).thenReturn(page);
-        Mockito.when(itemRepository.findAllByRequestId(Mockito.any())).thenReturn(List.of(new ItemEntity()));
+        when(itemRequestRepository.findAllWithoutRequestor(Mockito.any(), Mockito.any())).thenReturn(page);
+        when(itemRepository.findAllByRequestId(Mockito.any())).thenReturn(List.of(new ItemEntity()));
 
-        Mockito.when(itemRequestRepository.findAllWithoutRequestor(Mockito.eq(1), Mockito.any())).thenReturn(page);
-        Mockito.when(itemRepository.findAllByRequestId(Mockito.any())).thenReturn(List.of(new ItemEntity()));
+        when(itemRequestRepository.findAllWithoutRequestor(Mockito.eq(1), Mockito.any())).thenReturn(page);
+        when(itemRepository.findAllByRequestId(Mockito.any())).thenReturn(List.of(new ItemEntity()));
 
 
-        Assertions.assertThrows(PaginationParamsException.class, () -> itemRequestService.getAll(1, 0, null));
-        Mockito.verify(itemRequestRepository, Mockito.never()).findAllWithoutRequestor(Mockito.eq(1), Mockito.any());
-        Mockito.verify(itemRepository, Mockito.never()).findAllByRequestId(Mockito.eq(1));
+        assertThrows(PaginationParamsException.class, () -> itemRequestService.getAll(1, 0, null));
+        verify(itemRequestRepository, Mockito.never()).findAllWithoutRequestor(Mockito.eq(1), Mockito.any());
+        verify(itemRepository, Mockito.never()).findAllByRequestId(Mockito.eq(1));
 
-        Assertions.assertEquals(List.of(itemRequest), itemRequestService.getAll(1, 0, 1));
-        Mockito.verify(itemRequestRepository, Mockito.times(1)).findAllWithoutRequestor(Mockito.any(), Mockito.any());
-        Mockito.verify(itemRepository, Mockito.times(1)).findAllByRequestId(Mockito.any());
+        assertEquals(List.of(itemRequest), itemRequestService.getAll(1, 0, 1));
+        verify(itemRequestRepository, Mockito.times(1)).findAllWithoutRequestor(Mockito.any(), Mockito.any());
+        verify(itemRepository, Mockito.times(1)).findAllByRequestId(Mockito.any());
     }
 
     @Test
@@ -131,22 +135,22 @@ class ItemRequestServiceImplTest {
                 LocalDateTime.now(), null);
 
 
-        Mockito.when(userRepository.existsById(99)).thenReturn(false);
+        when(userRepository.existsById(99)).thenReturn(false);
 
-        Mockito.when(userRepository.existsById(1)).thenReturn(true);
-        Mockito.when(itemRequestRepository.findById(99)).thenReturn(Optional.empty());
+        when(userRepository.existsById(1)).thenReturn(true);
+        when(itemRequestRepository.findById(99)).thenReturn(Optional.empty());
 
-        Mockito.when(itemRequestRepository.findById(1)).thenReturn(Optional.of(itemRequestMapper.toEntity(itemRequest)));
-        Mockito.when(itemRepository.findAllByRequestId(1)).thenReturn(Collections.emptyList());
+        when(itemRequestRepository.findById(1)).thenReturn(Optional.of(itemRequestMapper.toEntity(itemRequest)));
+        when(itemRepository.findAllByRequestId(1)).thenReturn(Collections.emptyList());
 
 
-        Assertions.assertThrows(DataDoesNotExistsException.class, () -> itemRequestService.getById(99, 1));
-        Mockito.verify(itemRepository, Mockito.never()).findAllByRequestId(Mockito.eq(1));
+        assertThrows(DataDoesNotExistsException.class, () -> itemRequestService.getById(99, 1));
+        verify(itemRepository, Mockito.never()).findAllByRequestId(Mockito.eq(1));
 
-        Assertions.assertThrows(DataDoesNotExistsException.class, () -> itemRequestService.getById(1, 99));
-        Mockito.verify(itemRepository, Mockito.never()).findAllByRequestId(Mockito.eq(1));
+        assertThrows(DataDoesNotExistsException.class, () -> itemRequestService.getById(1, 99));
+        verify(itemRepository, Mockito.never()).findAllByRequestId(Mockito.eq(1));
 
-        Assertions.assertEquals(itemRequest, itemRequestService.getById(1, 1));
-        Mockito.verify(itemRepository, Mockito.times(1)).findAllByRequestId(Mockito.eq(1));
+        assertEquals(itemRequest, itemRequestService.getById(1, 1));
+        verify(itemRepository, Mockito.times(1)).findAllByRequestId(Mockito.eq(1));
     }
 }

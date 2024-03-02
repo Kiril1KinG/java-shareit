@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -52,7 +53,7 @@ class BookingControllerTest {
                 new User(3, "name", "email"),
                 BookingStatus.WAITING);
 
-        Mockito.when(bookingService.add(Mockito.any()))
+        when(bookingService.add(Mockito.any()))
                 .thenReturn(booking);
 
         mvc.perform(post("/bookings")
@@ -78,7 +79,7 @@ class BookingControllerTest {
                 new User(1, "name", "email"),
                 BookingStatus.APPROVED);
 
-        Mockito.when(bookingService.approveBooking(1, 1, true))
+        when(bookingService.approveBooking(1, 1, true))
                 .thenReturn(booking);
 
         mvc.perform(patch("/bookings/1?approved=true")
@@ -96,7 +97,7 @@ class BookingControllerTest {
                 new User(3, "name", "email"),
                 BookingStatus.WAITING);
 
-        Mockito.when(bookingService.getById(1, 3)).thenReturn(booking);
+        when(bookingService.getById(1, 3)).thenReturn(booking);
 
         mvc.perform(get("/bookings/1")
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -125,8 +126,8 @@ class BookingControllerTest {
                         new User(5, "name2", "email2"),
                         BookingStatus.WAITING));
 
-        Mockito.when(bookingService.getAllBookingsByState(3, "ALL", 0, 10)).thenReturn(bookings);
-        Mockito.when(bookingService.getAllBookingsByState(3, null, null, null)).thenReturn(bookings);
+        when(bookingService.getAllBookingsByState(3, "ALL", 0, 10)).thenReturn(bookings);
+        when(bookingService.getAllBookingsByState(3, null, null, null)).thenReturn(bookings);
 
         mvc.perform(get("/bookings?state=ALL&from=0&size=10")
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -183,8 +184,8 @@ class BookingControllerTest {
                         new User(5, "name2", "email2"),
                         BookingStatus.WAITING));
 
-        Mockito.when(bookingService.getAllBookingsForItemsByState(3, "ALL", 0, 10)).thenReturn(bookings);
-        Mockito.when(bookingService.getAllBookingsForItemsByState(3, null, null, null)).thenReturn(bookings);
+        when(bookingService.getAllBookingsForItemsByState(3, "ALL", 0, 10)).thenReturn(bookings);
+        when(bookingService.getAllBookingsForItemsByState(3, null, null, null)).thenReturn(bookings);
 
         mvc.perform(get("/bookings/owner?state=ALL&from=0&size=10")
                         .characterEncoding(StandardCharsets.UTF_8)

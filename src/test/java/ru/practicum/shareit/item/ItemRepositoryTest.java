@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +14,8 @@ import ru.practicum.shareit.user.storage.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
 class ItemRepositoryTest {
@@ -57,26 +58,24 @@ class ItemRepositoryTest {
 
     @Test
     void findAllByOwnerId() {
-        Assertions.assertEquals(List.of(item1),
+        assertEquals(List.of(item1),
                 itemRepository.findAllByOwnerId(user1.getId(), Pageable.ofSize(10)).getContent());
     }
 
     @Test
     void search() {
-        Assertions.assertEquals(List.of(item1),
+        assertEquals(List.of(item1),
                 itemRepository.search("дрель", Pageable.ofSize(10)).getContent());
     }
 
 
     @Test
     void findAllByRequestRequestorId() {
-        Assertions.assertEquals(List.of(item2),
-                itemRepository.findAllByRequestRequestorId(user1.getId()));
+        assertEquals(List.of(item2), itemRepository.findAllByRequestRequestorId(user1.getId()));
     }
 
     @Test
     void findAllByRequestId() {
-        Assertions.assertEquals(List.of(item2),
-                itemRepository.findAllByRequestId(itemRequest1.getId()));
+        assertEquals(List.of(item2), itemRepository.findAllByRequestId(itemRequest1.getId()));
     }
 }

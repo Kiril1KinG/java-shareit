@@ -25,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -49,7 +50,7 @@ class ItemControllerTest {
 
         ItemCreateRequest request = new ItemCreateRequest("item", "desc", true, null);
 
-        Mockito.when(itemService.add(Mockito.eq(1), Mockito.any())).thenReturn(item);
+        when(itemService.add(Mockito.eq(1), Mockito.any())).thenReturn(item);
 
         mvc.perform(post("/items")
                         .content(objectMapper.writeValueAsString(request))
@@ -70,7 +71,7 @@ class ItemControllerTest {
                 new User(1, "user", "email"),
                 null, null, null, null);
 
-        Mockito.when(itemService.get(1, 1)).thenReturn(item);
+        when(itemService.get(1, 1)).thenReturn(item);
 
         mvc.perform(MockMvcRequestBuilders.get("/items/1")
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -96,8 +97,8 @@ class ItemControllerTest {
                         new User(1, "user", "email"),
                         null, null, null, null));
 
-        Mockito.when(itemService.getByOwnerId(1, 0, 1)).thenReturn(List.of(items.get(0)));
-        Mockito.when(itemService.getByOwnerId(1, null, null)).thenReturn(items);
+        when(itemService.getByOwnerId(1, 0, 1)).thenReturn(List.of(items.get(0)));
+        when(itemService.getByOwnerId(1, null, null)).thenReturn(items);
 
         mvc.perform(MockMvcRequestBuilders.get("/items")
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -144,8 +145,8 @@ class ItemControllerTest {
                         new User(1, "user", "email"),
                         null, null, null, null));
 
-        Mockito.when(itemService.search("other", 0, 1)).thenReturn(List.of(items.get(0)));
-        Mockito.when(itemService.search("item", null, null)).thenReturn(items);
+        when(itemService.search("other", 0, 1)).thenReturn(List.of(items.get(0)));
+        when(itemService.search("item", null, null)).thenReturn(items);
 
         mvc.perform(MockMvcRequestBuilders.get("/items/search?text=item")
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -182,7 +183,7 @@ class ItemControllerTest {
                 new User(1, "user", "email"),
                 null, null, null, null);
 
-        Mockito.when(itemService.update(Mockito.eq(1), Mockito.any())).thenReturn(item);
+        when(itemService.update(Mockito.eq(1), Mockito.any())).thenReturn(item);
 
         mvc.perform(patch("/items/1")
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -211,7 +212,7 @@ class ItemControllerTest {
         Comment comment = new Comment(1, "comment", new Item(),
                 new User(1, "name", "email"), LocalDateTime.now());
 
-        Mockito.when(itemService.addComment(Mockito.any())).thenReturn(comment);
+        when(itemService.addComment(Mockito.any())).thenReturn(comment);
 
         mvc.perform(post("/items/1/comment")
                         .characterEncoding(StandardCharsets.UTF_8)

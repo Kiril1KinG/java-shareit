@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -49,7 +50,7 @@ class ItemRequestControllerTest {
                 new User(1, "name", "email"),
                 now, new ArrayList<>());
 
-        Mockito.when(itemRequestService.create(Mockito.any())).thenReturn(itemRequest);
+        when(itemRequestService.create(Mockito.any())).thenReturn(itemRequest);
 
         mvc.perform(post("/requests")
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -73,7 +74,7 @@ class ItemRequestControllerTest {
                         new User(1, "name", "email"),
                         LocalDateTime.now(), new ArrayList<>()));
 
-        Mockito.when(itemRequestService.getAllForUser(1)).thenReturn(itemRequests);
+        when(itemRequestService.getAllForUser(1)).thenReturn(itemRequests);
 
         mvc.perform(get("/requests")
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -101,9 +102,9 @@ class ItemRequestControllerTest {
                         new User(1, "name", "email"),
                         LocalDateTime.now(), new ArrayList<>()));
 
-        Mockito.when(itemRequestService.getAll(1, null, null)).thenReturn(itemRequests);
-        Mockito.when(itemRequestService.getAll(1, 0, 1)).thenReturn(List.of(itemRequests.get(0)));
-        Mockito.when(itemRequestService.getAll(1, null, 1)).thenThrow(new PaginationParamsException(""));
+        when(itemRequestService.getAll(1, null, null)).thenReturn(itemRequests);
+        when(itemRequestService.getAll(1, 0, 1)).thenReturn(List.of(itemRequests.get(0)));
+        when(itemRequestService.getAll(1, null, 1)).thenThrow(new PaginationParamsException(""));
 
         mvc.perform(get("/requests/all")
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -145,7 +146,7 @@ class ItemRequestControllerTest {
                 new User(1, "name", "email"),
                 LocalDateTime.now(), new ArrayList<>());
 
-        Mockito.when(itemRequestService.getById(1, 1)).thenReturn(itemRequest);
+        when(itemRequestService.getById(1, 1)).thenReturn(itemRequest);
 
         mvc.perform(get("/requests/1")
                         .characterEncoding(StandardCharsets.UTF_8)

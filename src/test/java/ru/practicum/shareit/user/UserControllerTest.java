@@ -21,6 +21,7 @@ import ru.practicum.shareit.user.service.UserService;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -43,7 +44,7 @@ class UserControllerTest {
         UserCreateRequest request = new UserCreateRequest("user", "email@yandex.ru");
         User user = new User(1, "user", "email@yandex.ru");
 
-        Mockito.when(userService.add(Mockito.any())).thenReturn(user);
+        when(userService.add(Mockito.any())).thenReturn(user);
 
         mvc.perform(post("/users")
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -61,8 +62,8 @@ class UserControllerTest {
     void get() throws Exception {
         User user = new User(1, "user", "email@yandex.ru");
 
-        Mockito.when(userService.get(1)).thenReturn(user);
-        Mockito.when(userService.get(99)).thenThrow(new DataDoesNotExistsException(""));
+        when(userService.get(1)).thenReturn(user);
+        when(userService.get(99)).thenThrow(new DataDoesNotExistsException(""));
 
         mvc.perform(MockMvcRequestBuilders.get("/users/1")
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -86,7 +87,7 @@ class UserControllerTest {
                 new User(1, "user", "email@yandex.ru"),
                 new User(2, "user2", "email2@yandex.ru"));
 
-        Mockito.when(userService.getAll()).thenReturn(users);
+        when(userService.getAll()).thenReturn(users);
 
         mvc.perform(MockMvcRequestBuilders.get("/users")
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -106,8 +107,8 @@ class UserControllerTest {
         UserUpdateRequest request = new UserUpdateRequest("update user", "updateEmail@yandex.ru");
         User user = new User(1, "update user", "updateEmail@yandex.ru");
 
-        Mockito.when(userService.update(Mockito.any())).thenReturn(user);
-        Mockito.when(userService.update(new User(99, "update user", "updateEmail@yandex.ru")))
+        when(userService.update(Mockito.any())).thenReturn(user);
+        when(userService.update(new User(99, "update user", "updateEmail@yandex.ru")))
                 .thenThrow(new DataAlreadyExistsException(""));
 
         mvc.perform(patch("/users/1")
