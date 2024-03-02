@@ -209,7 +209,7 @@ public class BookingServiceImpl implements BookingService {
             throw new PaginationParamsException("Get bookings failed, one of pagination params cannot be null");
         }
         if (from != null && size != null) {
-            return PageRequest.of(from > 0 ? from / size : 0, size, sort);
+            return PageRequest.of(from / size, size, sort);
         } else {
             int count = (int) bookingRepository.count();
             return PageRequest.of(0, count > 0 ? count : 1, sort);

@@ -156,7 +156,7 @@ public class ItemServiceImpl implements ItemService {
         }
         Pageable pageable;
         if (from != null && size != null) {
-            pageable = PageRequest.of(from > 0 ? from / size : 0, size, Sort.by("id"));
+            pageable = PageRequest.of( from / size, size, Sort.by("id"));
         } else {
             int count = (int) itemRepository.count();
             pageable = PageRequest.of(0, count > 0 ? count : 1, Sort.by("id"));
