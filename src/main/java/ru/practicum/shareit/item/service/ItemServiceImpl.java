@@ -135,7 +135,7 @@ public class ItemServiceImpl implements ItemService {
         }
 
         Pageable pageable;
-        if (from == null ^ size == null) {
+        if ((from == null & size != null) & (size == null & from != null)) {
             throw new PaginationParamsException("Get Items failed, one of pagination params cannot be null");
         }
         if (from != null && size != null) {
@@ -151,7 +151,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Collection<Item> getByOwnerId(int userId, Integer from, Integer size) {
-        if (from == null ^ size == null) {
+        if ((from == null & size != null) & (size == null & from != null)) {
             throw new PaginationParamsException("Get Items failed, one of pagination params cannot be null");
         }
         Pageable pageable;
