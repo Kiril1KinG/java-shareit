@@ -11,7 +11,7 @@ public interface BookingService {
 
     Booking getById(Integer bookingId, Integer userId);
 
-    Collection<Booking> getAllBookingsByState(Integer userId, String bookingState);
+    Collection<Booking> getAllBookingsByState(Integer userId, String bookingState, Integer from, Integer size);
 
-    Collection<Booking> getAllBookingsForItemsByState(Integer userId, String bookingState);
+    Collection<Booking> getAllBookingsForItemsByState(Integer userId, String bookingState, Integer from, Integer size);
 }

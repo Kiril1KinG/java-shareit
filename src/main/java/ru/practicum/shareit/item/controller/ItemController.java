@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +24,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -30,6 +32,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/items")
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 public class ItemController {
 
     private static final String X_SHARER_USER_ID = "X-Sharer-User-Id";
@@ -46,36 +49,40 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemWithBookingsResponse get(@PathVariable int itemId,
-                                        @RequestHeader(value = X_SHARER_USER_ID) Integer userId) {
+    public ItemWithBookingsResponse get(@PathVariable Integer itemId,
+                                        @RequestHeader(X_SHARER_USER_ID) Integer userId) {
         log.info("GET /items/{}", itemId);
         return itemMapper.toItemWithBookingsResponse(itemService.get(itemId, userId));
     }
 
     @GetMapping()
-    public Collection<ItemWithBookingsResponse> getAllForOwner(@RequestHeader(X_SHARER_USER_ID) Integer userId) {
+    public Collection<ItemWithBookingsResponse> getAllForOwner(@RequestHeader(X_SHARER_USER_ID) Integer userId,
+                                                               @RequestParam(value = "from", required = false) @Min(0) Integer from,
+                                                               @RequestParam(value = "size", required = false) @Min(1) Integer size) {
         log.info("GET /items X-Sharer-User-Id: {}", userId);
-        return itemService.getByOwnerId(userId).stream()
+        return itemService.getByOwnerId(userId, from, size).stream()
                 .map(itemMapper::toItemWithBookingsResponse)
                 .collect(Collectors.toList());
 
     }
 
     @GetMapping("/search")
-    public Collection<ItemResponse> search(@RequestParam String text) {
+    public Collection<ItemResponse> search(@RequestParam String text,
+                                           @RequestParam(value = "from", required = false) @Min(0) Integer from,
+                                           @RequestParam(value = "size", required = false) @Min(1) Integer size) {
         log.info("GET /items/search?text={}", text);
-        return itemService.search(text).stream()
+        return itemService.search(text, from, size).stream()
                 .map(itemMapper::toResponse)
                 .collect(Collectors.toList());
     }
 
     @PatchMapping("/{id}")
-    public Item update(@RequestHeader(X_SHARER_USER_ID) Integer userId, @PathVariable int id,
-                       @Valid @RequestBody ItemUpdateRequest request) {
+    public ItemResponse update(@RequestHeader(X_SHARER_USER_ID) Integer userId, @PathVariable Integer id,
+                               @Valid @RequestBody ItemUpdateRequest request) {
         log.info("PATCH /items/{} X-Sharer-User-Id: {}", id, userId);
         Item item = itemMapper.toItem(request);
         item.setId(id);
-        return itemService.update(userId, item);
+        return itemMapper.toResponse(itemService.update(userId, item));
     }
 
     @PostMapping("/{itemId}/comment")

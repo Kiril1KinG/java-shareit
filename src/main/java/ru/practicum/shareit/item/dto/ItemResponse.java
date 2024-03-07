@@ -14,4 +14,5 @@ public class ItemResponse {
     private String description;
     private Boolean available;
     private List<CommentResponse> comments;
+    private Integer requestId;
 }

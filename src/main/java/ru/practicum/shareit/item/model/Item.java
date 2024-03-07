@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -12,6 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
+@EqualsAndHashCode(of = "id")
 public class Item {
     private Integer id;
     private String name;

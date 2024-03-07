@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,7 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.service.BookingService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -25,6 +27,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/bookings")
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 public class BookingController {
 
     private static final String X_SHARER_USER_ID = "X-Sharer-User-Id";
@@ -58,17 +61,20 @@ public class BookingController {
 
     @GetMapping()
     public Collection<BookingResponse> getAllByState(@RequestHeader(X_SHARER_USER_ID) Integer userId,
-                                                     @RequestParam(value = "state", required = false) String state) {
-        return bookingService.getAllBookingsByState(userId, state).stream()
+                                                     @RequestParam(value = "state", required = false) String state,
+                                                     @RequestParam(value = "from", required = false) @Min(0) Integer from,
+                                                     @RequestParam(value = "size", required = false) @Min(1) Integer size) {
+        return bookingService.getAllBookingsByState(userId, state, from, size).stream()
                 .map(mapper::toResponse)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/owner")
     public Collection<BookingResponse> getAllBookingsForItemsByState(@RequestHeader(X_SHARER_USER_ID) Integer userId,
-                                                                     @RequestParam(value = "state",
-                                                                             required = false) String state) {
-        return bookingService.getAllBookingsForItemsByState(userId, state).stream()
+                                                                     @RequestParam(value = "state", required = false) String state,
+                                                                     @RequestParam(value = "from", required = false) @Min(0) Integer from,
+                                                                     @RequestParam(value = "size", required = false) @Min(1) Integer size) {
+        return bookingService.getAllBookingsForItemsByState(userId, state, from, size).stream()
                 .map(mapper::toResponse)
                 .collect(Collectors.toList());
     }

@@ -2,6 +2,9 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.entity.BookingEntity;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
@@ -9,6 +12,7 @@ import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.storage.BookingRepository;
 import ru.practicum.shareit.exception.DataAlreadyExistsException;
 import ru.practicum.shareit.exception.DataDoesNotExistsException;
+import ru.practicum.shareit.exception.PaginationParamsException;
 import ru.practicum.shareit.exception.WithoutBookingException;
 import ru.practicum.shareit.item.entity.CommentEntity;
 import ru.practicum.shareit.item.entity.ItemEntity;
@@ -18,8 +22,9 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.CommentRepository;
 import ru.practicum.shareit.item.storage.ItemRepository;
+import ru.practicum.shareit.request.entity.ItemRequestEntity;
+import ru.practicum.shareit.request.storage.ItemRequestRepository;
 import ru.practicum.shareit.user.entity.UserEntity;
-import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.storage.UserRepository;
 
 import java.time.LocalDateTime;
@@ -36,20 +41,28 @@ public class ItemServiceImpl implements ItemService {
 
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
+    private final ItemRequestRepository itemRequestRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
     private final ItemMapper itemMapper;
-    private final UserMapper userMapper;
     private final BookingMapper bookingMapper;
     private final CommentMapper commentMapper;
 
     @Override
     public Item add(int userId, Item item) {
+        ItemRequestEntity itemRequestEntity = null;
+        if (item.getRequest().getId() != null) {
+            itemRequestEntity = itemRequestRepository.findById(item.getRequest().getId()).orElseThrow(
+                    () -> new DataDoesNotExistsException(
+                            String.format("Create item by ItemRequest failed, ItemRequest with id %d not exists",
+                                    item.getRequest().getId())));
+        }
         UserEntity userEntity = userRepository.findById(userId).orElseThrow(
                 () -> new DataDoesNotExistsException(
-                        String.format("Add item failed, user with id %d npt exists", userId)));
-        item.setOwner(userMapper.toUser(userEntity));
+                        String.format("Add item failed, user with id %d not exists", userId)));
         ItemEntity res = itemMapper.toItemEntity(item);
+        res.setOwner(userEntity);
+        res.setRequest(itemRequestEntity);
         itemRepository.save(res);
         log.info("Item added: {}", res);
         return itemMapper.toItem(res);
@@ -116,18 +129,39 @@ public class ItemServiceImpl implements ItemService {
 
 
     @Override
-    public Collection<Item> search(String text) {
+    public Collection<Item> search(String text, Integer from, Integer size) {
         if (text.isBlank() || text.isEmpty()) {
             return Collections.emptyList();
         }
-        Collection<ItemEntity> items = itemRepository.search(text);
+
+        Pageable pageable;
+        if ((from == null && size != null) || (size == null && from != null)) {
+            throw new PaginationParamsException("Get Items failed, one of pagination params cannot be null");
+        }
+        if (from != null && size != null) {
+            pageable = PageRequest.of(from, size);
+        } else {
+            int count = (int) itemRepository.count();
+            pageable = PageRequest.of(0, count > 0 ? count : 1);
+        }
+        Collection<ItemEntity> items = itemRepository.search(text, pageable).getContent();
         log.info("Item search by request \"{}\" received: {}", text, items);
         return itemMapper.toItems(items);
     }
 
     @Override
-    public Collection<Item> getByOwnerId(int userId) {
-        Collection<Item> items = itemRepository.findUsersByOwnerIdOrderByIdAsc(userId).stream()
+    public Collection<Item> getByOwnerId(int userId, Integer from, Integer size) {
+        if ((from == null && size != null) || (size == null && from != null)) {
+            throw new PaginationParamsException("Get Items failed, one of pagination params cannot be null");
+        }
+        Pageable pageable;
+        if (from != null && size != null) {
+            pageable = PageRequest.of(from / size, size, Sort.by("id"));
+        } else {
+            int count = (int) itemRepository.count();
+            pageable = PageRequest.of(0, count > 0 ? count : 1, Sort.by("id"));
+        }
+        Collection<Item> items = itemRepository.findAllByOwnerId(userId, pageable).stream()
                 .map(itemMapper::toItem)
                 .collect(Collectors.toList());
         addBookingsToItems(items);

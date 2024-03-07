@@ -15,14 +15,12 @@ public abstract class BookingMapper {
     @Mapping(target = "item.id", source = "request.itemId")
     public abstract Booking toBooking(BookingRequest request, Integer userId);
 
-    @Mapping(target = "item.request.id", source = "item.request")
     public abstract Booking toBooking(BookingEntity bookingEntity);
 
     public abstract BookingResponse toResponse(Booking booking);
 
     @Mapping(target = "item.id", source = "booking.item.id")
     @Mapping(target = "booker.id", source = "booking.booker.id")
-    @Mapping(target = "item.request", source = "item.request.id")
     public abstract BookingEntity toBookingEntity(Booking booking);
 
     public abstract BookingShortDto toBookingResponseShort(BookingEntity booking);
