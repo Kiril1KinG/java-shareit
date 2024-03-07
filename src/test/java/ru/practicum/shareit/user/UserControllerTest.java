@@ -8,7 +8,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import ru.practicum.shareit.classBuilder.UserBuilder;
+import ru.practicum.shareit.classBuilder.TestUserProvider;
 import ru.practicum.shareit.exception.DataAlreadyExistsException;
 import ru.practicum.shareit.exception.DataDoesNotExistsException;
 import ru.practicum.shareit.user.controller.UserController;
@@ -45,7 +45,7 @@ class UserControllerTest {
         UserCreateRequest request = new UserCreateRequest();
         request.setName("user");
         request.setEmail("email@yandex.ru");
-        User user = UserBuilder.buildUser(1, "user", "email@yandex.ru");
+        User user = TestUserProvider.buildUser(1, "user", "email@yandex.ru");
 
         when(userService.add(any())).thenReturn(user);
 
@@ -63,7 +63,7 @@ class UserControllerTest {
 
     @Test
     void get() throws Exception {
-        User user = UserBuilder.buildUser(1, "user", "email@yandex.ru");
+        User user = TestUserProvider.buildUser(1, "user", "email@yandex.ru");
 
         when(userService.get(1)).thenReturn(user);
         when(userService.get(99)).thenThrow(new DataDoesNotExistsException(""));
@@ -87,8 +87,8 @@ class UserControllerTest {
     @Test
     void getAll() throws Exception {
         List<User> users = List.of(
-                UserBuilder.buildUser(1, "user", "email@yandex.ru"),
-                UserBuilder.buildUser(2, "user2", "email2@yandex.ru"));
+                TestUserProvider.buildUser(1, "user", "email@yandex.ru"),
+                TestUserProvider.buildUser(2, "user2", "email2@yandex.ru"));
 
         when(userService.getAll()).thenReturn(users);
 
@@ -110,10 +110,10 @@ class UserControllerTest {
         UserUpdateRequest request = new UserUpdateRequest();
         request.setName("update user");
         request.setEmail("updateEmail@yandex.ru");
-        User user = UserBuilder.buildUser(1, "update user", "updateEmail@yandex.ru");
+        User user = TestUserProvider.buildUser(1, "update user", "updateEmail@yandex.ru");
 
         when(userService.update(any())).thenReturn(user);
-        when(userService.update(UserBuilder.buildUser(99, "update user", "updateEmail@yandex.ru")))
+        when(userService.update(TestUserProvider.buildUser(99, "update user", "updateEmail@yandex.ru")))
                 .thenThrow(new DataAlreadyExistsException(""));
 
         mvc.perform(patch("/users/1")

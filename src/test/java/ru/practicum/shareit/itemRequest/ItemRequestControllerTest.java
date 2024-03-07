@@ -7,8 +7,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.practicum.shareit.classBuilder.ItemRequestBuilder;
-import ru.practicum.shareit.classBuilder.UserBuilder;
+import ru.practicum.shareit.classBuilder.TestItemRequestProvider;
+import ru.practicum.shareit.classBuilder.TestUserProvider;
 import ru.practicum.shareit.exception.PaginationParamsException;
 import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
@@ -51,8 +51,8 @@ class ItemRequestControllerTest {
         request.setRequestor(null);
         request.setCreated(now);
 
-        ItemRequest itemRequest = ItemRequestBuilder.buildItemRequest(1, "desc",
-                UserBuilder.buildUser(1, "name", "email"),
+        ItemRequest itemRequest = TestItemRequestProvider.provideItemRequest(1, "desc",
+                TestUserProvider.buildUser(1, "name", "email"),
                 now, new ArrayList<>());
 
         when(itemRequestService.create(any())).thenReturn(itemRequest);
@@ -72,11 +72,11 @@ class ItemRequestControllerTest {
     @Test
     void getAllForUser() throws Exception {
         List<ItemRequest> itemRequests = List.of(
-                ItemRequestBuilder.buildItemRequest(1, "desc",
-                        UserBuilder.buildUser(1, "name", "email"),
+                TestItemRequestProvider.provideItemRequest(1, "desc",
+                        TestUserProvider.buildUser(1, "name", "email"),
                         LocalDateTime.now(), List.of(new Item())),
-                ItemRequestBuilder.buildItemRequest(2, "desc2",
-                        UserBuilder.buildUser(1, "name", "email"),
+                TestItemRequestProvider.provideItemRequest(2, "desc2",
+                        TestUserProvider.buildUser(1, "name", "email"),
                         LocalDateTime.now(), new ArrayList<>()));
 
         when(itemRequestService.getAllForUser(1)).thenReturn(itemRequests);
@@ -100,11 +100,11 @@ class ItemRequestControllerTest {
     @Test
     void getAll() throws Exception {
         List<ItemRequest> itemRequests = List.of(
-                ItemRequestBuilder.buildItemRequest(1, "desc",
-                        UserBuilder.buildUser(1, "name", "email"),
+                TestItemRequestProvider.provideItemRequest(1, "desc",
+                        TestUserProvider.buildUser(1, "name", "email"),
                         LocalDateTime.now(), new ArrayList<>()),
-                ItemRequestBuilder.buildItemRequest(2, "desc2",
-                        UserBuilder.buildUser(1, "name", "email"),
+                TestItemRequestProvider.provideItemRequest(2, "desc2",
+                        TestUserProvider.buildUser(1, "name", "email"),
                         LocalDateTime.now(), new ArrayList<>()));
 
         when(itemRequestService.getAll(1, null, null)).thenReturn(itemRequests);
@@ -147,8 +147,8 @@ class ItemRequestControllerTest {
 
     @Test
     void getById() throws Exception {
-        ItemRequest itemRequest = ItemRequestBuilder.buildItemRequest(1, "desc",
-                UserBuilder.buildUser(1, "name", "email"),
+        ItemRequest itemRequest = TestItemRequestProvider.provideItemRequest(1, "desc",
+                TestUserProvider.buildUser(1, "name", "email"),
                 LocalDateTime.now(), new ArrayList<>());
 
         when(itemRequestService.getById(1, 1)).thenReturn(itemRequest);

@@ -9,9 +9,9 @@ import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 
-public class CommentBuilder {
+public class TestCommentProvider {
 
-    public static Comment buildComment(Integer id, String text, Item item, User author, LocalDateTime created) {
+    public static Comment provideComment(Integer id, String text, Item item, User author, LocalDateTime created) {
         Comment comment = new Comment();
         comment.setId(id);
         comment.setText(text);
@@ -21,7 +21,7 @@ public class CommentBuilder {
         return comment;
     }
 
-    public static CommentEntity buildCommentEntity(Integer id, String text, ItemEntity item, UserEntity author, LocalDateTime created) {
+    public static CommentEntity provideCommentEntity(Integer id, String text, ItemEntity item, UserEntity author, LocalDateTime created) {
         CommentEntity commentEntity = new CommentEntity();
         commentEntity.setId(id);
         commentEntity.setText(text);

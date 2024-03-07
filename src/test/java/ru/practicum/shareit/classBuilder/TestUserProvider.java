@@ -3,7 +3,7 @@ package ru.practicum.shareit.classBuilder;
 import ru.practicum.shareit.user.entity.UserEntity;
 import ru.practicum.shareit.user.model.User;
 
-public class UserBuilder {
+public class TestUserProvider {
 
     public static User buildUser(Integer id, String name, String email) {
         User user = new User();

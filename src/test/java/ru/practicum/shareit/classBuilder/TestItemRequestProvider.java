@@ -9,10 +9,10 @@ import ru.practicum.shareit.user.model.User;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class ItemRequestBuilder {
+public class TestItemRequestProvider {
 
-    public static ItemRequest buildItemRequest(Integer id, String description, User requestor, LocalDateTime created,
-                                               List<Item> items) {
+    public static ItemRequest provideItemRequest(Integer id, String description, User requestor, LocalDateTime created,
+                                                 List<Item> items) {
         ItemRequest itemRequest = new ItemRequest();
         itemRequest.setId(id);
         itemRequest.setDescription(description);
@@ -22,7 +22,7 @@ public class ItemRequestBuilder {
         return itemRequest;
     }
 
-    public static ItemRequestEntity buildItemRequestEntity(Integer id, String description, UserEntity requestor, LocalDateTime created) {
+    public static ItemRequestEntity provideItemRequestEntity(Integer id, String description, UserEntity requestor, LocalDateTime created) {
         ItemRequestEntity itemRequestEntity = new ItemRequestEntity();
         itemRequestEntity.setId(id);
         itemRequestEntity.setDescription(description);

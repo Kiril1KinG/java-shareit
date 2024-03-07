@@ -7,8 +7,8 @@ import org.mapstruct.factory.Mappers;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import ru.practicum.shareit.classBuilder.ItemRequestBuilder;
-import ru.practicum.shareit.classBuilder.UserBuilder;
+import ru.practicum.shareit.classBuilder.TestItemRequestProvider;
+import ru.practicum.shareit.classBuilder.TestUserProvider;
 import ru.practicum.shareit.exception.DataDoesNotExistsException;
 import ru.practicum.shareit.exception.PaginationParamsException;
 import ru.practicum.shareit.item.entity.ItemEntity;
@@ -63,12 +63,12 @@ class ItemRequestServiceImplTest {
 
     @Test
     void create() {
-        ItemRequest itemRequestWithIncorrectRequestorId = ItemRequestBuilder.buildItemRequest(1, "desc",
-                UserBuilder.buildUser(99, "user", "email"),
+        ItemRequest itemRequestWithIncorrectRequestorId = TestItemRequestProvider.provideItemRequest(1, "desc",
+                TestUserProvider.buildUser(99, "user", "email"),
                 LocalDateTime.now(), null);
 
-        ItemRequest itemRequest = ItemRequestBuilder.buildItemRequest(1, "desc",
-                UserBuilder.buildUser(1, "user", "email"),
+        ItemRequest itemRequest = TestItemRequestProvider.provideItemRequest(1, "desc",
+                TestUserProvider.buildUser(1, "user", "email"),
                 LocalDateTime.now(), null);
 
 
@@ -87,8 +87,8 @@ class ItemRequestServiceImplTest {
 
     @Test
     void getAllForUser() {
-        ItemRequest itemRequest = ItemRequestBuilder.buildItemRequest(1, "desc",
-                UserBuilder.buildUser(1, "user", "email"),
+        ItemRequest itemRequest = TestItemRequestProvider.provideItemRequest(1, "desc",
+                TestUserProvider.buildUser(1, "user", "email"),
                 LocalDateTime.now(), null);
 
         ItemRequestEntity itemRequestEntity = itemRequestMapper.toEntity(itemRequest);
@@ -112,8 +112,8 @@ class ItemRequestServiceImplTest {
 
     @Test
     void getAll() {
-        ItemRequest itemRequest = ItemRequestBuilder.buildItemRequest(1, "desc",
-                UserBuilder.buildUser(1, "user", "email"),
+        ItemRequest itemRequest = TestItemRequestProvider.provideItemRequest(1, "desc",
+                TestUserProvider.buildUser(1, "user", "email"),
                 LocalDateTime.now(), null);
         ItemRequestEntity itemRequestEntity = itemRequestMapper.toEntity(itemRequest);
 
@@ -138,8 +138,8 @@ class ItemRequestServiceImplTest {
 
     @Test
     void getById() {
-        ItemRequest itemRequest = ItemRequestBuilder.buildItemRequest(1, "desc",
-                UserBuilder.buildUser(1, "user", "email"),
+        ItemRequest itemRequest = TestItemRequestProvider.provideItemRequest(1, "desc",
+                TestUserProvider.buildUser(1, "user", "email"),
                 LocalDateTime.now(), null);
 
 

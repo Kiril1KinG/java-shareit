@@ -5,9 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Pageable;
-import ru.practicum.shareit.classBuilder.ItemBuilder;
-import ru.practicum.shareit.classBuilder.ItemRequestBuilder;
-import ru.practicum.shareit.classBuilder.UserBuilder;
+import ru.practicum.shareit.classBuilder.TestItemProvider;
+import ru.practicum.shareit.classBuilder.TestItemRequestProvider;
+import ru.practicum.shareit.classBuilder.TestUserProvider;
 import ru.practicum.shareit.item.entity.ItemEntity;
 import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.request.entity.ItemRequestEntity;
@@ -44,18 +44,18 @@ class ItemRepositoryTest {
         itemRepository.deleteAll();
         itemRequestRepository.deleteAll();
 
-        user1 = UserBuilder.buildUserEntity(null, "name", "email@yandex.ru");
+        user1 = TestUserProvider.buildUserEntity(null, "name", "email@yandex.ru");
         user1 = userRepository.save(user1);
-        user2 = UserBuilder.buildUserEntity(null, "other name", "otherEmail@yandex.ru");
+        user2 = TestUserProvider.buildUserEntity(null, "other name", "otherEmail@yandex.ru");
         user2 = userRepository.save(user2);
 
-        itemRequest1 = ItemRequestBuilder.buildItemRequestEntity(null, "Нужени миксер",
+        itemRequest1 = TestItemRequestProvider.provideItemRequestEntity(null, "Нужени миксер",
                 user1, LocalDateTime.now());
         itemRequest1 = itemRequestRepository.save(itemRequest1);
 
-        item1 = ItemBuilder.buildItemEntity(null, "Дрель", "Проводная дрель", true, user1, null);
+        item1 = TestItemProvider.provideItemEntity(null, "Дрель", "Проводная дрель", true, user1, null);
         item1 = itemRepository.save(item1);
-        item2 = ItemBuilder.buildItemEntity(null, "Миксер", "Кухонный миксер", true, user2, itemRequest1);
+        item2 = TestItemProvider.provideItemEntity(null, "Миксер", "Кухонный миксер", true, user2, itemRequest1);
         item2 = itemRepository.save(item2);
     }
 

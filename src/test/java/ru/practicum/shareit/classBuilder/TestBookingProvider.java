@@ -10,10 +10,10 @@ import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 
-public class BookingBuilder {
+public class TestBookingProvider {
 
-    public static Booking buildBooking(Integer id, LocalDateTime start, LocalDateTime end, Item item, User booker,
-                                       BookingStatus status) {
+    public static Booking provideBooking(Integer id, LocalDateTime start, LocalDateTime end, Item item, User booker,
+                                         BookingStatus status) {
         Booking booking = new Booking();
         booking.setId(id);
         booking.setStart(start);
@@ -24,8 +24,8 @@ public class BookingBuilder {
         return booking;
     }
 
-    public static BookingEntity buildBookingEntity(Integer id, LocalDateTime start, LocalDateTime end, ItemEntity item,
-                                                   UserEntity booker, BookingStatus status) {
+    public static BookingEntity provideBookingEntity(Integer id, LocalDateTime start, LocalDateTime end, ItemEntity item,
+                                                     UserEntity booker, BookingStatus status) {
         BookingEntity bookingEntity = new BookingEntity();
         bookingEntity.setId(id);
         bookingEntity.setStart(start);

@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ru.practicum.shareit.classBuilder.UserBuilder;
+import ru.practicum.shareit.classBuilder.TestUserProvider;
 import ru.practicum.shareit.exception.DataAlreadyExistsException;
 import ru.practicum.shareit.exception.DataDoesNotExistsException;
 import ru.practicum.shareit.user.entity.UserEntity;
@@ -45,8 +45,8 @@ public class UserServiceImplTest {
 
     @Test
     void add() {
-        User user = UserBuilder.buildUser(null, "name", "email");
-        User expected = UserBuilder.buildUser(1, "name", "email");
+        User user = TestUserProvider.buildUser(null, "name", "email");
+        User expected = TestUserProvider.buildUser(1, "name", "email");
 
         when(userRepository.save(any())).thenReturn(userMapper.toUserEntity(expected));
 
@@ -55,7 +55,7 @@ public class UserServiceImplTest {
 
     @Test
     void get() {
-        User expected = UserBuilder.buildUser(1, "name", "email");
+        User expected = TestUserProvider.buildUser(1, "name", "email");
 
         when(userRepository.findById(1)).thenReturn(Optional.of(userMapper.toUserEntity(expected)));
         when(userRepository.findById(99)).thenReturn(Optional.empty());
@@ -68,11 +68,11 @@ public class UserServiceImplTest {
 
     @Test
     void update() {
-        User user = UserBuilder.buildUser(1, "name", "email");
-        User user2 = UserBuilder.buildUser(1, "update user", "update email");
-        User userWithNulls = UserBuilder.buildUser(1, null, null);
-        User userWithIncorrectId = UserBuilder.buildUser(2, "update user", "update email");
-        User userWithDuplicateEmail = UserBuilder.buildUser(3, "update user", "email");
+        User user = TestUserProvider.buildUser(1, "name", "email");
+        User user2 = TestUserProvider.buildUser(1, "update user", "update email");
+        User userWithNulls = TestUserProvider.buildUser(1, null, null);
+        User userWithIncorrectId = TestUserProvider.buildUser(2, "update user", "update email");
+        User userWithDuplicateEmail = TestUserProvider.buildUser(3, "update user", "email");
 
         when(userRepository.findById(1)).thenReturn(Optional.of(userMapper.toUserEntity(user)));
         when(userRepository.findById(3)).thenReturn(Optional.of(userMapper.toUserEntity(userWithDuplicateEmail)));
@@ -100,8 +100,8 @@ public class UserServiceImplTest {
 
     @Test
     void getAll() {
-        User user = UserBuilder.buildUser(1, "name", "email");
-        User user2 = UserBuilder.buildUser(1, "user2", "email2");
+        User user = TestUserProvider.buildUser(1, "name", "email");
+        User user2 = TestUserProvider.buildUser(1, "user2", "email2");
 
         List<UserEntity> users = Stream.of(user, user2)
                 .map(userMapper::toUserEntity)

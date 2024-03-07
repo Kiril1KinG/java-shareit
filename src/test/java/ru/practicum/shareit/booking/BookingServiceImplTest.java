@@ -14,9 +14,9 @@ import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.booking.service.BookingServiceImpl;
 import ru.practicum.shareit.booking.storage.BookingRepository;
-import ru.practicum.shareit.classBuilder.BookingBuilder;
-import ru.practicum.shareit.classBuilder.ItemBuilder;
-import ru.practicum.shareit.classBuilder.UserBuilder;
+import ru.practicum.shareit.classBuilder.TestBookingProvider;
+import ru.practicum.shareit.classBuilder.TestItemProvider;
+import ru.practicum.shareit.classBuilder.TestUserProvider;
 import ru.practicum.shareit.exception.DataAlreadyExistsException;
 import ru.practicum.shareit.exception.DataDoesNotExistsException;
 import ru.practicum.shareit.exception.NotAvailableException;
@@ -68,53 +68,53 @@ class BookingServiceImplTest {
 
     @Test
     void add() {
-        Booking bookingWithIncorrectItemId = BookingBuilder.buildBooking(1,
+        Booking bookingWithIncorrectItemId = TestBookingProvider.provideBooking(1,
                 LocalDateTime.of(2023, 1, 20, 20, 30),
                 LocalDateTime.of(2023, 1, 21, 20, 30),
-                ItemBuilder.buildItem(99, "item", "desc", true, new User(), null, null, null, null),
-                UserBuilder.buildUser(1, "user", "email"),
+                TestItemProvider.provideItem(99, "item", "desc", true, new User(), null, null, null, null),
+                TestUserProvider.buildUser(1, "user", "email"),
                 BookingStatus.WAITING);
 
-        Booking bookingWithUnavailableItem = BookingBuilder.buildBooking(2,
+        Booking bookingWithUnavailableItem = TestBookingProvider.provideBooking(2,
                 LocalDateTime.of(2023, 1, 20, 20, 30),
                 LocalDateTime.of(2023, 1, 21, 20, 30),
-                ItemBuilder.buildItem(2, "item", "desc", false, new User(), null, null, null, null),
-                UserBuilder.buildUser(2, "user", "email"),
+                TestItemProvider.provideItem(2, "item", "desc", false, new User(), null, null, null, null),
+                TestUserProvider.buildUser(2, "user", "email"),
                 BookingStatus.WAITING);
 
-        Booking bookingWithIncorrectUserId = BookingBuilder.buildBooking(3,
+        Booking bookingWithIncorrectUserId = TestBookingProvider.provideBooking(3,
                 LocalDateTime.of(2023, 1, 20, 20, 30),
                 LocalDateTime.of(2023, 1, 21, 20, 30),
-                ItemBuilder.buildItem(3, "item", "desc", true, new User(), null, null, null, null),
-                UserBuilder.buildUser(99, "user", "email"),
+                TestItemProvider.provideItem(3, "item", "desc", true, new User(), null, null, null, null),
+                TestUserProvider.buildUser(99, "user", "email"),
                 BookingStatus.WAITING);
 
-        Booking bookingFromOwner = BookingBuilder.buildBooking(4,
+        Booking bookingFromOwner = TestBookingProvider.provideBooking(4,
                 LocalDateTime.of(2023, 1, 20, 20, 30),
                 LocalDateTime.of(2023, 1, 21, 20, 30),
-                ItemBuilder.buildItem(4, "item", "desc", true, UserBuilder.buildUser(4, "user", "email"), null, null, null, null),
-                UserBuilder.buildUser(4, "user", "email"),
+                TestItemProvider.provideItem(4, "item", "desc", true, TestUserProvider.buildUser(4, "user", "email"), null, null, null, null),
+                TestUserProvider.buildUser(4, "user", "email"),
                 BookingStatus.WAITING);
 
-        Booking repeatedBooking = BookingBuilder.buildBooking(5,
+        Booking repeatedBooking = TestBookingProvider.provideBooking(5,
                 LocalDateTime.of(2023, 1, 20, 20, 30),
                 LocalDateTime.of(2023, 1, 21, 20, 30),
-                ItemBuilder.buildItem(5, "item", "desc", true, UserBuilder.buildUser(1, "user", "email"), null, null, null, null),
-                UserBuilder.buildUser(5, "user", "email"),
+                TestItemProvider.provideItem(5, "item", "desc", true, TestUserProvider.buildUser(1, "user", "email"), null, null, null, null),
+                TestUserProvider.buildUser(5, "user", "email"),
                 BookingStatus.WAITING);
 
-        Booking booking = BookingBuilder.buildBooking(6,
+        Booking booking = TestBookingProvider.provideBooking(6,
                 LocalDateTime.of(2023, 1, 20, 20, 30),
                 LocalDateTime.of(2023, 1, 21, 20, 30),
-                ItemBuilder.buildItem(6, "item", "desc", true, UserBuilder.buildUser(1, "user", "email"), null, null, null, null),
-                UserBuilder.buildUser(6, "user", "email"),
+                TestItemProvider.provideItem(6, "item", "desc", true, TestUserProvider.buildUser(1, "user", "email"), null, null, null, null),
+                TestUserProvider.buildUser(6, "user", "email"),
                 BookingStatus.WAITING);
 
-        Booking bookingWithIncorrectTime = BookingBuilder.buildBooking(7,
+        Booking bookingWithIncorrectTime = TestBookingProvider.provideBooking(7,
                 LocalDateTime.of(2023, 1, 21, 20, 30),
                 LocalDateTime.of(2023, 1, 20, 20, 30),
-                ItemBuilder.buildItem(7, "item", "desc", true, new User(), null, null, null, null),
-                UserBuilder.buildUser(7, "user", "email"),
+                TestItemProvider.provideItem(7, "item", "desc", true, new User(), null, null, null, null),
+                TestUserProvider.buildUser(7, "user", "email"),
                 BookingStatus.WAITING);
 
 
@@ -173,32 +173,32 @@ class BookingServiceImplTest {
 
     @Test
     void approveBooking() {
-        Booking alreadyApprovedBooking = BookingBuilder.buildBooking(1,
+        Booking alreadyApprovedBooking = TestBookingProvider.provideBooking(1,
                 LocalDateTime.of(2023, 1, 20, 20, 30),
                 LocalDateTime.of(2023, 1, 21, 20, 30),
-                ItemBuilder.buildItem(1, "item", "desc", true, UserBuilder.buildUser(2, "user", "email"), null, null, null, null),
-                UserBuilder.buildUser(1, "user", "email"),
+                TestItemProvider.provideItem(1, "item", "desc", true, TestUserProvider.buildUser(2, "user", "email"), null, null, null, null),
+                TestUserProvider.buildUser(1, "user", "email"),
                 BookingStatus.APPROVED);
 
-        Booking bookingWithIncorrectUserId = BookingBuilder.buildBooking(2,
+        Booking bookingWithIncorrectUserId = TestBookingProvider.provideBooking(2,
                 LocalDateTime.of(2023, 1, 20, 20, 30),
                 LocalDateTime.of(2023, 1, 21, 20, 30),
-                ItemBuilder.buildItem(2, "item", "desc", true, UserBuilder.buildUser(1, "user", "email"), null, null, null, null),
-                UserBuilder.buildUser(99, "user", "email"),
+                TestItemProvider.provideItem(2, "item", "desc", true, TestUserProvider.buildUser(1, "user", "email"), null, null, null, null),
+                TestUserProvider.buildUser(99, "user", "email"),
                 BookingStatus.WAITING);
 
-        Booking bookingWithIncorrectOwner = BookingBuilder.buildBooking(3,
+        Booking bookingWithIncorrectOwner = TestBookingProvider.provideBooking(3,
                 LocalDateTime.of(2023, 1, 20, 20, 30),
                 LocalDateTime.of(2023, 1, 21, 20, 30),
-                ItemBuilder.buildItem(3, "item", "desc", true, UserBuilder.buildUser(1, "user", "email"), null, null, null, null),
-                UserBuilder.buildUser(3, "user", "email"),
+                TestItemProvider.provideItem(3, "item", "desc", true, TestUserProvider.buildUser(1, "user", "email"), null, null, null, null),
+                TestUserProvider.buildUser(3, "user", "email"),
                 BookingStatus.WAITING);
 
-        Booking booking = BookingBuilder.buildBooking(4,
+        Booking booking = TestBookingProvider.provideBooking(4,
                 LocalDateTime.of(2023, 1, 20, 20, 30),
                 LocalDateTime.of(2023, 1, 21, 20, 30),
-                ItemBuilder.buildItem(4, "item", "desc", true, UserBuilder.buildUser(4, "user", "email"), null, null, null, null),
-                UserBuilder.buildUser(4, "user", "email"),
+                TestItemProvider.provideItem(4, "item", "desc", true, TestUserProvider.buildUser(4, "user", "email"), null, null, null, null),
+                TestUserProvider.buildUser(4, "user", "email"),
                 BookingStatus.WAITING);
 
 
@@ -242,11 +242,11 @@ class BookingServiceImplTest {
 
     @Test
     void getById() {
-        Booking booking = BookingBuilder.buildBooking(1,
+        Booking booking = TestBookingProvider.provideBooking(1,
                 LocalDateTime.of(2023, 1, 20, 20, 30),
                 LocalDateTime.of(2023, 1, 21, 20, 30),
-                ItemBuilder.buildItem(1, "item", "desc", true, UserBuilder.buildUser(2, "user", "email"), null, null, null, null),
-                UserBuilder.buildUser(1, "user", "email"),
+                TestItemProvider.provideItem(1, "item", "desc", true, TestUserProvider.buildUser(2, "user", "email"), null, null, null, null),
+                TestUserProvider.buildUser(1, "user", "email"),
                 BookingStatus.WAITING);
 
 

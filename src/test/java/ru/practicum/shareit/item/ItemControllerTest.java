@@ -9,9 +9,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import ru.practicum.shareit.classBuilder.CommentBuilder;
-import ru.practicum.shareit.classBuilder.ItemBuilder;
-import ru.practicum.shareit.classBuilder.UserBuilder;
+import ru.practicum.shareit.classBuilder.TestCommentProvider;
+import ru.practicum.shareit.classBuilder.TestItemProvider;
+import ru.practicum.shareit.classBuilder.TestUserProvider;
 import ru.practicum.shareit.item.controller.ItemController;
 import ru.practicum.shareit.item.dto.CommentRequest;
 import ru.practicum.shareit.item.dto.ItemCreateRequest;
@@ -47,8 +47,8 @@ class ItemControllerTest {
 
     @Test
     void add() throws Exception {
-        Item item = ItemBuilder.buildItem(1, "item", "desc", true,
-                UserBuilder.buildUser(1, "user", "email"),
+        Item item = TestItemProvider.provideItem(1, "item", "desc", true,
+                TestUserProvider.buildUser(1, "user", "email"),
                 null, null, null, null);
 
         ItemCreateRequest request = new ItemCreateRequest();
@@ -74,8 +74,8 @@ class ItemControllerTest {
 
     @Test
     void get() throws Exception {
-        Item item = ItemBuilder.buildItem(1, "item", "desc", true,
-                UserBuilder.buildUser(1, "user", "email"),
+        Item item = TestItemProvider.provideItem(1, "item", "desc", true,
+                TestUserProvider.buildUser(1, "user", "email"),
                 null, null, null, null);
 
         when(itemService.get(1, 1)).thenReturn(item);
@@ -97,11 +97,11 @@ class ItemControllerTest {
 
     @Test
     void getAllForOwner() throws Exception {
-        List<Item> items = List.of(ItemBuilder.buildItem(1, "item", "desc", true,
-                        UserBuilder.buildUser(1, "user", "email"),
+        List<Item> items = List.of(TestItemProvider.provideItem(1, "item", "desc", true,
+                        TestUserProvider.buildUser(1, "user", "email"),
                         null, null, null, null),
-                ItemBuilder.buildItem(2, "item2", "desc2", true,
-                        UserBuilder.buildUser(1, "user", "email"),
+                TestItemProvider.provideItem(2, "item2", "desc2", true,
+                        TestUserProvider.buildUser(1, "user", "email"),
                         null, null, null, null));
 
         when(itemService.getByOwnerId(1, 0, 1)).thenReturn(List.of(items.get(0)));
@@ -145,11 +145,11 @@ class ItemControllerTest {
 
     @Test
     void search() throws Exception {
-        List<Item> items = List.of(ItemBuilder.buildItem(1, "item", "desc", true,
-                        UserBuilder.buildUser(1, "user", "email"),
+        List<Item> items = List.of(TestItemProvider.provideItem(1, "item", "desc", true,
+                        TestUserProvider.buildUser(1, "user", "email"),
                         null, null, null, null),
-                ItemBuilder.buildItem(2, "other item", "other desc", true,
-                        UserBuilder.buildUser(1, "user", "email"),
+                TestItemProvider.provideItem(2, "other item", "other desc", true,
+                        TestUserProvider.buildUser(1, "user", "email"),
                         null, null, null, null));
 
         when(itemService.search("other", 0, 1)).thenReturn(List.of(items.get(0)));
@@ -189,8 +189,8 @@ class ItemControllerTest {
         request.setName("update name");
         request.setDescription("update desc");
         request.setAvailable(true);
-        Item item = ItemBuilder.buildItem(1, "update name", "update desc", true,
-                UserBuilder.buildUser(1, "user", "email"),
+        Item item = TestItemProvider.provideItem(1, "update name", "update desc", true,
+                TestUserProvider.buildUser(1, "user", "email"),
                 null, null, null, null);
 
         when(itemService.update(eq(1), any())).thenReturn(item);
@@ -219,8 +219,8 @@ class ItemControllerTest {
         CommentRequest badRequest = new CommentRequest();
         badRequest.setText("");
 
-        Comment comment = CommentBuilder.buildComment(1, "comment", new Item(),
-                UserBuilder.buildUser(1, "name", "email"), LocalDateTime.now());
+        Comment comment = TestCommentProvider.provideComment(1, "comment", new Item(),
+                TestUserProvider.buildUser(1, "name", "email"), LocalDateTime.now());
 
         when(itemService.addComment(any())).thenReturn(comment);
 

@@ -4,9 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import ru.practicum.shareit.classBuilder.CommentBuilder;
-import ru.practicum.shareit.classBuilder.ItemBuilder;
-import ru.practicum.shareit.classBuilder.UserBuilder;
+import ru.practicum.shareit.classBuilder.TestCommentProvider;
+import ru.practicum.shareit.classBuilder.TestItemProvider;
+import ru.practicum.shareit.classBuilder.TestUserProvider;
 import ru.practicum.shareit.item.entity.CommentEntity;
 import ru.practicum.shareit.item.entity.ItemEntity;
 import ru.practicum.shareit.item.storage.CommentRepository;
@@ -43,13 +43,13 @@ class CommentRepositoryTest {
         itemRepository.deleteAll();
         commentRepository.deleteAll();
 
-        user = UserBuilder.buildUserEntity(null, "user", "user@yandex.ru");
+        user = TestUserProvider.buildUserEntity(null, "user", "user@yandex.ru");
         user = userRepository.save(user);
 
-        item = ItemBuilder.buildItemEntity(null, "Дрель", "Проводная дрель", true, user, null);
+        item = TestItemProvider.provideItemEntity(null, "Дрель", "Проводная дрель", true, user, null);
         item = itemRepository.save(item);
 
-        comment = CommentBuilder.buildCommentEntity(null, "text", item, user, LocalDateTime.now());
+        comment = TestCommentProvider.provideCommentEntity(null, "text", item, user, LocalDateTime.now());
         comment = commentRepository.save(comment);
     }
 

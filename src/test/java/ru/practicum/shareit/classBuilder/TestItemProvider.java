@@ -11,10 +11,10 @@ import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 
-public class ItemBuilder {
+public class TestItemProvider {
 
-    public static Item buildItem(Integer id, String name, String description, Boolean available, User owner,
-                                 ItemRequest request, Booking lastBooking, Booking nextBooking, List<Comment> comments) {
+    public static Item provideItem(Integer id, String name, String description, Boolean available, User owner,
+                                   ItemRequest request, Booking lastBooking, Booking nextBooking, List<Comment> comments) {
         Item item = new Item();
         item.setId(id);
         item.setName(name);
@@ -28,8 +28,8 @@ public class ItemBuilder {
         return item;
     }
 
-    public static ItemEntity buildItemEntity(Integer id, String name, String description, Boolean available, UserEntity owner,
-                                             ItemRequestEntity request) {
+    public static ItemEntity provideItemEntity(Integer id, String name, String description, Boolean available, UserEntity owner,
+                                               ItemRequestEntity request) {
         ItemEntity itemEntity = new ItemEntity();
         itemEntity.setName(name);
         itemEntity.setDescription(description);

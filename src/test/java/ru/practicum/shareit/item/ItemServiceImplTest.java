@@ -11,10 +11,10 @@ import ru.practicum.shareit.booking.entity.BookingEntity;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.storage.BookingRepository;
-import ru.practicum.shareit.classBuilder.CommentBuilder;
-import ru.practicum.shareit.classBuilder.ItemBuilder;
-import ru.practicum.shareit.classBuilder.ItemRequestBuilder;
-import ru.practicum.shareit.classBuilder.UserBuilder;
+import ru.practicum.shareit.classBuilder.TestCommentProvider;
+import ru.practicum.shareit.classBuilder.TestItemProvider;
+import ru.practicum.shareit.classBuilder.TestItemRequestProvider;
+import ru.practicum.shareit.classBuilder.TestUserProvider;
 import ru.practicum.shareit.exception.DataAlreadyExistsException;
 import ru.practicum.shareit.exception.DataDoesNotExistsException;
 import ru.practicum.shareit.exception.PaginationParamsException;
@@ -82,17 +82,17 @@ class ItemServiceImplTest {
 
     @Test
     void add() {
-        Item itemWithIncorrectRequestId = ItemBuilder.buildItem(1, "item", "desc", true, null,
-                ItemRequestBuilder.buildItemRequest(99, null, null, null, null),
+        Item itemWithIncorrectRequestId = TestItemProvider.provideItem(1, "item", "desc", true, null,
+                TestItemRequestProvider.provideItemRequest(99, null, null, null, null),
                 null, null, null);
 
-        Item item = ItemBuilder.buildItem(2, "item", "desc", true, null,
-                ItemRequestBuilder.buildItemRequest(1, null, null, null, null),
+        Item item = TestItemProvider.provideItem(2, "item", "desc", true, null,
+                TestItemRequestProvider.provideItemRequest(1, null, null, null, null),
                 null, null, null);
 
-        Item item2 = ItemBuilder.buildItem(3, "item", "desc", true,
-                UserBuilder.buildUser(1, "user", "email"),
-                ItemRequestBuilder.buildItemRequest(2, null, null, null, null),
+        Item item2 = TestItemProvider.provideItem(3, "item", "desc", true,
+                TestUserProvider.buildUser(1, "user", "email"),
+                TestItemRequestProvider.provideItemRequest(2, null, null, null, null),
                 null, null, null);
 
         ItemEntity item2Entity = itemMapper.toItemEntity(item2);
@@ -117,9 +117,9 @@ class ItemServiceImplTest {
 
     @Test
     void get() {
-        Item item = ItemBuilder.buildItem(1, "item", "desc", true,
-                UserBuilder.buildUser(1, "user", "email"),
-                ItemRequestBuilder.buildItemRequest(1, null, null, null, null),
+        Item item = TestItemProvider.provideItem(1, "item", "desc", true,
+                TestUserProvider.buildUser(1, "user", "email"),
+                TestItemRequestProvider.provideItemRequest(1, null, null, null, null),
                 null, null, null);
         ItemEntity itemEntity = itemMapper.toItemEntity(item);
         BookingEntity bookingEntity = new BookingEntity();
@@ -142,21 +142,21 @@ class ItemServiceImplTest {
         Item empty = new Item();
         ItemEntity emptyEntity = itemMapper.toItemEntity(empty);
 
-        Item item = ItemBuilder.buildItem(1, "item", "desc", true,
-                UserBuilder.buildUser(1, "user", "email"),
-                ItemRequestBuilder.buildItemRequest(1, null, null, null, null),
+        Item item = TestItemProvider.provideItem(1, "item", "desc", true,
+                TestUserProvider.buildUser(1, "user", "email"),
+                TestItemRequestProvider.provideItemRequest(1, null, null, null, null),
                 null, null, null);
         ItemEntity itemEntity = itemMapper.toItemEntity(item);
 
-        Item itemForUpdate = ItemBuilder.buildItem(2, "item", "desc", true,
-                UserBuilder.buildUser(2, "user", "email"),
-                ItemRequestBuilder.buildItemRequest(2, null, null, null, null),
+        Item itemForUpdate = TestItemProvider.provideItem(2, "item", "desc", true,
+                TestUserProvider.buildUser(2, "user", "email"),
+                TestItemRequestProvider.provideItemRequest(2, null, null, null, null),
                 null, null, null);
         ItemEntity itemForUpdateEntity = itemMapper.toItemEntity(itemForUpdate);
 
-        Item update = ItemBuilder.buildItem(2, "item", "new desc", false,
-                UserBuilder.buildUser(2, "user", "email"),
-                ItemRequestBuilder.buildItemRequest(2, null, null, null, null),
+        Item update = TestItemProvider.provideItem(2, "item", "new desc", false,
+                TestUserProvider.buildUser(2, "user", "email"),
+                TestItemRequestProvider.provideItemRequest(2, null, null, null, null),
                 null, null, null);
         ItemEntity updateEntity = itemMapper.toItemEntity(update);
 
@@ -183,15 +183,15 @@ class ItemServiceImplTest {
 
     @Test
     void delete() {
-        Item itemWithIncorrectOwnerId = ItemBuilder.buildItem(1, "item", "desc", true,
-                UserBuilder.buildUser(99, "user", "email"),
-                ItemRequestBuilder.buildItemRequest(1, null, null, null, null),
+        Item itemWithIncorrectOwnerId = TestItemProvider.provideItem(1, "item", "desc", true,
+                TestUserProvider.buildUser(99, "user", "email"),
+                TestItemRequestProvider.provideItemRequest(1, null, null, null, null),
                 null, null, null);
         ItemEntity itemEntityWithIncorrectOwnerId = itemMapper.toItemEntity(itemWithIncorrectOwnerId);
 
-        Item item = ItemBuilder.buildItem(2, "item", "desc", true,
-                UserBuilder.buildUser(2, "user", "email"),
-                ItemRequestBuilder.buildItemRequest(2, null, null, null, null),
+        Item item = TestItemProvider.provideItem(2, "item", "desc", true,
+                TestUserProvider.buildUser(2, "user", "email"),
+                TestItemRequestProvider.provideItemRequest(2, null, null, null, null),
                 null, null, null);
         ItemEntity itemEntity = itemMapper.toItemEntity(item);
 
@@ -213,9 +213,9 @@ class ItemServiceImplTest {
 
     @Test
     void search() {
-        Item item = ItemBuilder.buildItem(1, "item", "desc", true,
-                UserBuilder.buildUser(1, "user", "email"),
-                ItemRequestBuilder.buildItemRequest(1, null, null, null, null),
+        Item item = TestItemProvider.provideItem(1, "item", "desc", true,
+                TestUserProvider.buildUser(1, "user", "email"),
+                TestItemRequestProvider.provideItemRequest(1, null, null, null, null),
                 null, null, null);
         ItemEntity itemEntity = itemMapper.toItemEntity(item);
         Page<ItemEntity> page = new PageImpl<>(List.of(itemEntity));
@@ -236,8 +236,8 @@ class ItemServiceImplTest {
 
     @Test
     void getByOwnerId() {
-        Item item = ItemBuilder.buildItem(1, "item", "desc", true,
-                UserBuilder.buildUser(1, "user", "email"),
+        Item item = TestItemProvider.provideItem(1, "item", "desc", true,
+                TestUserProvider.buildUser(1, "user", "email"),
                 null, null, null, null);
         ItemEntity itemEntity = itemMapper.toItemEntity(item);
         Page<ItemEntity> page = new PageImpl<>(List.of(itemEntity));
@@ -255,29 +255,29 @@ class ItemServiceImplTest {
 
     @Test
     void addComment() {
-        Comment commentWithBadAuthor = CommentBuilder.buildComment(1, "comment",
+        Comment commentWithBadAuthor = TestCommentProvider.provideComment(1, "comment",
                 new Item(),
-                UserBuilder.buildUser(99, null, null),
+                TestUserProvider.buildUser(99, null, null),
                 LocalDateTime.now());
 
-        Comment commentWithBadItem = CommentBuilder.buildComment(2, "comment",
-                ItemBuilder.buildItem(99, null, null, true, null, null, null, null, null),
-                UserBuilder.buildUser(1, "user", "email"),
+        Comment commentWithBadItem = TestCommentProvider.provideComment(2, "comment",
+                TestItemProvider.provideItem(99, null, null, true, null, null, null, null, null),
+                TestUserProvider.buildUser(1, "user", "email"),
                 LocalDateTime.now());
 
-        Comment commentWithoutBooking = CommentBuilder.buildComment(2, "comment",
-                ItemBuilder.buildItem(2, null, null, true, null, null, null, null, null),
-                UserBuilder.buildUser(2, null, null),
+        Comment commentWithoutBooking = TestCommentProvider.provideComment(2, "comment",
+                TestItemProvider.provideItem(2, null, null, true, null, null, null, null, null),
+                TestUserProvider.buildUser(2, null, null),
                 LocalDateTime.now());
 
-        Comment repeatedComment = CommentBuilder.buildComment(3, "comment",
-                ItemBuilder.buildItem(3, null, null, true, null, null, null, null, null),
-                UserBuilder.buildUser(3, null, null),
+        Comment repeatedComment = TestCommentProvider.provideComment(3, "comment",
+                TestItemProvider.provideItem(3, null, null, true, null, null, null, null, null),
+                TestUserProvider.buildUser(3, null, null),
                 LocalDateTime.now());
 
-        Comment comment = CommentBuilder.buildComment(4, "comment",
-                ItemBuilder.buildItem(4, null, null, true, null, null, null, null, null),
-                UserBuilder.buildUser(4, null, null),
+        Comment comment = TestCommentProvider.provideComment(4, "comment",
+                TestItemProvider.provideItem(4, null, null, true, null, null, null, null, null),
+                TestUserProvider.buildUser(4, null, null),
                 LocalDateTime.now());
 
 

@@ -5,8 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Pageable;
-import ru.practicum.shareit.classBuilder.ItemRequestBuilder;
-import ru.practicum.shareit.classBuilder.UserBuilder;
+import ru.practicum.shareit.classBuilder.TestItemRequestProvider;
+import ru.practicum.shareit.classBuilder.TestUserProvider;
 import ru.practicum.shareit.request.entity.ItemRequestEntity;
 import ru.practicum.shareit.request.storage.ItemRequestRepository;
 import ru.practicum.shareit.user.entity.UserEntity;
@@ -37,16 +37,16 @@ class ItemRequestRepositoryTest {
         repository.deleteAll();
         userRepository.deleteAll();
 
-        user1 = UserBuilder.buildUserEntity(null, "name", "email@yandex.ru");
+        user1 = TestUserProvider.buildUserEntity(null, "name", "email@yandex.ru");
         user1 = userRepository.save(user1);
-        user2 = UserBuilder.buildUserEntity(null, "other name", "otherEmail@yandex.ru");
+        user2 = TestUserProvider.buildUserEntity(null, "other name", "otherEmail@yandex.ru");
         user2 = userRepository.save(user2);
 
-        itemRequest1 = ItemRequestBuilder.buildItemRequestEntity(null, "desc", user1, LocalDateTime.now());
+        itemRequest1 = TestItemRequestProvider.provideItemRequestEntity(null, "desc", user1, LocalDateTime.now());
         itemRequest1 = repository.save(itemRequest1);
-        itemRequest2 = ItemRequestBuilder.buildItemRequestEntity(null, "desc", user1, LocalDateTime.now());
+        itemRequest2 = TestItemRequestProvider.provideItemRequestEntity(null, "desc", user1, LocalDateTime.now());
         itemRequest2 = repository.save(itemRequest2);
-        itemRequest3 = ItemRequestBuilder.buildItemRequestEntity(null, "desc", user2, LocalDateTime.now());
+        itemRequest3 = TestItemRequestProvider.provideItemRequestEntity(null, "desc", user2, LocalDateTime.now());
         itemRequest3 = repository.save(itemRequest3);
     }
 

@@ -8,9 +8,9 @@ import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.booking.entity.BookingEntity;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.storage.BookingRepository;
-import ru.practicum.shareit.classBuilder.BookingBuilder;
-import ru.practicum.shareit.classBuilder.ItemBuilder;
-import ru.practicum.shareit.classBuilder.UserBuilder;
+import ru.practicum.shareit.classBuilder.TestBookingProvider;
+import ru.practicum.shareit.classBuilder.TestItemProvider;
+import ru.practicum.shareit.classBuilder.TestUserProvider;
 import ru.practicum.shareit.item.entity.ItemEntity;
 import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.user.entity.UserEntity;
@@ -45,18 +45,18 @@ class BookingRepositoryTest {
         userRepository.deleteAll();
         itemRepository.deleteAll();
 
-        itemOwner = UserBuilder.buildUserEntity(null, "itemOwner", "owner@yandex.ru");
+        itemOwner = TestUserProvider.buildUserEntity(null, "itemOwner", "owner@yandex.ru");
         itemOwner = userRepository.save(itemOwner);
-        booker = UserBuilder.buildUserEntity(null, "booker", "booker@yandex.ru");
+        booker = TestUserProvider.buildUserEntity(null, "booker", "booker@yandex.ru");
         booker = userRepository.save(booker);
 
-        item = ItemBuilder.buildItemEntity(null, "Дрель", "Проводная дрель", true, itemOwner, null);
+        item = TestItemProvider.provideItemEntity(null, "Дрель", "Проводная дрель", true, itemOwner, null);
         item = itemRepository.save(item);
     }
 
     @Test
     void existsBookingByItemIdAndBookerIdAndStatus() {
-        BookingEntity booking = BookingBuilder.buildBookingEntity(null, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), item, booker, BookingStatus.WAITING);
+        BookingEntity booking = TestBookingProvider.provideBookingEntity(null, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), item, booker, BookingStatus.WAITING);
         bookingRepository.save(booking);
 
         assertTrue(bookingRepository.existsBookingByItemIdAndBookerIdAndStatus(item.getId(), booker.getId(), BookingStatus.WAITING));
@@ -65,7 +65,7 @@ class BookingRepositoryTest {
 
     @Test
     void findAllByBookerId() {
-        BookingEntity booking = BookingBuilder.buildBookingEntity(null, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), item, booker, BookingStatus.WAITING);
+        BookingEntity booking = TestBookingProvider.provideBookingEntity(null, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), item, booker, BookingStatus.WAITING);
         bookingRepository.save(booking);
 
         assertEquals(List.of(booking),
@@ -74,7 +74,7 @@ class BookingRepositoryTest {
 
     @Test
     void findAllByBookerIdAndEndIsBefore() {
-        BookingEntity booking = BookingBuilder.buildBookingEntity(null, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), item, booker, BookingStatus.WAITING);
+        BookingEntity booking = TestBookingProvider.provideBookingEntity(null, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), item, booker, BookingStatus.WAITING);
         bookingRepository.save(booking);
 
         assertEquals(List.of(booking),
@@ -84,7 +84,7 @@ class BookingRepositoryTest {
 
     @Test
     void findAllByBookerIdAndStartIsBeforeAndEndIsAfter() {
-        BookingEntity booking = BookingBuilder.buildBookingEntity(null, LocalDateTime.now().minusDays(1), LocalDateTime.now().plusDays(2), item, booker, BookingStatus.WAITING);
+        BookingEntity booking = TestBookingProvider.provideBookingEntity(null, LocalDateTime.now().minusDays(1), LocalDateTime.now().plusDays(2), item, booker, BookingStatus.WAITING);
         bookingRepository.save(booking);
 
         assertEquals(List.of(booking),
@@ -94,7 +94,7 @@ class BookingRepositoryTest {
 
     @Test
     void findAllByBookerIdAndStartIsAfter() {
-        BookingEntity booking = BookingBuilder.buildBookingEntity(null, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), item, booker, BookingStatus.WAITING);
+        BookingEntity booking = TestBookingProvider.provideBookingEntity(null, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), item, booker, BookingStatus.WAITING);
         bookingRepository.save(booking);
 
         assertEquals(List.of(booking), bookingRepository.findAllByBookerIdAndStartIsAfter(booker.getId(), LocalDateTime.now(),
@@ -103,7 +103,7 @@ class BookingRepositoryTest {
 
     @Test
     void findAllByBookerIdAndStatus() {
-        BookingEntity booking = BookingBuilder.buildBookingEntity(null, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), item, booker, BookingStatus.WAITING);
+        BookingEntity booking = TestBookingProvider.provideBookingEntity(null, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), item, booker, BookingStatus.WAITING);
         bookingRepository.save(booking);
 
         assertEquals(List.of(booking),
@@ -112,7 +112,7 @@ class BookingRepositoryTest {
 
     @Test
     void findAllByItemOwnerId() {
-        BookingEntity booking = BookingBuilder.buildBookingEntity(null, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), item, booker, BookingStatus.WAITING);
+        BookingEntity booking = TestBookingProvider.provideBookingEntity(null, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), item, booker, BookingStatus.WAITING);
         bookingRepository.save(booking);
 
         assertEquals(List.of(booking),
@@ -121,7 +121,7 @@ class BookingRepositoryTest {
 
     @Test
     void findAllByItemOwnerIdAndEndIsAfterAndStartIsBefore() {
-        BookingEntity booking = BookingBuilder.buildBookingEntity(null, LocalDateTime.now().minusDays(1), LocalDateTime.now().plusDays(2), item, booker, BookingStatus.WAITING);
+        BookingEntity booking = TestBookingProvider.provideBookingEntity(null, LocalDateTime.now().minusDays(1), LocalDateTime.now().plusDays(2), item, booker, BookingStatus.WAITING);
         bookingRepository.save(booking);
 
         assertEquals(List.of(booking),
@@ -131,7 +131,7 @@ class BookingRepositoryTest {
 
     @Test
     void findAllByItemOwnerIdAndEndIsBefore() {
-        BookingEntity booking = BookingBuilder.buildBookingEntity(null, LocalDateTime.now().minusDays(2), LocalDateTime.now().minusDays(1), item, booker, BookingStatus.WAITING);
+        BookingEntity booking = TestBookingProvider.provideBookingEntity(null, LocalDateTime.now().minusDays(2), LocalDateTime.now().minusDays(1), item, booker, BookingStatus.WAITING);
         bookingRepository.save(booking);
 
         assertEquals(List.of(booking),
@@ -141,7 +141,7 @@ class BookingRepositoryTest {
 
     @Test
     void findAllByItemOwnerIdAndStartIsAfter() {
-        BookingEntity booking = BookingBuilder.buildBookingEntity(null, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), item, booker, BookingStatus.WAITING);
+        BookingEntity booking = TestBookingProvider.provideBookingEntity(null, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), item, booker, BookingStatus.WAITING);
         bookingRepository.save(booking);
 
         assertEquals(List.of(booking),
@@ -151,7 +151,7 @@ class BookingRepositoryTest {
 
     @Test
     void findAllByItemOwnerIdAndStatus() {
-        BookingEntity booking = BookingBuilder.buildBookingEntity(null, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), item, booker, BookingStatus.WAITING);
+        BookingEntity booking = TestBookingProvider.provideBookingEntity(null, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), item, booker, BookingStatus.WAITING);
         bookingRepository.save(booking);
 
         assertEquals(List.of(booking),
@@ -160,7 +160,7 @@ class BookingRepositoryTest {
 
     @Test
     void existsBookingByItemIdAndBookerIdAndStatusAndEndIsBefore() {
-        BookingEntity booking = BookingBuilder.buildBookingEntity(null, LocalDateTime.now().minusDays(2), LocalDateTime.now().minusDays(1), item, booker, BookingStatus.WAITING);
+        BookingEntity booking = TestBookingProvider.provideBookingEntity(null, LocalDateTime.now().minusDays(2), LocalDateTime.now().minusDays(1), item, booker, BookingStatus.WAITING);
         bookingRepository.save(booking);
 
         assertTrue(bookingRepository.existsBookingByItemIdAndBookerIdAndStatusAndEndIsBefore(item.getId(),
@@ -171,9 +171,9 @@ class BookingRepositoryTest {
 
     @Test
     void findLastAndNextBookingByItemId() {
-        BookingEntity last = BookingBuilder.buildBookingEntity(null, LocalDateTime.now().minusDays(2), LocalDateTime.now().minusDays(1), item, booker, BookingStatus.APPROVED);
+        BookingEntity last = TestBookingProvider.provideBookingEntity(null, LocalDateTime.now().minusDays(2), LocalDateTime.now().minusDays(1), item, booker, BookingStatus.APPROVED);
         bookingRepository.save(last);
-        BookingEntity next = BookingBuilder.buildBookingEntity(null, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), item, booker, BookingStatus.APPROVED);
+        BookingEntity next = TestBookingProvider.provideBookingEntity(null, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), item, booker, BookingStatus.APPROVED);
         bookingRepository.save(next);
 
         assertEquals(List.of(last, next),
