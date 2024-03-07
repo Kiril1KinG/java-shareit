@@ -25,19 +25,21 @@ import ru.practicum.shareit.item.service.ItemService;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest({ItemController.class, ItemMapper.class, CommentMapper.class})
 class ItemControllerTest {
 
-    private final ItemMapper itemMapper = Mappers.getMapper(ItemMapper.class);
+    private final ItemMapper mapper = Mappers.getMapper(ItemMapper.class);
+    private final CommentMapper commentMapper = Mappers.getMapper(CommentMapper.class);
     @Autowired
     private MockMvc mvc;
     @Autowired
@@ -66,10 +68,7 @@ class ItemControllerTest {
                         .header("X-Sharer-User-Id", 1)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.name").value("item"))
-                .andExpect(jsonPath("$.description").value("desc"))
-                .andExpect(jsonPath("$.available").value("true"));
+                .andExpect(content().json(objectMapper.writeValueAsString(mapper.toResponse(item))));
     }
 
     @Test
@@ -86,13 +85,7 @@ class ItemControllerTest {
                         .header("X-Sharer-User-Id", 1)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.name").value("item"))
-                .andExpect(jsonPath("$.description").value("desc"))
-                .andExpect(jsonPath("$.available").value("true"))
-                .andExpect(jsonPath("$.lastBooking").hasJsonPath())
-                .andExpect(jsonPath("$.nextBooking").hasJsonPath())
-                .andExpect(jsonPath("$.comments").hasJsonPath());
+                .andExpect(content().json(objectMapper.writeValueAsString(mapper.toItemWithBookingsResponse(item))));
     }
 
     @Test
@@ -113,20 +106,9 @@ class ItemControllerTest {
                         .header("X-Sharer-User-Id", 1)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("[0].id").value(1))
-                .andExpect(jsonPath("[0].name").value("item"))
-                .andExpect(jsonPath("[0].description").value("desc"))
-                .andExpect(jsonPath("[0].available").value("true"))
-                .andExpect(jsonPath("[0].lastBooking").hasJsonPath())
-                .andExpect(jsonPath("[0].nextBooking").hasJsonPath())
-                .andExpect(jsonPath("[0].comments").hasJsonPath())
-                .andExpect(jsonPath("[1].id").value(2))
-                .andExpect(jsonPath("[1].name").value("item2"))
-                .andExpect(jsonPath("[1].description").value("desc2"))
-                .andExpect(jsonPath("[1].available").value("true"))
-                .andExpect(jsonPath("[1].lastBooking").hasJsonPath())
-                .andExpect(jsonPath("[1].nextBooking").hasJsonPath())
-                .andExpect(jsonPath("[1].comments").hasJsonPath());
+                .andExpect(content().json(objectMapper.writeValueAsString(items.stream()
+                        .map(mapper::toItemWithBookingsResponse)
+                        .collect(Collectors.toList()))));
 
         mvc.perform(MockMvcRequestBuilders.get("/items?from=0&size=1")
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -134,13 +116,10 @@ class ItemControllerTest {
                         .header("X-Sharer-User-Id", 1)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("[0].id").value(1))
-                .andExpect(jsonPath("[0].name").value("item"))
-                .andExpect(jsonPath("[0].description").value("desc"))
-                .andExpect(jsonPath("[0].available").value("true"))
-                .andExpect(jsonPath("[0].lastBooking").hasJsonPath())
-                .andExpect(jsonPath("[0].nextBooking").hasJsonPath())
-                .andExpect(jsonPath("[0].comments").hasJsonPath());
+                .andExpect(content().json(objectMapper.writeValueAsString(items.stream()
+                        .map(mapper::toItemWithBookingsResponse)
+                        .limit(1)
+                        .collect(Collectors.toList()))));
     }
 
     @Test
@@ -160,27 +139,19 @@ class ItemControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("[0].id").value(1))
-                .andExpect(jsonPath("[0].name").value("item"))
-                .andExpect(jsonPath("[0].description").value("desc"))
-                .andExpect(jsonPath("[0].available").value("true"))
-                .andExpect(jsonPath("[0].comments").hasJsonPath())
-                .andExpect(jsonPath("[1].id").value(2))
-                .andExpect(jsonPath("[1].name").value("other item"))
-                .andExpect(jsonPath("[1].description").value("other desc"))
-                .andExpect(jsonPath("[1].available").value("true"))
-                .andExpect(jsonPath("[1].comments").hasJsonPath());
+                .andExpect(content().json(objectMapper.writeValueAsString(items.stream()
+                        .map(mapper::toResponse)
+                        .collect(Collectors.toList()))));
 
         mvc.perform(MockMvcRequestBuilders.get("/items/search?text=other&from=0&size=1")
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("[0].id").value(1))
-                .andExpect(jsonPath("[0].name").value("item"))
-                .andExpect(jsonPath("[0].description").value("desc"))
-                .andExpect(jsonPath("[0].available").value("true"))
-                .andExpect(jsonPath("[0].comments").hasJsonPath());
+                .andExpect(content().json(objectMapper.writeValueAsString(items.stream()
+                        .map(mapper::toResponse)
+                        .limit(1)
+                        .collect(Collectors.toList()))));
     }
 
     @Test
@@ -202,11 +173,7 @@ class ItemControllerTest {
                         .header("X-Sharer-User-Id", 1)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.name").value("update name"))
-                .andExpect(jsonPath("$.description").value("update desc"))
-                .andExpect(jsonPath("$.available").value("true"))
-                .andExpect(jsonPath("$.comments").hasJsonPath());
+                .andExpect(content().json(objectMapper.writeValueAsString(mapper.toResponse(item))));
 
 
     }
@@ -231,10 +198,7 @@ class ItemControllerTest {
                         .header("X-Sharer-User-Id", 1)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.text").value("comment"))
-                .andExpect(jsonPath("$.authorName").hasJsonPath())
-                .andExpect(jsonPath("$.created").hasJsonPath());
+                .andExpect(content().json(objectMapper.writeValueAsString(commentMapper.toResponse(comment))));
 
         mvc.perform(post("/items/1/comment")
                         .characterEncoding(StandardCharsets.UTF_8)

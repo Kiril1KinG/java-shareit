@@ -2,6 +2,7 @@ package ru.practicum.shareit.itemRequest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -12,7 +13,6 @@ import ru.practicum.shareit.classBuilder.TestUserProvider;
 import ru.practicum.shareit.exception.PaginationParamsException;
 import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.controller.ItemRequestController;
 import ru.practicum.shareit.request.dto.ItemRequestRequest;
 import ru.practicum.shareit.request.mapper.ItemRequestMapper;
@@ -23,23 +23,23 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest({ItemRequestController.class, ItemRequestMapper.class, ItemMapper.class, CommentMapper.class})
 class ItemRequestControllerTest {
 
+    private final ItemRequestMapper mapper = Mappers.getMapper(ItemRequestMapper.class);
     @MockBean
     private ItemRequestService itemRequestService;
-
     @Autowired
     private ObjectMapper objectMapper;
-
     @Autowired
     private MockMvc mvc;
 
@@ -64,9 +64,7 @@ class ItemRequestControllerTest {
                         .header("X-Sharer-User-Id", 1)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.description").value("desc"))
-                .andExpect(jsonPath("$.created").hasJsonPath());
+                .andExpect(content().json(objectMapper.writeValueAsString(mapper.toResponse(itemRequest))));
     }
 
     @Test
@@ -74,7 +72,7 @@ class ItemRequestControllerTest {
         List<ItemRequest> itemRequests = List.of(
                 TestItemRequestProvider.provideItemRequest(1, "desc",
                         TestUserProvider.buildUser(1, "name", "email"),
-                        LocalDateTime.now(), List.of(new Item())),
+                        LocalDateTime.now(), new ArrayList<>()),
                 TestItemRequestProvider.provideItemRequest(2, "desc2",
                         TestUserProvider.buildUser(1, "name", "email"),
                         LocalDateTime.now(), new ArrayList<>()));
@@ -87,14 +85,9 @@ class ItemRequestControllerTest {
                         .header("X-Sharer-User-Id", 1)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("[0].id").value(1))
-                .andExpect(jsonPath("[0].description").value("desc"))
-                .andExpect(jsonPath("[0].created").hasJsonPath())
-                .andExpect(jsonPath("[0].items").hasJsonPath())
-                .andExpect(jsonPath("[1].id").value(2))
-                .andExpect(jsonPath("[1].description").value("desc2"))
-                .andExpect(jsonPath("[1].created").hasJsonPath())
-                .andExpect(jsonPath("[1].items").hasJsonPath());
+                .andExpect(content().json(objectMapper.writeValueAsString(itemRequests.stream()
+                        .map(mapper::toResponseWithItems)
+                        .collect(Collectors.toList()))));
     }
 
     @Test
@@ -117,14 +110,9 @@ class ItemRequestControllerTest {
                         .header("X-Sharer-User-Id", 1)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("[0].id").value(1))
-                .andExpect(jsonPath("[0].description").value("desc"))
-                .andExpect(jsonPath("[0].created").hasJsonPath())
-                .andExpect(jsonPath("[0].items").hasJsonPath())
-                .andExpect(jsonPath("[1].id").value(2))
-                .andExpect(jsonPath("[1].description").value("desc2"))
-                .andExpect(jsonPath("[1].created").hasJsonPath())
-                .andExpect(jsonPath("[1].items").hasJsonPath());
+                .andExpect(content().json(objectMapper.writeValueAsString(itemRequests.stream()
+                        .map(mapper::toResponseWithItems)
+                        .collect(Collectors.toList()))));
 
         mvc.perform(get("/requests/all?from=0&size=1")
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -132,10 +120,10 @@ class ItemRequestControllerTest {
                         .header("X-Sharer-User-Id", 1)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("[0].id").value(1))
-                .andExpect(jsonPath("[0].description").value("desc"))
-                .andExpect(jsonPath("[0].created").hasJsonPath())
-                .andExpect(jsonPath("[0].items").hasJsonPath());
+                .andExpect(content().json(objectMapper.writeValueAsString(itemRequests.stream()
+                        .map(mapper::toResponseWithItems)
+                        .limit(1)
+                        .collect(Collectors.toList()))));
 
         mvc.perform(get("/requests/all?size=1")
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -159,9 +147,6 @@ class ItemRequestControllerTest {
                         .header("X-Sharer-User-Id", 1)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.description").value("desc"))
-                .andExpect(jsonPath("$.created").hasJsonPath())
-                .andExpect(jsonPath("$.items").hasJsonPath());
+                .andExpect(content().json(objectMapper.writeValueAsString(mapper.toResponseWithItems(itemRequest))));
     }
 }

@@ -2,6 +2,7 @@ package ru.practicum.shareit.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -20,23 +21,23 @@ import ru.practicum.shareit.user.service.UserService;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest({UserController.class, UserMapper.class})
 class UserControllerTest {
 
+    private final UserMapper mapper = Mappers.getMapper(UserMapper.class);
     @Autowired
     private ObjectMapper objectMapper;
-
     @Autowired
     private MockMvc mvc;
-
     @MockBean
     private UserService userService;
 
@@ -55,9 +56,7 @@ class UserControllerTest {
                         .content(objectMapper.writeValueAsString(request))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("id").value(1))
-                .andExpect(jsonPath("name").value("user"))
-                .andExpect(jsonPath("email").value("email@yandex.ru"));
+                .andExpect(content().json(objectMapper.writeValueAsString(mapper.toResponse(user))));
 
     }
 
@@ -73,9 +72,7 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("id").value(1))
-                .andExpect(jsonPath("name").value("user"))
-                .andExpect(jsonPath("email").value("email@yandex.ru"));
+                .andExpect(content().json(objectMapper.writeValueAsString(mapper.toResponse(user))));
 
         mvc.perform(MockMvcRequestBuilders.get("/users/99")
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -97,12 +94,9 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("[0].id").value(1))
-                .andExpect(jsonPath("[0].name").value("user"))
-                .andExpect(jsonPath("[0].email").value("email@yandex.ru"))
-                .andExpect(jsonPath("[1].id").value(2))
-                .andExpect(jsonPath("[1].name").value("user2"))
-                .andExpect(jsonPath("[1].email").value("email2@yandex.ru"));
+                .andExpect(content().json(objectMapper.writeValueAsString(users.stream()
+                        .map(mapper::toResponse)
+                        .collect(Collectors.toList()))));
     }
 
     @Test
@@ -122,9 +116,7 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("id").value(1))
-                .andExpect(jsonPath("name").value("update user"))
-                .andExpect(jsonPath("email").value("updateEmail@yandex.ru"));
+                .andExpect(content().json(objectMapper.writeValueAsString(mapper.toResponse(user))));
 
         mvc.perform(patch("/users/99")
                         .characterEncoding(StandardCharsets.UTF_8)
