@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  shareit-getaway:
+    build: shareit-getaway
+    image: shareit-getaway-image
+    container_name: shareit-getaway-container
+    ports:
+      - "8080:8081"
+    depends_on:
+      - shareit-server
+    environment:
+      - TZ=Europe/Moscow
+      - SERVER_PORT=8081
+      - SHAREIT_SERVER_URL=http://shareit-server:9091
+
+  shareit-server:
+    build: shareit-server
+    image: shareit-server-image
+    container_name: shareit-server-container
+    ports:
+      - "9090:9091"
+    depends_on:
+      - shareit-db
+    environment:
+      - TZ=Europe/Moscow
+      - SERVER_PORT=9091
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://shareit-db:5432/shareit
+      - SPRING_DATASOURCE_USERNAME=shareit_admin
+      - SPRING_DATASOURCE_PASSWORD=sh0re1t
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
+
+  shareit-db:
+    image: postgres:latest
+    container_name: shareit-db-container
+    ports:
+      - "6541:5432"
+    environment:
+      - TZ=Europe/Moscow
+      - POSTGRES_PASSWORD=sh0re1t
+      - POSTGRES_USER=shareit_admin
+      - POSTGRES_DB=shareit

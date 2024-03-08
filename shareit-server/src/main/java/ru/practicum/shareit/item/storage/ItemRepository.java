@@ -15,7 +15,7 @@ public interface ItemRepository extends JpaRepository<ItemEntity, Integer> {
 
     @Query("select i from ItemEntity i " +
             "where (upper(i.name) like upper(concat('%', :text, '%')) " +
-            " or upper(i.description) like upper(concat('%', :text, '%'))) " +
+            "or upper(i.description) like upper(concat('%', :text, '%'))) " +
             "and i.available = true")
     Page<ItemEntity> search(@Param("text") String text, Pageable pageable);
 
