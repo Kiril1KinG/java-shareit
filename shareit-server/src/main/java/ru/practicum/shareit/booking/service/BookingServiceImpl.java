@@ -18,7 +18,6 @@ import ru.practicum.shareit.exception.NotAvailableException;
 import ru.practicum.shareit.exception.NotOwnerException;
 import ru.practicum.shareit.exception.PaginationParamsException;
 import ru.practicum.shareit.exception.RepeatedRequestException;
-import ru.practicum.shareit.exception.UnknownStateException;
 import ru.practicum.shareit.item.entity.ItemEntity;
 import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.user.entity.UserEntity;
@@ -38,17 +37,6 @@ public class BookingServiceImpl implements BookingService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final BookingMapper mapper;
-
-    private static BookingState filterBookingState(String state) {
-        if (state == null) {
-            return BookingState.ALL;
-        }
-        try {
-            return BookingState.valueOf(state.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new UnknownStateException("Unknown state: " + state);
-        }
-    }
 
     @Override
     public Booking add(Booking booking) {
@@ -126,7 +114,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public Collection<Booking> getAllBookingsByState(Integer userId, String bookingState, Integer from, Integer size) {
-        BookingState state = filterBookingState(bookingState);
+        BookingState state = BookingState.valueOf(bookingState.toUpperCase());
         if (!userRepository.existsById(userId)) {
             throw new DataDoesNotExistsException(
                     String.format("Get all booking by state failed, user with id %d not exists", userId));
@@ -160,7 +148,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     public Collection<Booking> getAllBookingsForItemsByState(Integer userId, String bookingState, Integer from, Integer size) {
-        BookingState state = filterBookingState(bookingState);
+        BookingState state = BookingState.valueOf(bookingState.toUpperCase());
         if (!userRepository.existsById(userId)) {
             throw new DataDoesNotExistsException(
                     String.format("Get all booking by state failed, user with id %d not exists", userId));

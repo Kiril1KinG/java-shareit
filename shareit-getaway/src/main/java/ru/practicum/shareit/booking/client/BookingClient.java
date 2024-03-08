@@ -71,8 +71,6 @@ public class BookingClient extends BaseClient {
         return get("/owner?state=" + state, userId);
     }
 
-
-    //TODO удалить валидацию в сервере, также обработчик и сам эксепшн
     private void checkBookingRequestTime(BookingRequest bookingRequest) {
         if (bookingRequest.getEnd().isBefore(bookingRequest.getStart())) {
             throw new TimeValidationException("Incorrect time, end can not be before start");
@@ -82,7 +80,6 @@ public class BookingClient extends BaseClient {
         }
     }
 
-    //TODO удалить валидацию в сервере
     private String filterBookingState(String state) {
         Set<String> validValues = Set.of("ALL", "CURRENT", "PAST", "FUTURE", "WAITING", "REJECTED");
         if (state == null) {
