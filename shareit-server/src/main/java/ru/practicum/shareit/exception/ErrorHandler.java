@@ -36,13 +36,6 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public Map<String, String> handle(DataIntegrityViolationException e) {
-        log.info(e.getMessage(), e);
-        return Map.of("Already exists", e.getMessage());
-    }
-
-    @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public UnknownStateException handle(UnknownStateException e) {
         log.info(e.getMessage(), e);
@@ -70,17 +63,4 @@ public class ErrorHandler {
         return Map.of("Bad request", e.getMessage());
     }
 
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handle(PaginationParamsException e) {
-        log.info(e.getMessage(), e);
-        return Map.of("Bad request params", e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handle(MethodArgumentNotValidException e) {
-        log.info(e.getMessage(), e);
-        return Map.of("Bad request", e.getMessage());
-    }
 }

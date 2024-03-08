@@ -16,7 +16,6 @@ import ru.practicum.shareit.exception.DataAlreadyExistsException;
 import ru.practicum.shareit.exception.DataDoesNotExistsException;
 import ru.practicum.shareit.exception.NotAvailableException;
 import ru.practicum.shareit.exception.NotOwnerException;
-import ru.practicum.shareit.exception.PaginationParamsException;
 import ru.practicum.shareit.exception.RepeatedRequestException;
 import ru.practicum.shareit.item.entity.ItemEntity;
 import ru.practicum.shareit.item.storage.ItemRepository;
@@ -182,14 +181,10 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private Pageable getPageable(Integer from, Integer size, Sort sort) {
-        if ((from == null && size != null) || (size == null && from != null)) {
-            throw new PaginationParamsException("Get bookings failed, one of pagination params cannot be null");
-        }
         if (from != null && size != null) {
             return PageRequest.of(from / size, size, sort);
-        } else {
-            int count = (int) bookingRepository.count();
-            return PageRequest.of(0, count > 0 ? count : 1, sort);
         }
+        int count = (int) bookingRepository.count();
+        return PageRequest.of(0, count > 0 ? count : 1, sort);
     }
 }

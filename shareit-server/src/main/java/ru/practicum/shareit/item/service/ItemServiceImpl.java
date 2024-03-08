@@ -12,7 +12,6 @@ import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.storage.BookingRepository;
 import ru.practicum.shareit.exception.DataAlreadyExistsException;
 import ru.practicum.shareit.exception.DataDoesNotExistsException;
-import ru.practicum.shareit.exception.PaginationParamsException;
 import ru.practicum.shareit.exception.WithoutBookingException;
 import ru.practicum.shareit.item.entity.CommentEntity;
 import ru.practicum.shareit.item.entity.ItemEntity;
@@ -133,11 +132,7 @@ public class ItemServiceImpl implements ItemService {
         if (text.isBlank() || text.isEmpty()) {
             return Collections.emptyList();
         }
-
         Pageable pageable;
-        if ((from == null && size != null) || (size == null && from != null)) {
-            throw new PaginationParamsException("Get Items failed, one of pagination params cannot be null");
-        }
         if (from != null && size != null) {
             pageable = PageRequest.of(from, size);
         } else {
@@ -151,9 +146,6 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Collection<Item> getByOwnerId(int userId, Integer from, Integer size) {
-        if ((from == null && size != null) || (size == null && from != null)) {
-            throw new PaginationParamsException("Get Items failed, one of pagination params cannot be null");
-        }
         Pageable pageable;
         if (from != null && size != null) {
             pageable = PageRequest.of(from / size, size, Sort.by("id"));

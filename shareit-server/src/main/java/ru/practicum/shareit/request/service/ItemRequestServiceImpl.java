@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exception.DataDoesNotExistsException;
-import ru.practicum.shareit.exception.PaginationParamsException;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.request.mapper.ItemRequestMapper;
@@ -57,9 +56,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public Collection<ItemRequest> getAll(Integer userId, Integer from, Integer size) {
-        if ((from == null && size != null) || (size == null && from != null)) {
-            throw new PaginationParamsException("Bad pagination params, one of the parameters cannot be null");
-        }
         Pageable pageable;
         if (from != null & size != null) {
             pageable = PageRequest.of(from, size, Sort.by("created").descending());

@@ -102,7 +102,6 @@ class ItemRequestControllerTest {
 
         when(itemRequestService.getAll(1, null, null)).thenReturn(itemRequests);
         when(itemRequestService.getAll(1, 0, 1)).thenReturn(List.of(itemRequests.get(0)));
-        when(itemRequestService.getAll(1, null, 1)).thenThrow(new PaginationParamsException(""));
 
         mvc.perform(get("/requests/all")
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -124,13 +123,6 @@ class ItemRequestControllerTest {
                         .map(mapper::toResponseWithItems)
                         .limit(1)
                         .collect(Collectors.toList()))));
-
-        mvc.perform(get("/requests/all?size=1")
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
     }
 
     @Test
