@@ -18,7 +18,6 @@ import ru.practicum.shareit.exception.NotAvailableException;
 import ru.practicum.shareit.exception.NotOwnerException;
 import ru.practicum.shareit.exception.PaginationParamsException;
 import ru.practicum.shareit.exception.RepeatedRequestException;
-import ru.practicum.shareit.exception.TimeValidationException;
 import ru.practicum.shareit.exception.UnknownStateException;
 import ru.practicum.shareit.item.entity.ItemEntity;
 import ru.practicum.shareit.item.storage.ItemRepository;
@@ -51,18 +50,8 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-    private static void checkBookingRequestTime(Booking booking) {
-        if (booking.getEnd().isBefore(booking.getStart())) {
-            throw new TimeValidationException("Incorrect time, end can not be before start");
-        }
-        if (booking.getEnd().equals(booking.getStart())) {
-            throw new TimeValidationException("Incorrect time, end can not be equal start");
-        }
-    }
-
     @Override
     public Booking add(Booking booking) {
-        checkBookingRequestTime(booking);
         ItemEntity itemEntity = itemRepository.findById(booking.getItem().getId()).orElseThrow(
                 () -> new DataDoesNotExistsException(
                         String.format("Add booking failed, item with id %d not exists", booking.getItem().getId())));

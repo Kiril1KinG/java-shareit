@@ -58,13 +58,6 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handle(TimeValidationException e) {
-        log.info(e.getMessage(), e);
-        return Map.of("Bad request", e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handle(WithoutBookingException e) {
         log.info(e.getMessage(), e);
         return Map.of("Bad request", e.getMessage());
