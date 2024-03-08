@@ -17,7 +17,6 @@ import ru.practicum.shareit.classBuilder.TestItemRequestProvider;
 import ru.practicum.shareit.classBuilder.TestUserProvider;
 import ru.practicum.shareit.exception.DataAlreadyExistsException;
 import ru.practicum.shareit.exception.DataDoesNotExistsException;
-import ru.practicum.shareit.exception.PaginationParamsException;
 import ru.practicum.shareit.exception.WithoutBookingException;
 import ru.practicum.shareit.item.dto.ItemShortResponse;
 import ru.practicum.shareit.item.entity.ItemEntity;
@@ -227,9 +226,6 @@ class ItemServiceImplTest {
         assertEquals(Collections.emptyList(), itemService.search(" ", 0, 2));
         verify(itemRepository, never()).search(anyString(), any());
 
-        assertThrows(PaginationParamsException.class, () -> itemService.search("text", 0, null));
-        verify(itemRepository, never()).search(anyString(), any());
-
         assertEquals(List.of(item), itemService.search("search", 0, 1));
         verify(itemRepository, times(1)).search(anyString(), any());
     }
@@ -245,9 +241,6 @@ class ItemServiceImplTest {
 
         when(itemRepository.findAllByOwnerId(anyInt(), any())).thenReturn(page);
 
-
-        assertThrows(PaginationParamsException.class, () -> itemService.getByOwnerId(99, 0, null));
-        verify(itemRepository, never()).findAllByOwnerId(anyInt(), any());
 
         assertEquals(List.of(item), itemService.getByOwnerId(1, 0, 1));
         verify(itemRepository, times(1)).findAllByOwnerId(anyInt(), any());

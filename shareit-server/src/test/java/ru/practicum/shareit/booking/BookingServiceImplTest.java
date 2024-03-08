@@ -21,10 +21,7 @@ import ru.practicum.shareit.exception.DataAlreadyExistsException;
 import ru.practicum.shareit.exception.DataDoesNotExistsException;
 import ru.practicum.shareit.exception.NotAvailableException;
 import ru.practicum.shareit.exception.NotOwnerException;
-import ru.practicum.shareit.exception.PaginationParamsException;
 import ru.practicum.shareit.exception.RepeatedRequestException;
-import ru.practicum.shareit.exception.TimeValidationException;
-import ru.practicum.shareit.exception.UnknownStateException;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.user.mapper.UserMapper;
@@ -110,13 +107,6 @@ class BookingServiceImplTest {
                 TestUserProvider.buildUser(6, "user", "email"),
                 BookingStatus.WAITING);
 
-        Booking bookingWithIncorrectTime = TestBookingProvider.provideBooking(7,
-                LocalDateTime.of(2023, 1, 21, 20, 30),
-                LocalDateTime.of(2023, 1, 20, 20, 30),
-                TestItemProvider.provideItem(7, "item", "desc", true, new User(), null, null, null, null),
-                TestUserProvider.buildUser(7, "user", "email"),
-                BookingStatus.WAITING);
-
 
         when(itemRepository.findById(99)).thenReturn(Optional.empty());
 
@@ -166,9 +156,6 @@ class BookingServiceImplTest {
 
         assertEquals(booking, bookingService.add(booking));
         verify(bookingRepository, times(1)).save(any());
-
-        assertThrows(TimeValidationException.class, () -> bookingService.add(bookingWithIncorrectTime));
-        verify(bookingRepository, never()).save(bookingMapper.toBookingEntity(bookingWithIncorrectTime));
     }
 
     @Test
@@ -289,12 +276,7 @@ class BookingServiceImplTest {
                 any())).thenReturn(page);
 
 
-        assertThrows(UnknownStateException.class, () -> bookingService.getAllBookingsByState(1, "STATE", 0, 1));
-
         assertThrows(DataDoesNotExistsException.class, () -> bookingService.getAllBookingsByState(99, "All", 0, 1));
-        verify(bookingRepository, never()).findAllByItemOwnerId(any(), any());
-
-        assertThrows(PaginationParamsException.class, () -> bookingService.getAllBookingsByState(1, null, 0, null));
         verify(bookingRepository, never()).findAllByItemOwnerId(any(), any());
 
         assertEquals(Collections.emptyList(), bookingService.getAllBookingsByState(1, "ALL", 0, 1));

@@ -10,7 +10,6 @@ import org.springframework.data.domain.PageImpl;
 import ru.practicum.shareit.classBuilder.TestItemRequestProvider;
 import ru.practicum.shareit.classBuilder.TestUserProvider;
 import ru.practicum.shareit.exception.DataDoesNotExistsException;
-import ru.practicum.shareit.exception.PaginationParamsException;
 import ru.practicum.shareit.item.entity.ItemEntity;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.storage.ItemRepository;
@@ -126,10 +125,6 @@ class ItemRequestServiceImplTest {
         when(itemRequestRepository.findAllWithoutRequestor(eq(1), any())).thenReturn(page);
         when(itemRepository.findAllByRequestId(any())).thenReturn(List.of(new ItemEntity()));
 
-
-        assertThrows(PaginationParamsException.class, () -> itemRequestService.getAll(1, 0, null));
-        verify(itemRequestRepository, never()).findAllWithoutRequestor(eq(1), any());
-        verify(itemRepository, never()).findAllByRequestId(eq(1));
 
         assertEquals(List.of(itemRequest), itemRequestService.getAll(1, 0, 1));
         verify(itemRequestRepository, times(1)).findAllWithoutRequestor(any(), any());

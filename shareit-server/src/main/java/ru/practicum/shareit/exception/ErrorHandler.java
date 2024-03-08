@@ -35,13 +35,6 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public UnknownStateException handle(UnknownStateException e) {
-        log.info(e.getMessage(), e);
-        return e;
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handle(RepeatedRequestException e) {
         log.info(e.getMessage(), e);
         return Map.of("Repeated request", e.getMessage());
