@@ -38,7 +38,6 @@ public class ItemClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getAllForOwner(Long userId, Integer from, Integer size) {
-        //TODO убрвть потом везде валидацию пагинации
         PaginationValidator.validatePaginationParams(from, size);
         if (from != null && size != null) {
             Map<String, Object> params = Map.of(

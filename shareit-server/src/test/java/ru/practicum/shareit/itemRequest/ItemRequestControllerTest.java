@@ -10,7 +10,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.classBuilder.TestItemRequestProvider;
 import ru.practicum.shareit.classBuilder.TestUserProvider;
-import ru.practicum.shareit.exception.PaginationParamsException;
 import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.request.controller.ItemRequestController;
