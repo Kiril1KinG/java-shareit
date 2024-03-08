@@ -9,7 +9,7 @@ services:
     depends_on:
       - shareit-server
     environment:
-      - TZ=Europe/Moscow
+#      - TZ=Europe/Moscow
       - SERVER_PORT=8081
       - SHAREIT_SERVER_URL=http://shareit-server:9091
 
@@ -22,7 +22,7 @@ services:
     depends_on:
       - shareit-db
     environment:
-      - TZ=Europe/Moscow
+#      - TZ=Europe/Moscow
       - SERVER_PORT=9091
       - SPRING_DATASOURCE_URL=jdbc:postgresql://shareit-db:5432/shareit
       - SPRING_DATASOURCE_USERNAME=shareit_admin
@@ -35,7 +35,7 @@ services:
     ports:
       - "6541:5432"
     environment:
-      - TZ=Europe/Moscow
+#      - TZ=Europe/Moscow
       - POSTGRES_PASSWORD=sh0re1t
       - POSTGRES_USER=shareit_admin
       - POSTGRES_DB=shareit
