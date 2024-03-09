@@ -17,28 +17,28 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handle(MethodArgumentNotValidException e) {
-        log.info(e.getMessage());
+        log.warn(e.getMessage());
         return Map.of("Validation failed", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handle(TimeValidationException e) {
-        log.info(e.getMessage(), e);
+        log.warn(e.getMessage(), e);
         return Map.of("Bad request", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handle(ConstraintViolationException e) {
-        log.info(e.getMessage(), e);
+        log.warn(e.getMessage(), e);
         return Map.of("Validation failed", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public UnknownStateException handle(UnknownStateException e) {
-        log.info(e.getMessage(), e);
+        log.warn(e.getMessage(), e);
         return e;
     }
 }

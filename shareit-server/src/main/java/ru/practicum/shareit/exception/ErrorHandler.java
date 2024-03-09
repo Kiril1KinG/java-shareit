@@ -15,42 +15,42 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handle(DataDoesNotExistsException e) {
-        log.info(e.getMessage(), e);
+        log.warn(e.getMessage(), e);
         return Map.of("Data not found", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handle(NotOwnerException e) {
-        log.info(e.getMessage(), e);
+        log.warn(e.getMessage(), e);
         return Map.of("You not owner", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public Map<String, String> handle(DataAlreadyExistsException e) {
-        log.info(e.getMessage(), e);
+        log.warn(e.getMessage(), e);
         return Map.of("Already exists", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handle(RepeatedRequestException e) {
-        log.info(e.getMessage(), e);
+        log.warn(e.getMessage(), e);
         return Map.of("Repeated request", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handle(WithoutBookingException e) {
-        log.info(e.getMessage(), e);
+        log.warn(e.getMessage(), e);
         return Map.of("Bad request", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handle(NotAvailableException e) {
-        log.info(e.getMessage(), e);
+        log.warn(e.getMessage(), e);
         return Map.of("Bad request", e.getMessage());
     }
 
