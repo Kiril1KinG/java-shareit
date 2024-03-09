@@ -2,7 +2,6 @@ version: '3.8'
 services:
   shareit-getaway:
     build: shareit-getaway
-    image: shareit-getaway-image
     container_name: shareit-getaway-container
     ports:
       - "8080:8081"
@@ -14,7 +13,6 @@ services:
 
   shareit-server:
     build: shareit-server
-    image: shareit-server-image
     container_name: shareit-server-container
     ports:
       - "9090:9091"
