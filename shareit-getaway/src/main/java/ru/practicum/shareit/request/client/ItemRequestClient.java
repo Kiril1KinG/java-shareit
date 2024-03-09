@@ -18,6 +18,8 @@ public class ItemRequestClient extends BaseClient {
 
     private static final String API_PREFIX = "/requests";
 
+    private final PaginationValidator paginationValidator = new PaginationValidator();
+
     @Autowired
     public ItemRequestClient(@Value("${shareIt-server.url}") String serverUrl, RestTemplateBuilder builder) {
         super(builder
@@ -36,7 +38,7 @@ public class ItemRequestClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getAll(Integer from, Integer size, Long userId) {
-        PaginationValidator.validatePaginationParams(from, size);
+        paginationValidator.validatePaginationParams(from, size);
         if (from != null && size != null) {
             Map<String, Object> params = Map.of(
                     "from", from,

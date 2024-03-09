@@ -21,6 +21,8 @@ public class BookingClient extends BaseClient {
 
     private static final String API_PREFIX = "/bookings";
 
+    private final PaginationValidator paginationValidator = new PaginationValidator();
+
     @Autowired
     public BookingClient(@Value("${shareIt-server.url}") String serverUrl, RestTemplateBuilder builder) {
         super(builder
@@ -45,7 +47,7 @@ public class BookingClient extends BaseClient {
 
     public ResponseEntity<Object> getAllByState(Long userId, String state, Integer from, Integer size) {
         state = filterBookingState(state);
-        PaginationValidator.validatePaginationParams(from, size);
+        paginationValidator.validatePaginationParams(from, size);
         if (from != null && size != null) {
             Map<String, Object> params = Map.of(
                     "state", state,
@@ -59,7 +61,7 @@ public class BookingClient extends BaseClient {
 
     public ResponseEntity<Object> getAllBookingsForItemsByState(Long userId, String state, Integer from, Integer size) {
         state = filterBookingState(state);
-        PaginationValidator.validatePaginationParams(from, size);
+        paginationValidator.validatePaginationParams(from, size);
         if (from != null && size != null) {
             Map<String, Object> params = Map.of(
                     "state", state,
